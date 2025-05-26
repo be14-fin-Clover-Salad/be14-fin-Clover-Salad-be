@@ -153,3 +153,5 @@ applicaiton.properties
 # Kubernetes 설정 yml 파일 폴더 관련 ignore 설정
 manifest-k8s
 boot*.yml
+
+/.gradle/

@@ -42,23 +42,23 @@ CREATE TABLE FILE_UPLOAD
     rename_file VARCHAR(20) NOT NULL,
     path        VARCHAR(50) NOT NULL,
     created_at  DATETIME    NOT NULL,
-    type        VARCHAR(3)  NOT NULL COMMENT '프로필, 상품, 계약서',
+    type        VARCHAR(3)  NOT NULL,
     CONSTRAINT PK_FILE_UPLOAD PRIMARY KEY (id)
 );
 
 CREATE TABLE EMPLOYEE
 (
     id            INT         NOT NULL,
-    code          INT         NOT NULL COMMENT '입사년월(6)+번호(3), UNIQUE',
+    code          INT         NOT NULL,
     password      VARCHAR(20) NOT NULL,
     name          VARCHAR(10) NOT NULL,
-    phone         VARCHAR(11) NOT NULL COMMENT '01012345678 형태로 저장',
-    level         VARCHAR(3)  NOT NULL DEFAULT '사원' COMMENT '사원, 주임, 대리, 과장, 팀장, 관리자',
+    phone         VARCHAR(11) NOT NULL,
+    level         VARCHAR(3)  NOT NULL DEFAULT '사원',
     hire_date     DATE        NULL,
     resign_date   DATE        NULL,
     is_deleted    BOOLEAN     NOT NULL DEFAULT FALSE,
     work_place    VARCHAR(10) NULL,
-    department_id INT         NOT NULL DEFAULT 1 COMMENT '팀 미배정시(동작구1팀 등 )1번 미배정팀 배정',
+    department_id INT         NOT NULL DEFAULT 1,
     profile       INT         NOT NULL,
     CONSTRAINT PK_EMPLOYEE PRIMARY KEY (id),
     CONSTRAINT FK_DEPARTMENT_TO_EMPLOYEE
@@ -77,7 +77,7 @@ CREATE TABLE EMPLOYEE_PERFORMANCE
     new_customer_count      INT           NULL,
     total_rental_amount     BIGINT        NULL,
     customer_feedback_score DECIMAL(2, 1) NULL,
-    target_date             INT(6)        NOT NULL COMMENT '202505',
+    target_date             INT(6)        NOT NULL,
     employee_id             INT           NOT NULL,
     CONSTRAINT PK_EMPLOYEE_PERFORMANCE PRIMARY KEY (id),
     CONSTRAINT FK_EMPLOYEE_TO_EMPLOYEE_PERFORMANCE
@@ -90,7 +90,7 @@ CREATE TABLE NOTICE
     id          INT         NOT NULL,
     title       VARCHAR(20) NOT NULL,
     content     TEXT        NOT NULL,
-    created_at  DATETIME    NOT NULL COMMENT '2025-01-01 00:00:00',
+    created_at  DATETIME    NOT NULL,
     is_deleted  BOOLEAN     NOT NULL DEFAULT FALSE,
     employee_id INT         NOT NULL,
     CONSTRAINT PK_NOTICE PRIMARY KEY (id),
@@ -105,7 +105,7 @@ CREATE TABLE PRODUCT
     category       VARCHAR(30)  NOT NULL,
     name           VARCHAR(255) NOT NULL,
     serial_number  VARCHAR(255) NOT NULL,
-    product_code   VARCHAR(255) NOT NULL COMMENT '회사 내부 부여',
+    product_code   VARCHAR(255) NOT NULL,
     company        VARCHAR(255) NOT NULL,
     origin_cost    INT          NOT NULL,
     rental_cost    INT          NOT NULL,
@@ -142,7 +142,7 @@ CREATE TABLE DEPARTMENT_PERFORMANCE
     new_customer_count      INT           NULL,
     total_rental_amount     BIGINT        NULL,
     customer_feedback_score DECIMAL(2, 1) NULL,
-    target_date             INT(6)        NOT NULL COMMENT '202505',
+    target_date             INT(6)        NOT NULL,
     department_id           INT           NOT NULL,
     CONSTRAINT PK_DEPARTMENT_PERFORMANCE PRIMARY KEY (id),
     CONSTRAINT FK_DEPARTMENT_TO_DEPARTMENT_PERFORMANCE
@@ -154,13 +154,13 @@ CREATE TABLE CUSTOMER
 (
     id          INT          NOT NULL,
     name        VARCHAR(20)  NOT NULL,
-    birthdate   VARCHAR(20)  NOT NULL COMMENT '2025-01-01',
+    birthdate   VARCHAR(20)  NOT NULL,
     address     VARCHAR(20)  NULL,
-    phone       VARCHAR(11)  NOT NULL COMMENT '01012345678',
+    phone       VARCHAR(11)  NOT NULL,
     email       VARCHAR(255) NULL,
     register_at DATE         NULL,
     is_deleted  BOOLEAN      NOT NULL DEFAULT FALSE,
-    type        VARCHAR(20)  NOT NULL COMMENT '리드, 고객 ENUM으로 관리',
+    type        VARCHAR(20)  NOT NULL,
     etc         VARCHAR(20)  NULL,
     CONSTRAINT PK_CUSTOMER PRIMARY KEY (id)
 );
@@ -224,7 +224,7 @@ CREATE TABLE DEFAULT_GOAL
     new_customer_count      INT           NOT NULL,
     total_rental_amount     BIGINT        NOT NULL,
     customer_feedback_score DECIMAL(2, 1) NOT NULL,
-    target_year             INT(4)        NOT NULL COMMENT '2025',
+    target_year             INT(4)        NOT NULL,
     CONSTRAINT PK_DEFAULT_GOAL PRIMARY KEY (id)
 );
 
@@ -251,7 +251,7 @@ CREATE TABLE EMPLOYEE_GOAL
     new_customer_count      INT           NOT NULL,
     total_rental_amount     BIGINT        NOT NULL,
     customer_feedback_score DECIMAL(2, 1) NOT NULL,
-    target_date             INT(6)        NOT NULL COMMENT '202505',
+    target_date             INT(6)        NOT NULL,
     employee_id             INT           NOT NULL,
     CONSTRAINT PK_EMPLOYEE_GOAL PRIMARY KEY (id),
     CONSTRAINT FK_EMPLOYEE_TO_EMPLOYEE_GOAL
@@ -262,17 +262,17 @@ CREATE TABLE EMPLOYEE_GOAL
 CREATE TABLE CONTRACT
 (
     id                 INT         NOT NULL,
-    code               VARCHAR(11) NOT NULL COMMENT 'C-YYMM-nnnn (C-2501-0001)',
+    code               VARCHAR(11) NOT NULL,
     created_at         DATETIME    NOT NULL,
     start_date         DATE        NOT NULL,
     end_date           DATE        NOT NULL,
-    status             VARCHAR(10) NOT NULL COMMENT '결재 전, 반려, 결재 중, 계약 중, 계약 만료, 중도 해지',
+    status             VARCHAR(10) NOT NULL,
     amount             INT         NOT NULL,
     bank_name          VARCHAR(20) NOT NULL,
-    bank_account       VARCHAR(20) NOT NULL COMMENT '- 없이 숫자만 저장',
+    bank_account       VARCHAR(20) NOT NULL,
     payment_day        INT         NOT NULL,
     deposit_owner      VARCHAR(20) NOT NULL,
-    relationship       VARCHAR(20) NOT NULL COMMENT '본인, 부모, 자녀',
+    relationship       VARCHAR(20) NOT NULL,
     payment_email      VARCHAR(20) NOT NULL,
     is_deleted         BOOLEAN     NOT NULL DEFAULT FALSE,
     etc                VARCHAR(20) NULL,
@@ -324,13 +324,13 @@ CREATE TABLE CONTRACT_PRODUCT
 CREATE TABLE APPROVAL
 (
     id          INT         NOT NULL,
-    code        VARCHAR(11) NOT NULL COMMENT 'A-YYMM-nnnn (A-2501-0001)',
-    title       VARCHAR(20) NOT NULL COMMENT '필요?',
+    code        VARCHAR(11) NOT NULL,
+    title       VARCHAR(20) NOT NULL,
     content     TEXT        NOT NULL,
     req_date    DATETIME    NOT NULL,
     aprv_date   DATETIME    NULL,
-    state       VARCHAR(20) NOT NULL COMMENT '요청됨, 승인됨, 반려됨',
-    comment     VARCHAR(20) NULL COMMENT '결재 반려 시 사유',
+    state       VARCHAR(20) NOT NULL,
+    comment     VARCHAR(20) NULL,
     req_id      INT         NOT NULL,
     aprv_id     INT         NOT NULL,
     contract_id INT         NOT NULL,

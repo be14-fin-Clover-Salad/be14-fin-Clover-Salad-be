@@ -1,10 +1,8 @@
 ---
 name: Feature 템플릿
 about: 기능 추가 관련 템플릿
-title: ''
-labels: ''
-assignees: ''
-
+title: '[Feat] '
+labels: 'enhancement'
 ---
 
 ## 어떤 기능인가요?

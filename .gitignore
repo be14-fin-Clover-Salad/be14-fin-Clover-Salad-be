@@ -155,3 +155,4 @@ manifest-k8s
 boot*.yml
 
 /.gradle/
+/build/

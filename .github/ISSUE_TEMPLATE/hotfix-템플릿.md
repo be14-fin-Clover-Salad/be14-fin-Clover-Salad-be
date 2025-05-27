@@ -1,10 +1,8 @@
 ---
 name: Hotfix 템플릿
 about: 긴급 수정 관련 템플릿
-title: ''
-labels: ''
-assignees: ''
-
+title: '[Hotfix] '
+labels: 'bug'
 ---
 
 ## 어떤 버그인가요?

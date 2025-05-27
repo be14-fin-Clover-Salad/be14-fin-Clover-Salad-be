@@ -17,11 +17,19 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 	
 	@Override
 	public void registerProduct(ProductDTO productDTO) {
-		productRep.save(productDTOToProduct(productDTO));
+		Product product = new Product();
+		productDTOToProduct(productDTO, product);
+		productRep.save(product);
 	}
 	
-	private Product productDTOToProduct(ProductDTO productDTO) {
-		Product product = new Product();
+	@Override
+	public void updateProduct(int productId, ProductDTO productDTO) {
+		Product product = productRep.findById(productId).orElseThrow();
+		productDTOToProduct(productDTO, product);
+		productRep.save(product);
+	}
+	
+	private void productDTOToProduct(ProductDTO productDTO, Product product) {
 		product.setCategory(productDTO.getCategory());
 		product.setName(productDTO.getName());
 		product.setSerialNumber(productDTO.getSerialNumber());
@@ -30,7 +38,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 		product.setOriginCost(productDTO.getOriginCost());
 		product.setRentalCost(productDTO.getRentalCost());
 		product.setDescription(productDTO.getDescription());
+		product.setDeleted(productDTO.isDeleted());
 		product.setFileUploadId(productDTO.getFileUploadId());
-		return product;
 	}
 }

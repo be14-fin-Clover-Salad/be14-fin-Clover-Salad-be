@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clover.salad.customer.query.mapper.CustomerMapper">
+
+    <!-- 고객 ResultMap -->
+    <resultMap id="CustomerResultMap"
+        type="com.clover.salad.customer.command.application.dto.CustomerDTO">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="birthdate" column="birthdate" />
+        <result property="phone" column="phone" />
+        <result property="email" column="email" />
+        <result property="registerAt" column="register_at" />
+        <result property="isDeleted" column="is_deleted" />
+        <result property="type" column="type" />
+        <result property="etc" column="etc" />
+    </resultMap>
+
+    <!-- 고객 상세 조회 -->
+    <select id="selectCustomerById" resultMap="CustomerResultMap" parameterType="int">
+        SELECT
+            c.id,
+            c.name,
+            c.birthdate,
+            c.phone,
+            c.email,
+            c.register_at,
+            c.is_deleted,
+            c.type,
+            c.etc
+        FROM customer c
+        WHERE c.id = #{customerId}
+    </select>
+
+    <!-- 고객 전체 조회 -->
+    <select id="selectAllCustomers" resultMap="CustomerResultMap">
+        SELECT
+            c.id,
+            c.name,
+            c.birthdate,
+            c.phone,
+            c.email,
+            c.register_at,
+            c.is_deleted,
+            c.type,
+            c.etc
+        FROM customer c
+    </select>
+</mapper>

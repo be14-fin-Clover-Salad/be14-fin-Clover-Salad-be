@@ -1,6 +1,5 @@
 package com.clover.salad.product.command.application.service;
 
-import org.apache.ibatis.jdbc.Null;
 import org.springframework.stereotype.Service;
 
 import com.clover.salad.product.command.application.dto.ProductDTO;

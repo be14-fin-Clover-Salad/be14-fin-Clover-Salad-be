@@ -1,5 +1,6 @@
 package com.clover.salad.product.command.application.service;
 
+import org.apache.ibatis.jdbc.Null;
 import org.springframework.stereotype.Service;
 
 import com.clover.salad.product.command.application.dto.ProductDTO;
@@ -29,6 +30,14 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 		productRep.save(product);
 	}
 	
+	@Override
+	public String deleteProduct(int productId) {
+		Product product = productRep.findById(productId).orElseThrow();
+		product.setDeleted(true);
+		productRep.save(product);
+		return product.getName();
+	}
+	
 	private void productDTOToProduct(ProductDTO productDTO, Product product) {
 		product.setCategory(productDTO.getCategory());
 		product.setName(productDTO.getName());
@@ -38,7 +47,6 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 		product.setOriginCost(productDTO.getOriginCost());
 		product.setRentalCost(productDTO.getRentalCost());
 		product.setDescription(productDTO.getDescription());
-		product.setDeleted(productDTO.isDeleted());
 		product.setFileUploadId(productDTO.getFileUploadId());
 	}
 }

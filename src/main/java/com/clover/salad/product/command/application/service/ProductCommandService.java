@@ -6,4 +6,6 @@ public interface ProductCommandService {
 	void registerProduct(ProductDTO productDTO);
 	
 	void updateProduct(int productId, ProductDTO productDTO);
+	
+	String deleteProduct(int productId);
 }

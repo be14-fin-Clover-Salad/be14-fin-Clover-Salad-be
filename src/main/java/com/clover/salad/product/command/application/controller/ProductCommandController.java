@@ -35,6 +35,10 @@ public class ProductCommandController {
 		return ResponseEntity.ok(productDTO.getName() + " is updated");
 	}
 	
-	/* 설명. 상품 삭제 */
-	
+	/* 설명. 상품 삭제(논리 삭제) */
+	@PutMapping("/delete/{productId}")
+	public ResponseEntity<String> deleteProduct(@PathVariable("productId") int productId) {
+		String name = productCSer.deleteProduct(productId);
+		return ResponseEntity.ok(name + " is deleted");
+	}
 }

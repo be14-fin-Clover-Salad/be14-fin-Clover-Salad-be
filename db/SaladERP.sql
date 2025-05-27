@@ -1,4 +1,6 @@
 ﻿-- saladdb 계정으로 실행!
+USE saladdb;
+
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS APPROVAL;
@@ -25,7 +27,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE DEPARTMENT
 (
-    id          INT         NOT NULL,
+    id          INT         NOT NULL AUTO_INCREMENT,
     name        VARCHAR(10) NOT NULL,
     is_deleted  BOOLEAN     NOT NULL DEFAULT FALSE,
     sup_dept_id INT         NULL,
@@ -37,7 +39,7 @@ CREATE TABLE DEPARTMENT
 
 CREATE TABLE FILE_UPLOAD
 (
-    id          INT         NOT NULL,
+    id          INT         NOT NULL AUTO_INCREMENT,
     origin_file VARCHAR(20) NOT NULL,
     rename_file VARCHAR(20) NOT NULL,
     path        VARCHAR(50) NOT NULL,
@@ -48,7 +50,7 @@ CREATE TABLE FILE_UPLOAD
 
 CREATE TABLE EMPLOYEE
 (
-    id            INT         NOT NULL,
+    id            INT         NOT NULL AUTO_INCREMENT,
     code          INT         NOT NULL,
     password      VARCHAR(20) NOT NULL,
     name          VARCHAR(10) NOT NULL,
@@ -71,7 +73,7 @@ CREATE TABLE EMPLOYEE
 
 CREATE TABLE EMPLOYEE_PERFORMANCE
 (
-    id                      INT           NOT NULL,
+    id                      INT           NOT NULL AUTO_INCREMENT,
     rental_product_count    INT           NULL,
     rental_retention_rate   INT           NULL,
     new_customer_count      INT           NULL,
@@ -87,7 +89,7 @@ CREATE TABLE EMPLOYEE_PERFORMANCE
 
 CREATE TABLE NOTICE
 (
-    id          INT         NOT NULL,
+    id          INT         NOT NULL AUTO_INCREMENT,
     title       VARCHAR(20) NOT NULL,
     content     TEXT        NOT NULL,
     created_at  DATETIME    NOT NULL,
@@ -101,7 +103,7 @@ CREATE TABLE NOTICE
 
 CREATE TABLE PRODUCT
 (
-    id             INT          NOT NULL,
+    id             INT          NOT NULL AUTO_INCREMENT,
     category       VARCHAR(30)  NOT NULL,
     name           VARCHAR(255) NOT NULL,
     serial_number  VARCHAR(255) NOT NULL,
@@ -120,7 +122,7 @@ CREATE TABLE PRODUCT
 
 CREATE TABLE QNA
 (
-    id             INT         NOT NULL,
+    id             INT         NOT NULL AUTO_INCREMENT,
     title          VARCHAR(20) NOT NULL,
     content        TEXT        NOT NULL,
     created_at     DATETIME    NOT NULL,
@@ -136,7 +138,7 @@ CREATE TABLE QNA
 
 CREATE TABLE DEPARTMENT_PERFORMANCE
 (
-    id                      INT           NOT NULL,
+    id                      INT           NOT NULL AUTO_INCREMENT,
     rental_product_count    INT           NULL,
     rental_retention_rate   INT           NULL,
     new_customer_count      INT           NULL,
@@ -152,7 +154,7 @@ CREATE TABLE DEPARTMENT_PERFORMANCE
 
 CREATE TABLE CUSTOMER
 (
-    id          INT          NOT NULL,
+    id          INT          NOT NULL AUTO_INCREMENT,
     name        VARCHAR(20)  NOT NULL,
     birthdate   VARCHAR(20)  NOT NULL,
     address     VARCHAR(20)  NULL,
@@ -167,7 +169,7 @@ CREATE TABLE CUSTOMER
 
 CREATE TABLE CONSULTATION
 (
-    id             INT           NOT NULL,
+    id             INT           NOT NULL AUTO_INCREMENT,
     consult_at     DATETIME      NOT NULL,
     content        TEXT          NOT NULL,
     is_deleted     BOOLEAN       NOT NULL DEFAULT FALSE,
@@ -186,7 +188,7 @@ CREATE TABLE CONSULTATION
 
 CREATE TABLE DOCUMENT_TEMPLATE
 (
-    id             INT         NOT NULL,
+    id             INT         NOT NULL AUTO_INCREMENT,
     name           VARCHAR(20) NOT NULL,
     version        VARCHAR(5)  NOT NULL,
     description    VARCHAR(20) NULL,
@@ -201,7 +203,7 @@ CREATE TABLE DOCUMENT_TEMPLATE
 
 CREATE TABLE DOCUMENT_ORIGIN
 (
-    id                   INT      NOT NULL,
+    id                   INT      NOT NULL AUTO_INCREMENT,
     created_at           DATETIME NOT NULL,
     is_deleted           BOOLEAN  NULL DEFAULT FALSE,
     document_template_id INT      NOT NULL,
@@ -217,7 +219,7 @@ CREATE TABLE DOCUMENT_ORIGIN
 
 CREATE TABLE DEFAULT_GOAL
 (
-    id                      INT           NOT NULL,
+    id                      INT           NOT NULL AUTO_INCREMENT,
     level                   VARCHAR(20)   NOT NULL,
     rental_product_count    INT           NOT NULL,
     rental_retention_rate   INT           NOT NULL,
@@ -230,7 +232,7 @@ CREATE TABLE DEFAULT_GOAL
 
 CREATE TABLE EMPLOYEE_NOTICE
 (
-    id          INT     NOT NULL,
+    id          INT     NOT NULL AUTO_INCREMENT,
     is_checked  BOOLEAN NOT NULL DEFAULT FALSE,
     employee_id INT     NOT NULL,
     notice_id   INT     NOT NULL,
@@ -245,7 +247,7 @@ CREATE TABLE EMPLOYEE_NOTICE
 
 CREATE TABLE EMPLOYEE_GOAL
 (
-    id                      INT           NOT NULL,
+    id                      INT           NOT NULL AUTO_INCREMENT,
     rental_product_count    INT           NOT NULL,
     rental_retention_rate   INT           NOT NULL,
     new_customer_count      INT           NOT NULL,
@@ -261,7 +263,7 @@ CREATE TABLE EMPLOYEE_GOAL
 
 CREATE TABLE CONTRACT
 (
-    id                 INT         NOT NULL,
+    id                 INT         NOT NULL AUTO_INCREMENT,
     code               VARCHAR(11) NOT NULL,
     created_at         DATETIME    NOT NULL,
     start_date         DATE        NOT NULL,
@@ -293,7 +295,7 @@ CREATE TABLE CONTRACT
 
 CREATE TABLE SALES
 (
-    id            INT         NOT NULL,
+    id            INT         NOT NULL AUTO_INCREMENT,
     sales_date    DATE        NOT NULL,
     department    VARCHAR(20) NOT NULL,
     employee_name VARCHAR(20) NOT NULL,
@@ -308,7 +310,7 @@ CREATE TABLE SALES
 
 CREATE TABLE CONTRACT_PRODUCT
 (
-    id          INT NOT NULL,
+    id          INT NOT NULL AUTO_INCREMENT,
     quantity    INT NOT NULL,
     contract_id INT NOT NULL,
     product_id  INT NOT NULL,
@@ -323,7 +325,7 @@ CREATE TABLE CONTRACT_PRODUCT
 
 CREATE TABLE APPROVAL
 (
-    id          INT         NOT NULL,
+    id          INT         NOT NULL AUTO_INCREMENT,
     code        VARCHAR(11) NOT NULL,
     title       VARCHAR(20) NOT NULL,
     content     TEXT        NOT NULL,

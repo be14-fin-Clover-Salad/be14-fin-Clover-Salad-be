@@ -25,4 +25,5 @@ public class ProductCommandController {
 		productCSer.registerProduct(productDTO);
 		return ResponseEntity.ok(productDTO.getName() + " is registered");
 	}
+	
 }

@@ -4,9 +4,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class ContractDTO {
 	private int id;
 	private String code;
@@ -21,6 +25,7 @@ public class ContractDTO {
 	private String depositOwner;
 	private String relationship;
 	private String paymentEmail;
+	@JsonProperty("is_deleted")
 	private boolean isDeleted;
 	private String etc;
 

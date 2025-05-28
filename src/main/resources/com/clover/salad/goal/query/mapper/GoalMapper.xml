@@ -17,7 +17,8 @@
     </resultMap>
 
     <!-- 설명. 설정 기간의 사원별 실적 목표 조회 -->
-    <select id="selectEmployeeGoalByEIdAndTargetDate" resultMap="EmployeeGoalResultMap" parameterType="map">
+    <select id="selectEmployeeGoalByEIdAndTargetDate" resultMap="EmployeeGoalResultMap"
+            parameterType="com.clover.salad.goal.command.application.dto.SearchTermDTO">
         SELECT
                EG.ID
              , EG.RENTAL_PRODUCT_COUNT
@@ -28,12 +29,48 @@
              , EG.TARGET_DATE
              , EG.EMPLOYEE_ID
           FROM EMPLOYEE_GOAL EG
-         WHERE EG.EMPLOYEE_ID = #{employeeId}
-           AND EG.TARGET_DATE BETWEEN #{startDate} AND #{endDate}
+         WHERE EG.EMPLOYEE_ID = #{id}
+        <if test="startDate != null">
+           AND EG.TARGET_DATE >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            <![CDATA[AND EG.TARGET_DATE <= #{endDate}]]>
+        </if>
+        <if test="minRentalProductCount != null">
+            AND EG.RENTAL_PRODUCT_COUNT >= #{minRentalProductCount}
+        </if>
+        <if test="maxRentalProductCount != null">
+            <![CDATA[AND EG.RENTAL_PRODUCT_COUNT <= #{maxRentalProductCount}]]>
+        </if>
+        <if test="minRentalRetentionRate != null">
+            AND EG.RENTAL_RETENTION_RATE >= #{minRentalRetentionRate}
+        </if>
+        <if test="maxRentalRetentionRate != null">
+            <![CDATA[AND EG.RENTAL_RETENTION_RATE <= #{maxRentalRetentionRate}]]>
+        </if>
+        <if test="minNewCustomerCount != null">
+            AND EG.NEW_CUSTOMER_COUNT >= #{minNewCustomerCount}
+        </if>
+        <if test="maxNewCustomerCount != null">
+            <![CDATA[AND EG.NEW_CUSTOMER_COUNT <= #{maxNewCustomerCount}]]>
+        </if>
+        <if test="minTotalRentalAmount != null">
+            AND EG.TOTAL_RENTAL_AMOUNT >= #{minTotalRentalAmount}
+        </if>
+        <if test="maxTotalRentalAmount != null">
+            <![CDATA[AND EG.TOTAL_RENTAL_AMOUNT <= #{maxTotalRentalAmount}]]>
+        </if>
+        <if test="minCustomerFeedbackScore != null">
+            AND EG.CUSTOMER_FEEDBACK_SCORE >= #{minCustomerFeedbackScore}
+        </if>
+        <if test="maxCustomerFeedbackScore != null">
+            <![CDATA[AND EG.CUSTOMER_FEEDBACK_SCORE <= #{maxCustomerFeedbackScore}]]>
+        </if>
     </select>
 
     <!-- 설명. 설정 기간의 팀 단위 실적 목표 조회 -->
-    <select id="selectEmployeeGoalByDepartmentId" resultMap="EmployeeGoalResultMap" parameterType="map">
+    <select id="selectEmployeeGoalByDepartmentId" resultMap="EmployeeGoalResultMap"
+            parameterType="com.clover.salad.goal.command.application.dto.SearchTermDTO">
         SELECT
                EG.ID
              , EG.RENTAL_PRODUCT_COUNT
@@ -45,7 +82,42 @@
              , EG.EMPLOYEE_ID
           FROM EMPLOYEE_GOAL EG
           JOIN EMPLOYEE E ON EG.EMPLOYEE_ID = E.ID
-         WHERE E.DEPARTMENT_ID = #{departmentId}
-           AND EG.TARGET_DATE BETWEEN #{startDate} AND #{endDate}
+         WHERE E.DEPARTMENT_ID = #{id}
+        <if test="startDate != null">
+            AND EG.TARGET_DATE >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            <![CDATA[AND EG.TARGET_DATE <= #{endDate}]]>
+        </if>
+        <if test="minRentalProductCount != null">
+            AND EG.RENTAL_PRODUCT_COUNT >= #{minRentalProductCount}
+        </if>
+        <if test="maxRentalProductCount != null">
+            <![CDATA[AND EG.RENTAL_PRODUCT_COUNT <= #{maxRentalProductCount}]]>
+        </if>
+        <if test="minRentalRetentionRate != null">
+            AND EG.RENTAL_RETENTION_RATE >= #{minRentalRetentionRate}
+        </if>
+        <if test="maxRentalRetentionRate != null">
+            <![CDATA[AND EG.RENTAL_RETENTION_RATE <= #{maxRentalRetentionRate}]]>
+        </if>
+        <if test="minNewCustomerCount != null">
+            AND EG.NEW_CUSTOMER_COUNT >= #{minNewCustomerCount}
+        </if>
+        <if test="maxNewCustomerCount != null">
+            <![CDATA[AND EG.NEW_CUSTOMER_COUNT <= #{maxNewCustomerCount}]]>
+        </if>
+        <if test="minTotalRentalAmount != null">
+            AND EG.TOTAL_RENTAL_AMOUNT >= #{minTotalRentalAmount}
+        </if>
+        <if test="maxTotalRentalAmount != null">
+            <![CDATA[AND EG.TOTAL_RENTAL_AMOUNT <= #{maxTotalRentalAmount}]]>
+        </if>
+        <if test="minCustomerFeedbackScore != null">
+            AND EG.CUSTOMER_FEEDBACK_SCORE >= #{minCustomerFeedbackScore}
+        </if>
+        <if test="maxCustomerFeedbackScore != null">
+            <![CDATA[AND EG.CUSTOMER_FEEDBACK_SCORE <= #{maxCustomerFeedbackScore}]]>
+        </if>
     </select>
 </mapper>

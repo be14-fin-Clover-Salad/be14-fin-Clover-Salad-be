@@ -8,7 +8,7 @@ import com.clover.salad.customer.command.application.dto.CustomerDTO;
 
 @Mapper
 public interface CustomerMapper {
-    CustomerDTO selectCustomerById(int customerId);
+    List<CustomerDTO> findAllCustomers();
 
-    List<CustomerDTO> selectAllCustomers();
+    CustomerDTO findCustomerById(int customerId);
 }

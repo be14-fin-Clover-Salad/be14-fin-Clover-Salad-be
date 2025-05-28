@@ -156,3 +156,9 @@ boot*.yml
 
 /.gradle/
 /build/
+
+# VSCode settings (개발자 개인 설정)
+.vscode/
+
+# Java 클래스/컴파일 결과물
+/bin/

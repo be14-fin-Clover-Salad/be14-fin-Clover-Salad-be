@@ -28,8 +28,6 @@ public class ContractController {
 		this.contractService = contractService;
 	}
 
-
-
 	@GetMapping("/contract/{employeeId}")
 	public ResponseEntity<List<ContractDTO>> find(@PathVariable int employeeId) {
 		return ResponseEntity.ok(contractService.findContractInfo(employeeId));

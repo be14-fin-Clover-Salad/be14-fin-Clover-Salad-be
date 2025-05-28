@@ -20,4 +20,7 @@ public class ContractCommandController {
 	// 	return ResponseEntity.ok(ContractService.registContract(fileName));
 	// }
 
+	// @PostMapping("/contract/upload")
+	// public ResoponseEntity<contractFileRequestDTO>
+
 }

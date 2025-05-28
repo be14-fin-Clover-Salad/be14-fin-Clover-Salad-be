@@ -6,5 +6,7 @@ import com.clover.salad.goal.command.application.dto.EGoalDTO;
 import com.clover.salad.goal.command.application.dto.TargetDateDTO;
 
 public interface GoalQueryService {
-	List<EGoalDTO> searchEGoalByEIdAndTargetDate(int employeeId, TargetDateDTO input);
+	List<EGoalDTO> searchEGoalByEIdAndTargetDate(int employeeId, TargetDateDTO targetDate);
+	
+	List<EGoalDTO> searchEGoalByDepartmentId(int departmentId, TargetDateDTO targetDate);
 }

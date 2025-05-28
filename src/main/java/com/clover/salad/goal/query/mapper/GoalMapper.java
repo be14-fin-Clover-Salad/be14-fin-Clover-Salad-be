@@ -14,4 +14,10 @@ public interface GoalMapper {
 		@Param("startDate") int startDate,
 		@Param("endDate") int endDate
 	);
+	
+	List<EGoalDTO> selectEmployeeGoalByDepartmentId(
+		@Param("departmentId") int departmentId,
+		@Param("startDate") int startDate,
+		@Param("endDate") int endDate
+	);
 }

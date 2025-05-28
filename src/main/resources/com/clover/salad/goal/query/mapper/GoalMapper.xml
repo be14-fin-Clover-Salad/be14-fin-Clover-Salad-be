@@ -31,4 +31,21 @@
          WHERE EG.EMPLOYEE_ID = #{employeeId}
            AND EG.TARGET_DATE BETWEEN #{startDate} AND #{endDate}
     </select>
+
+    <!-- 설명. 설정 기간의 팀 단위 실적 목표 조회 -->
+    <select id="selectEmployeeGoalByDepartmentId" resultMap="EmployeeGoalResultMap" parameterType="map">
+        SELECT
+               EG.ID
+             , EG.RENTAL_PRODUCT_COUNT
+             , EG.RENTAL_RETENTION_RATE
+             , EG.NEW_CUSTOMER_COUNT
+             , EG.TOTAL_RENTAL_AMOUNT
+             , EG.CUSTOMER_FEEDBACK_SCORE
+             , EG.TARGET_DATE
+             , EG.EMPLOYEE_ID
+          FROM EMPLOYEE_GOAL EG
+          JOIN EMPLOYEE E ON EG.EMPLOYEE_ID = E.ID
+         WHERE E.DEPARTMENT_ID = #{departmentId}
+           AND EG.TARGET_DATE BETWEEN #{startDate} AND #{endDate}
+    </select>
 </mapper>

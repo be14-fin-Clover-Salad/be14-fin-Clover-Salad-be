@@ -19,18 +19,29 @@ public class GoalQueryServiceImpl implements GoalQueryService {
 	
 	@Override
 	public List<EGoalDTO> searchEGoalByEIdAndTargetDate(int employeeId, TargetDateDTO targetDate) {
+		int[] targetDateArr = parseTargetDate(targetDate);
+		return goalMapper.selectEmployeeGoalByEIdAndTargetDate(employeeId, targetDateArr[0], targetDateArr[1]);
+	}
+	
+	@Override
+	public List<EGoalDTO> searchEGoalByDepartmentId(int departmentId, TargetDateDTO targetDate) {
+		int[] targetDateArr = parseTargetDate(targetDate);
+		return goalMapper.selectEmployeeGoalByDepartmentId(departmentId, targetDateArr[0], targetDateArr[1]);
+	}
+	
+	public int[] parseTargetDate(TargetDateDTO targetDate) {
 		int startDate;
 		int endDate;
-		if (targetDate.getStartDate() == null) {
+		if(targetDate.getStartDate()==null) {
 			startDate = 0;
 		} else {
 			startDate = targetDate.getStartDate();
 		}
-		if (targetDate.getEndDate() == null) {
+		if(targetDate.getEndDate()==null) {
 			endDate = 999999;
 		} else {
 			endDate = targetDate.getEndDate();
 		}
-		return goalMapper.selectEmployeeGoalByEIdAndTargetDate(employeeId, startDate, endDate);
+		return new int[] {startDate, endDate};
 	}
 }

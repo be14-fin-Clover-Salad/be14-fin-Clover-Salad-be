@@ -57,6 +57,7 @@ jobs:
           MODEL: o3-mini # https://platform.openai.com/docs/models
           OPENAI_API_ENDPOINT: https://api.openai.com/v1
           LANGUAGE: Korean
+          INLINE_COMMENT: false
           PROMPT: |
             이 PR을 Google/Meta/Stripe 수준의 엄격한 코드 리뷰 관점으로 분석해주세요:
             

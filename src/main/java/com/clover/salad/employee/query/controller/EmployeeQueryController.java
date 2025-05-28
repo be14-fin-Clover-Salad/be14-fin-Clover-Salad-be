@@ -35,7 +35,7 @@ public class EmployeeQueryController {
 
 	@GetMapping("/health")
 	public String status() {
-		return "서버는 살아있습니다. 포트: " + env.getProperty("local.server.port");
+		return "서버가 동작 중입니다. 포트: " + env.getProperty("local.server.port");
 	}
 
 	@GetMapping("/employee/{employeeId}")

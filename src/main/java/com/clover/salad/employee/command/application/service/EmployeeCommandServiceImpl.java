@@ -33,10 +33,28 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 
 		registerRequestDTO.setUserId(UUID.randomUUID().toString());
 
-		/* 설명. Entity로 modelMapper로 매핑 후 엔티티에 있는 encryptedPwd에 암호화된 값을 추가한다. */
 		EmployeeEntity registerUser = modelMapper.map(registerRequestDTO, EmployeeEntity.class);
 		registerUser.setEncPwd(bCryptPasswordEncoder.encode(registerRequestDTO.getPassword()));
 
 		employeeRepository.save(registerUser);
+	}
+
+	@Override
+	public void hardDeleteEmployeeByCode(String code) {
+		EmployeeEntity employee = employeeRepository.findByCode(code);
+		if (employee == null) {
+			throw new IllegalArgumentException("해당 사번을 가진 직원을 찾을 수 없습니다. 사번: " + code);
+		}
+		employeeRepository.delete(employee);
+	}
+
+	@Override
+	public void deleteEmployeeByCode(String code) {
+		EmployeeEntity employee = employeeRepository.findByCode(code);
+		if (employee == null) {
+			throw new IllegalArgumentException("해당 사번을 가진 직원을 찾을 수 없습니다. 사번: " + code);
+		}
+		employee.setDeleted(true);
+		employeeRepository.save(employee);
 	}
 }

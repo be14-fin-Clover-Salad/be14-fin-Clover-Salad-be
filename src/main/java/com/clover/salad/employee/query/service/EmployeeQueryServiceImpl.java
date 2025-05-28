@@ -57,9 +57,7 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService{
 		}
 
 		List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-		grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 		grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
-		grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_MANAGER"));
 
 		return new User(loginUser.getCode(), loginUser.getEncPwd(),
 			true, true, true, true, grantedAuthorities);

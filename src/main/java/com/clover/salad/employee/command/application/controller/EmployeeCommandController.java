@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,9 +27,9 @@ public class EmployeeCommandController {
 
 	@Autowired
 	public EmployeeCommandController(Environment env,
-									ModelMapper modelMapper,
-									EmployeeCommandService employeeCommandService
-		) {
+		ModelMapper modelMapper,
+		EmployeeCommandService employeeCommandService
+	) {
 		this.env = env;
 		this.modelMapper = modelMapper;
 		this.employeeCommandService = employeeCommandService;
@@ -46,4 +48,15 @@ public class EmployeeCommandController {
 			.body(successRegisterUser);
 	}
 
+	@DeleteMapping("/employee/{code}/hard")
+	public ResponseEntity<Void> hardDeleteEmployee(@PathVariable("code") String code) {
+		employeeCommandService.hardDeleteEmployeeByCode(code);
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/employee/{code}")
+	public ResponseEntity<Void> deleteEmployee(@PathVariable("code") String code) {
+		employeeCommandService.deleteEmployeeByCode(code);
+		return ResponseEntity.noContent().build();
+	}
 }

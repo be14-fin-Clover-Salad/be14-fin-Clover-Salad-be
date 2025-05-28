@@ -60,7 +60,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		log.info("시크릿 키: {}", env.getProperty("token.secret"));
 
 		String code = ((User)authResult.getPrincipal()).getUsername();
-		log.info("회원의 아이디(이메일): {}", code);
+		log.info("회원의 아이디: {}", code);
 
 		List<String> roles = authResult.getAuthorities().stream()
 			.map(GrantedAuthority::getAuthority)

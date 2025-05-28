@@ -19,18 +19,34 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class CustomerQueryController {
-    private final CustomerQueryService customerQSrv;
+    private final CustomerQueryService customerQueryService;
 
-    /* 고객 상세 조회 */
+    /**
+     * 고객 ID로 고객 정보를 조회합니다.
+     *
+     * @param customerId 조회할 고객 ID
+     * @return 고객 정보 DTO
+     */
     @GetMapping("/detail/{customerId}")
-    public ResponseEntity<CustomerDTO> searchCustomerById(
+    public ResponseEntity<CustomerDTO> findCustomerById(
             @PathVariable("customerId") int customerId) {
-        return ResponseEntity.ok(customerQSrv.searchCustomerById(customerId));
+        log.info("고객 상세 조회 요청: id = {}", customerId);
+        CustomerDTO customer = customerQueryService.findCustomerById(customerId);
+        if (customer == null) {
+            log.warn("고객 정보를 찾을 수 없습니다. id = {}", customerId);
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(customer);
     }
 
-    /* 고객 목록 조회 */
+    /**
+     * 전체 고객 목록을 조회합니다.
+     *
+     * @return 고객 정보 리스트
+     */
     @GetMapping("/list")
-    public ResponseEntity<List<CustomerDTO>> searchCustomerList() {
-        return ResponseEntity.ok(customerQSrv.searchAllCustomers());
+    public ResponseEntity<List<CustomerDTO>> findAllCustomers() {
+        log.info("전체 고객 목록 조회 요청");
+        return ResponseEntity.ok(customerQueryService.findAllCustomers());
     }
 }

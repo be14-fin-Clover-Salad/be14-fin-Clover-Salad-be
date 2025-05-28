@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clover.salad.goal.query.mapper.GoalMapper">
+
+    <!-- 설명. 실적 목표 ResultMap -->
+    <resultMap id="EmployeeGoalResultMap" type="com.clover.salad.goal.command.application.dto.EGoalDTO">
+        <id property="id" column="ID"/>
+        <result property="rentalProductCount" column="RENTAL_PRODUCT_COUNT"/>
+        <result property="rentalRetentionRate" column="RENTAL_RETENTION_RATE"/>
+        <result property="newCustomerCount" column="NEW_CUSTOMER_COUNT"/>
+        <result property="totalRentalAmount" column="TOTAL_RENTAL_AMOUNT"/>
+        <result property="customerFeedbackScore" column="CUSTOMER_FEEDBACK_SCORE"/>
+        <result property="targetDate" column="TARGET_DATE"/>
+        <result property="employeeId" column="EMPLOYEE_ID"/>
+    </resultMap>
+
+    <!-- 설명. 설정 기간의 사원별 실적 목표 조회 -->
+    <select id="selectEmployeeGoalByEIdAndTargetDate" resultMap="EmployeeGoalResultMap" parameterType="map">
+        SELECT
+               EG.ID
+             , EG.RENTAL_PRODUCT_COUNT
+             , EG.RENTAL_RETENTION_RATE
+             , EG.NEW_CUSTOMER_COUNT
+             , EG.TOTAL_RENTAL_AMOUNT
+             , EG.CUSTOMER_FEEDBACK_SCORE
+             , EG.TARGET_DATE
+             , EG.EMPLOYEE_ID
+          FROM EMPLOYEE_GOAL EG
+         WHERE EG.EMPLOYEE_ID = #{employeeId}
+           AND EG.TARGET_DATE BETWEEN #{startDate} AND #{endDate}
+    </select>
+</mapper>

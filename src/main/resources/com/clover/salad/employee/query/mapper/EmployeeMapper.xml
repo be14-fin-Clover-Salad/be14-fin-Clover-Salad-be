@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clover.salad.employee.query.mapper.EmployeeMapper">
+
+    <!-- 사원 ResultMap -->
+    <resultMap id="EmployeeResultMap" type="com.clover.salad.employee.query.dto.EmployeeQueryDTO">
+        <id property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="encPwd" column="password"/>
+        <result property="name" column="name"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="levelLabel" column="level"/>
+        <result property="hireDate" column="hire_date"/>
+        <result property="resignDate" column="resign_date"/>
+        <result property="isAdmin" column="is_admin"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="workPlace" column="work_place"/>
+
+        <!-- 사원 1:N 부서 -->
+        <association property="department" javaType="com.clover.salad.employee.query.dto.DepartmentQueryDTO">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+            <result property="isDeleted" column="id_deleted"/>
+            <result property="supDeptId" column="sup_dept_id"/>
+        </association>
+
+        <!-- 사원(optional) 1:1 사진 -->
+        <association property="profile" javaType="com.clover.salad.employee.query.dto.ProfileQueryDTO">
+            <id property="id" column="id"/>
+            <result property="originFile" column="origin_file"/>
+            <result property="renameFile" column="rename_file"/>
+            <result property="path" column="path"/>
+            <result property="createdAt" column="created_at"/>
+            <result property="type" column="type"/>
+        </association>
+    </resultMap>
+    <select id="selectEmployeeById" resultMap="EmployeeResultMap">
+        SELECT
+               a.id
+             , a.code
+             , a.name
+             , a.phone
+             , a.email
+             , CASE a.level
+                   WHEN 'L1' THEN '사원'
+                   WHEN 'L2' THEN '주임'
+                   WHEN 'L3' THEN '대리'
+                   WHEN 'L4' THEN '과장'
+                   WHEN 'L5' THEN '팀장'
+                   WHEN 'ADMIN' THEN '관리자'
+                   ELSE a.level
+               END AS level
+             , a.hire_date
+             , a.resign_date
+             , a.work_place
+          FROM employee a
+         WHERE a.id = ${id}
+           AND a.is_admin = false
+           AND a.is_deleted = false
+    </select>
+
+
+
+
+
+
+
+
+
+
+</mapper>

@@ -39,29 +39,31 @@ CREATE TABLE DEPARTMENT
 
 CREATE TABLE FILE_UPLOAD
 (
-    id          INT         NOT NULL AUTO_INCREMENT,
-    origin_file VARCHAR(20) NOT NULL,
-    rename_file VARCHAR(20) NOT NULL,
-    path        VARCHAR(50) NOT NULL,
-    created_at  DATETIME    NOT NULL,
-    type        VARCHAR(3)  NOT NULL,
+    id          INT             NOT NULL AUTO_INCREMENT,
+    origin_file VARCHAR(100)    NOT NULL,
+    rename_file VARCHAR(100)    NOT NULL,
+    path        VARCHAR(100)    NOT NULL,
+    created_at  DATETIME        NOT NULL,
+    type        VARCHAR(100)    NOT NULL,
     CONSTRAINT PK_FILE_UPLOAD PRIMARY KEY (id)
 );
 
 CREATE TABLE EMPLOYEE
 (
-    id            INT         NOT NULL AUTO_INCREMENT,
-    code          INT         NOT NULL,
-    password      VARCHAR(20) NOT NULL,
-    name          VARCHAR(10) NOT NULL,
-    phone         VARCHAR(11) NOT NULL,
-    level         VARCHAR(3)  NOT NULL DEFAULT '사원',
-    hire_date     DATE        NULL,
-    resign_date   DATE        NULL,
-    is_deleted    BOOLEAN     NOT NULL DEFAULT FALSE,
-    work_place    VARCHAR(10) NULL,
-    department_id INT         NOT NULL DEFAULT 1,
-    profile       INT         NOT NULL,
+    id            INT           NOT NULL AUTO_INCREMENT,
+    code          INT           NOT NULL UNIQUE,
+    password      VARCHAR(100)  NOT NULL,
+    name          VARCHAR(10)   NOT NULL,
+    phone         VARCHAR(11)   NOT NULL UNIQUE,
+    email         VARCHAR(50)   NOT NULL UNIQUE,
+    level         VARCHAR(3)    NOT NULL DEFAULT '사원',
+    hire_date     DATE          NOT NULL,
+    resign_date   DATE          NULL,
+    is_admin      BOOLEAN       NOT NULL DEFAULT FALSE,
+    is_deleted    BOOLEAN       NOT NULL DEFAULT FALSE,
+    work_place    VARCHAR(10)   NULL,
+    department_id INT           NOT NULL DEFAULT 1,
+    profile       INT           NOT NULL,
     CONSTRAINT PK_EMPLOYEE PRIMARY KEY (id),
     CONSTRAINT FK_DEPARTMENT_TO_EMPLOYEE
         FOREIGN KEY (department_id)

@@ -49,7 +49,7 @@ jobs:
         shell: bash
 
       - name: ChatGPT codeReviewer
-        uses: anc95/ChatGPT-CodeReview@main
+        uses: SungMin-hub/ChatGPT-CodeReview@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

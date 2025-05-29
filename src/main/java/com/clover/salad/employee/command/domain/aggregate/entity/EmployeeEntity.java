@@ -32,13 +32,13 @@ public class EmployeeEntity {
 	@Column(name = "id")
 	private int id;
 
-	@Column(name="code", nullable = false)
+	@Column(name = "code", nullable = false)
 	private String code;
 
-	@Column(name="password", nullable = false)
+	@Column(name = "password", nullable = false)
 	private String encPwd;
 
-	@Column(name="name", nullable = false)
+	@Column(name = "name", nullable = false)
 	private String name;
 
 	@Column(name = "phone", nullable = false)
@@ -51,25 +51,25 @@ public class EmployeeEntity {
 	@Column(name = "level", nullable = false)
 	private EmployeeLevel level;
 
-	@Column(name="hire_date")
+	@Column(name = "hire_date")
 	private LocalDate hireDate;
 
-	@Column(name="resign_date")
+	@Column(name = "resign_date")
 	private LocalDate resignDate;
 
-	@Column(name="is_admin", nullable = false)
+	@Column(name = "is_admin", nullable = false)
 	private boolean isAdmin;
 
-	@Column(name="is_deleted", nullable = false)
+	@Column(name = "is_deleted", nullable = false)
 	private boolean isDeleted;
 
-	@Column(name="work_place")
+	@Column(name = "work_place")
 	private String workPlace;
 
-	@Column(name="department_id", nullable = false)
+	@Column(name = "department_id", nullable = false)
 	private int departmentId;
 
-	@Column(name="profile", nullable = false)
+	@Column(name = "profile", nullable = false)
 	private int profile;
 
 }

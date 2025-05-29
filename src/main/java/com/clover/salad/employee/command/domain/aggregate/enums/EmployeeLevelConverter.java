@@ -8,13 +8,15 @@ public class EmployeeLevelConverter implements AttributeConverter<EmployeeLevel,
 
 	@Override
 	public String convertToDatabaseColumn(EmployeeLevel attribute) {
-		if (attribute == null) return null;
+		if (attribute == null)
+			return null;
 		return attribute.getLabel();
 	}
 
 	@Override
 	public EmployeeLevel convertToEntityAttribute(String dbData) {
-		if (dbData == null) return null;
+		if (dbData == null)
+			return null;
 		try {
 			return EmployeeLevel.fromLabel(dbData);
 		} catch (IllegalArgumentException e) {

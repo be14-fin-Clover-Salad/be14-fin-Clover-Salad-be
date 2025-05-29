@@ -45,7 +45,7 @@
         AND e.is_deleted = false
 
         <if test="code != null">
-            AND CAST(e.code AS CHAR) LIKE CONCAT('%', #{code}, '%')
+            AND e.code LIKE CONCAT('%', #{code}, '%')
         </if>
 
         <if test="name != null and name != ''">

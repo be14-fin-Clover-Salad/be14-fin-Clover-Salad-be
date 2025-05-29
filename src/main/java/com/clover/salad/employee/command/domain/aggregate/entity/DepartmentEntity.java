@@ -26,12 +26,12 @@ public class DepartmentEntity {
 	@Column(name = "id")
 	private int id;
 
-	@Column(name="name", nullable = false)
+	@Column(name = "name", nullable = false)
 	private String name;
 
 	@Column(name = "is_deleted", nullable = false)
 	private Boolean isDeleted;
 
-	@Column(name="sup_dept_id")
+	@Column(name = "sup_dept_id")
 	private int supDeptId;
 }

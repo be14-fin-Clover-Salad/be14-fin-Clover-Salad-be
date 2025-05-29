@@ -23,8 +23,7 @@ public class EmployeeQueryController {
 	private final EmployeeQueryService employeeQueryService;
 
 	@Autowired
-	public EmployeeQueryController(Environment env,
-									EmployeeQueryService employeeQueryService) {
+	public EmployeeQueryController(Environment env, EmployeeQueryService employeeQueryService) {
 		this.env = env;
 		this.employeeQueryService = employeeQueryService;
 	}

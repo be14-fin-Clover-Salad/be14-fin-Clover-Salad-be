@@ -28,18 +28,18 @@ public class FileUploadEntity {
 	@Column(name = "id")
 	private int id;
 
-	@Column(name="origin_file", nullable = false)
+	@Column(name = "origin_file", nullable = false)
 	private String originFile;
 
-	@Column(name="rename_file", nullable = false)
+	@Column(name = "rename_file", nullable = false)
 	private String renameFile;
 
-	@Column(name="path", nullable = false)
+	@Column(name = "path", nullable = false)
 	private String path;
 
-	@Column(name="created_at", nullable = false)
+	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt;
 
-	@Column(name="type", nullable = false)
+	@Column(name = "type", nullable = false)
 	private String type;
 }

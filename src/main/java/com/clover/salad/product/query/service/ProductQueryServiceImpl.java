@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.clover.salad.product.command.application.dto.ProductDTO;
+import com.clover.salad.product.command.application.dto.SearchTermDTO;
 import com.clover.salad.product.query.mapper.ProductMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class ProductQueryServiceImpl implements ProductQueryService {
 	}
 	
 	@Override
-	public List<ProductDTO> searchProductList() {
-		return productMapper.selectProductList();
+	public List<ProductDTO> searchProductList(SearchTermDTO searchTerm) {
+		return productMapper.selectProductList(searchTerm);
 	}
 }

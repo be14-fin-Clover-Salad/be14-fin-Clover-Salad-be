@@ -37,8 +37,9 @@
          WHERE P.ID = #{productId}
     </select>
 
-    <!-- 설명. 상품 상세정보 조회 -->
-    <select id="selectProductList" resultMap="ProductResultMap">
+    <!-- 설명. 상품 목록 조회 -->
+    <select id="selectProductList" resultMap="ProductResultMap"
+            parameterType="com.clover.salad.product.command.application.dto.SearchTermDTO">
         SELECT
                P.ID
              , P.CATEGORY
@@ -52,5 +53,35 @@
              , P.IS_DELETED
              , P.FILE_UPLOAD_ID
           FROM PRODUCT P
+         WHERE P.IS_DELETED = FALSE
+        <if test="productCode != null and productCode != ''">
+            AND P.PRODUCT_CODE LIKE CONCAT('%', #{productCode}, '%')
+        </if>
+        <!-- 카테고리는 콤보박스 -->
+        <if test="category != null and category != ''">
+            AND P.CATEGORY = #{category}
+        </if>
+        <if test="minOriginCost != null">
+            AND P.ORIGIN_COST >= #{minOriginCost}
+        </if>
+        <if test="maxOriginCost != null">
+            <![CDATA[AND P.ORIGIN_COST <= #{maxOriginCost}]]>
+        </if>
+        <if test="minRentalCost != null">
+            AND P.RENTAL_COST >= #{minRentalCost}
+        </if>
+        <if test="maxRentalCost != null">
+            <![CDATA[AND P.RENTAL_COST <= #{maxRentalCost}]]>
+        </if>
+        <if test="name != null and name != ''">
+            AND P.NAME LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="serialNumber != null and serialNumber != ''">
+            AND P.SERIAL_NUMBER LIKE CONCAT('%', #{serialNumber}, '%')
+        </if>
+        <if test="company != null and company != ''">
+            AND P.COMPANY LIKE CONCAT('%', #{company}, '%')
+        </if>
+         ORDER BY P.ID DESC
     </select>
 </mapper>

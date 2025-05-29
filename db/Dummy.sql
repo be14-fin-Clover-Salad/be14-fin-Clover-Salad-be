@@ -3,29 +3,21 @@ USE saladdb;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- DEPARTMENT
-INSERT INTO DEPARTMENT (id, name, is_deleted, sup_dept_id) VALUES (1, '총무', False, NULL);
+INSERT INTO DEPARTMENT (id, name, is_deleted, sup_dept_id) VALUES (1, '본부', False, NULL);
 INSERT INTO DEPARTMENT (id, name, is_deleted, sup_dept_id) VALUES (2, '영업1팀', False, 1);
 INSERT INTO DEPARTMENT (id, name, is_deleted, sup_dept_id) VALUES (3, '영업2팀', False, 1);
 INSERT INTO DEPARTMENT (id, name, is_deleted, sup_dept_id) VALUES (4, '고객지원팀', False, 1);
 INSERT INTO DEPARTMENT (id, name, is_deleted, sup_dept_id) VALUES (5, '기술지원팀', False, 1);
 
 -- FILE_UPLOAD
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (1, 'profile1.png', 'uuid1.png', '/uploads/', '2025-05-28 02:13:22', 'IMG');
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (2, 'profile2.png', 'uuid2.png', '/uploads/', '2025-05-28 02:13:22', 'IMG');
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (3, 'profile3.png', 'uuid3.png', '/uploads/', '2025-05-28 02:13:22', 'IMG');
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (4, 'profile4.png', 'uuid4.png', '/uploads/', '2025-05-28 02:13:22', 'IMG');
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (5, 'profile5.png', 'uuid5.png', '/uploads/', '2025-05-28 02:13:22', 'IMG');
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (6, 'profile6.png', 'uuid6.png', '/uploads/', '2025-05-28 02:13:22', 'IMG');
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (7, 'profile7.png', 'uuid7.png', '/uploads/', '2025-05-28 02:13:22', 'IMG');
+INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (1, 'profile1.png', 'uuid1.png', '/uploads/', '2025-05-28 02:13:22', '프로필');
+INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (2, 'profile2.png', 'uuid2.png', '/uploads/', '2025-05-28 02:13:22', '계약서');
+INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (3, 'profile3.png', 'uuid3.png', '/uploads/', '2025-05-28 02:13:22', '상품');
 
 -- EMPLOYEE
-INSERT INTO EMPLOYEE (id, code, password, name, phone, level, hire_date, resign_date, is_deleted, work_place, department_id, profile) VALUES (1, 1001, 'pw1234', '김민수', '01012340001', '사원', '2024-05-28', NULL, False, '서울', 4, 1);
-INSERT INTO EMPLOYEE (id, code, password, name, phone, level, hire_date, resign_date, is_deleted, work_place, department_id, profile) VALUES (2, 1002, 'pw1234', '이서연', '01012340002', '주임', '2023-05-29', NULL, False, '부산', 3, 2);
-INSERT INTO EMPLOYEE (id, code, password, name, phone, level, hire_date, resign_date, is_deleted, work_place, department_id, profile) VALUES (3, 1003, 'pw1234', '박지훈', '01012340003', '대리', '2022-05-29', NULL, False, '대전', 2, 3);
-INSERT INTO EMPLOYEE (id, code, password, name, phone, level, hire_date, resign_date, is_deleted, work_place, department_id, profile) VALUES (4, 1004, 'pw1234', '최유진', '01012340004', '과장', '2021-05-29', NULL, False, '광주', 4, 4);
-INSERT INTO EMPLOYEE (id, code, password, name, phone, level, hire_date, resign_date, is_deleted, work_place, department_id, profile) VALUES (5, 1005, 'pw1234', '정우성', '01012340005', '팀장', '2020-05-29', NULL, False, '인천', 5, 5);
-INSERT INTO EMPLOYEE (id, code, password, name, phone, level, hire_date, resign_date, is_deleted, work_place, department_id, profile) VALUES (6, 1006, 'pw1234', '한예슬', '01012340006', '사원', '2019-05-30', NULL, False, '대구', 1, 6);
-INSERT INTO EMPLOYEE (id, code, password, name, phone, level, hire_date, resign_date, is_deleted, work_place, department_id, profile) VALUES (7, 1007, 'pw1234', '장동건', '01012340007', '대리', '2018-05-30', NULL, False, '울산', 2, 7);
+INSERT INTO EMPLOYEE (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES ('202501001', 'pass01', '홍길동', '01012345678', 'hong@example.com', '사원', '2025-01-01', NULL, FALSE, FALSE, '서울본사', 1, 1);
+INSERT INTO EMPLOYEE (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES ('202501002', 'pass02', '홍길둉', '01012345679', 'hong1@example.com', '팀장', '2024-01-01', NULL, FALSE, FALSE, '강남씨티빌딩', 2, 2);
+
 
 -- CUSTOMER
 INSERT INTO CUSTOMER (id, name, birthdate, address, phone, email, register_at, is_deleted, type, etc) VALUES (1, '홍길동', '1981-02-15', '도시1', '01088880001', 'customer1@email.com', '2025-05-18', False, '법인', NULL);

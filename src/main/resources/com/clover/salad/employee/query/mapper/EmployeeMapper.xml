@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.clover.salad.employee.query.mapper.EmployeeMapper">
+
+    <resultMap id="SearchEmployeeResultMap" type="com.clover.salad.employee.query.dto.EmployeeQueryDTO">
+        <id property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="level" column="level"/>
+        <result property="hireDate" column="hire_date"/>
+        <result property="workPlace" column="work_place"/>
+
+        <!-- 사원(optional) 1:1 사진 -->
+        <result property="profileId" column="profile"/>
+
+        <!-- 사원 1:N 부서 -->
+        <association property="department" javaType="com.clover.salad.employee.query.dto.DepartmentQueryDTO">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+            <result property="supDeptId" column="sup_dept_id"/>
+        </association>
+
+
+    </resultMap>
+    <select id="searchEmployees"
+            parameterType="com.clover.salad.employee.query.dto.SearchEmployeeDTO"
+            resultMap="SearchEmployeeResultMap">
+        SELECT
+               e.id
+             , e.code
+             , e.name
+             , e.phone
+             , e.email
+             , e.level
+             , e.hire_date
+             , e.work_place
+             , e.profile
+             , d.id AS dept_id
+             , d.name AS dept_name
+             , d.sup_dept_id
+          FROM employee e
+          JOIN department d ON e.department_id = d.id
+         WHERE e.is_admin = false
+           AND e.is_deleted = false
+
+        <if test="code != null">
+            AND CAST(e.code AS CHAR) LIKE CONCAT('%', #{code}, '%')
+        </if>
+
+        <if test="name != null and name != ''">
+            AND e.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+
+        <if test="phone != null and phone != ''">
+            AND e.phone LIKE CONCAT('%', #{phone}, '%')
+        </if>
+
+        <if test="email != null and email != ''">
+            AND e.email LIKE CONCAT('%', #{email}, '%')
+        </if>
+
+        <if test="level != null and level != ''">
+            AND e.level = #{level}
+        </if>
+
+        <if test="hireDateFrom != null">
+            AND e.hire_date &gt;= #{hireDateFrom}
+        </if>
+
+        <if test="hireDateTo != null">
+            AND e.hire_date &lt;= #{hireDateTo}
+        </if>
+
+        <if test="workPlace != null and workPlace != ''">
+            AND e.work_place LIKE CONCAT('%', #{workPlace}, '%')
+        </if>
+
+        <if test="departmentName != null and departmentName != ''">
+            AND d.name LIKE CONCAT('%', #{departmentName}, '%')
+        </if>
+    </select>
+
+</mapper>

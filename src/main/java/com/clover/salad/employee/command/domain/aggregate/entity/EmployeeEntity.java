@@ -23,7 +23,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
 @Table(name = "employee")
 public class EmployeeEntity {
 

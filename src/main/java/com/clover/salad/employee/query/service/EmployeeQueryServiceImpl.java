@@ -10,7 +10,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
@@ -25,16 +24,13 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService{
 
 	private final EmployeeRepository employeeRepository;
 	private final ModelMapper modelMapper;
-	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
 	@Autowired
 	public EmployeeQueryServiceImpl(EmployeeRepository employeeRepository,
-									ModelMapper modelMapper,
-									BCryptPasswordEncoder bCryptPasswordEncoder) {
+									ModelMapper modelMapper) {
 		this.employeeRepository = employeeRepository;
 		this.modelMapper = modelMapper;
-		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 	}
 
 	@Override

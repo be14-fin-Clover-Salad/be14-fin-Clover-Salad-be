@@ -26,7 +26,7 @@
         <result property="totalRentalCount" column="SUM(EG.TOTAL_RENTAL_COUNT)"/>
         <result property="newCustomerCount" column="SUM(EG.NEW_CUSTOMER_COUNT)"/>
         <result property="totalRentalAmount" column="SUM(EG.TOTAL_RENTAL_AMOUNT)"/>
-        <result property="customerFeedbackScore" column="(ROUND(AVG(EG.CUSTOMER_FEEDBACK_SCORE), 1) * 10)"/>
+        <result property="customerFeedbackScore" column="ROUND(AVG(EG.CUSTOMER_FEEDBACK_SCORE * 10))"/>
         <result property="customerFeedbackCount" column="SUM(EG.CUSTOMER_FEEDBACK_COUNT)"/>
         <result property="targetDate" column="TARGET_DATE"/>
         <result property="employeeId" column="EMPLOYEE_ID"/>
@@ -96,7 +96,7 @@
              , SUM(EG.TOTAL_RENTAL_COUNT)
              , SUM(EG.NEW_CUSTOMER_COUNT)
              , SUM(EG.TOTAL_RENTAL_AMOUNT)
-             , (ROUND(AVG(EG.CUSTOMER_FEEDBACK_SCORE), 1) * 10)
+             , ROUND(AVG(EG.CUSTOMER_FEEDBACK_SCORE * 10))
              , SUM(EG.CUSTOMER_FEEDBACK_COUNT)
              , EG.TARGET_DATE
           FROM EMPLOYEE_GOAL EG

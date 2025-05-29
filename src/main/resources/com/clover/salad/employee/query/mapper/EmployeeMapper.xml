@@ -14,39 +14,35 @@
         <result property="level" column="level"/>
         <result property="hireDate" column="hire_date"/>
         <result property="workPlace" column="work_place"/>
-
-        <!-- 사원(optional) 1:1 사진 -->
         <result property="profileId" column="profile"/>
 
-        <!-- 사원 1:N 부서 -->
         <association property="department" javaType="com.clover.salad.employee.query.dto.DepartmentQueryDTO">
-            <id property="id" column="id"/>
-            <result property="name" column="name"/>
+            <id property="id" column="dept_id"/>
+            <result property="name" column="dept_name"/>
             <result property="supDeptId" column="sup_dept_id"/>
         </association>
-
-
     </resultMap>
+
     <select id="searchEmployees"
             parameterType="com.clover.salad.employee.query.dto.SearchEmployeeDTO"
             resultMap="SearchEmployeeResultMap">
         SELECT
-               e.id
-             , e.code
-             , e.name
-             , e.phone
-             , e.email
-             , e.level
-             , e.hire_date
-             , e.work_place
-             , e.profile
-             , d.id AS dept_id
-             , d.name AS dept_name
-             , d.sup_dept_id
-          FROM employee e
-          JOIN department d ON e.department_id = d.id
-         WHERE e.is_admin = false
-           AND e.is_deleted = false
+        e.id
+        , e.code
+        , e.name
+        , e.phone
+        , e.email
+        , e.level
+        , e.hire_date
+        , e.work_place
+        , e.profile
+        , d.id AS dept_id
+        , d.name AS dept_name
+        , d.sup_dept_id
+        FROM employee e
+        JOIN department d ON e.department_id = d.id
+        WHERE e.is_admin = false
+        AND e.is_deleted = false
 
         <if test="code != null">
             AND CAST(e.code AS CHAR) LIKE CONCAT('%', #{code}, '%')

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.clover.salad.goal.command.application.dto.EGoalDTO;
+import com.clover.salad.goal.command.application.dto.GoalDTO;
 import com.clover.salad.goal.command.application.dto.SearchTermDTO;
 import com.clover.salad.goal.query.service.GoalQueryService;
 
@@ -23,25 +23,19 @@ import lombok.extern.slf4j.Slf4j;
 public class GoalQueryController {
 	private final GoalQueryService goalQueryService;
 	
-	/* 설명. 사원 한 명의 목표 조회 (Employee -> E로 축약) */
-	@GetMapping("/{employeeId}")
-	public ResponseEntity<List<EGoalDTO>> searchEGoalByEId(
-		@PathVariable("employeeId") int employeeId,
-		@RequestBody SearchTermDTO searchTerm
-	) {
-		return ResponseEntity.ok(
-			goalQueryService.searchEGoalByEIdAndTargetDate(employeeId, searchTerm)
-		);
+	/* 설명. 사원 한 명의 목표 조회
+	*   쿼리스트링 수동 변경에 의한 조회 제한 필요
+	* */
+	@GetMapping("/employee")
+	public ResponseEntity<List<GoalDTO>> searchGoalByEmployeeId(SearchTermDTO searchTerm) {
+		return ResponseEntity.ok(goalQueryService.searchGoalByEmployeeId(searchTerm));
 	}
 	
 	/* 설명. 팀장이 소속된 팀원 모두의 목표 조회
 	*   팀장 권한 설정 필요
 	* */
-	@GetMapping("/department/{departmentId}")
-	public ResponseEntity<List<EGoalDTO>> searchEGoalByDepartmentId(
-		@PathVariable("departmentId") int departmentId,
-		@RequestBody SearchTermDTO searchTerm
-	) {
-		return ResponseEntity.ok(goalQueryService.searchEGoalByDepartmentId(departmentId, searchTerm));
+	@GetMapping("/department")
+	public ResponseEntity<List<GoalDTO>> searchGoalByDepartmentId(SearchTermDTO searchTerm) {
+		return ResponseEntity.ok(goalQueryService.searchGoalByDepartmentId(searchTerm));
 	}
 }

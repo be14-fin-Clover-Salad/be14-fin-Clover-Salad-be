@@ -12,7 +12,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class SearchTermDTO {
-	private Integer id;
+	private Integer targetId;
 	private Integer startDate;
 	private Integer endDate;
 	private Integer minRentalProductCount;

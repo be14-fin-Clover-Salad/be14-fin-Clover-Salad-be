@@ -5,31 +5,49 @@
 <mapper namespace="com.clover.salad.goal.query.mapper.GoalMapper">
 
     <!-- 설명. 실적 목표 ResultMap -->
-    <resultMap id="EmployeeGoalResultMap" type="com.clover.salad.goal.command.application.dto.EGoalDTO">
+    <resultMap id="GoalResultMap" type="com.clover.salad.goal.command.application.dto.GoalDTO">
         <id property="id" column="ID"/>
         <result property="rentalProductCount" column="RENTAL_PRODUCT_COUNT"/>
-        <result property="rentalRetentionRate" column="RENTAL_RETENTION_RATE"/>
+        <result property="rentalRetentionCount" column="RENTAL_RETENTION_COUNT"/>
+        <result property="totalRentalCount" column="TOTAL_RENTAL_COUNT"/>
         <result property="newCustomerCount" column="NEW_CUSTOMER_COUNT"/>
         <result property="totalRentalAmount" column="TOTAL_RENTAL_AMOUNT"/>
         <result property="customerFeedbackScore" column="CUSTOMER_FEEDBACK_SCORE"/>
+        <result property="customerFeedbackCount" column="CUSTOMER_FEEDBACK_COUNT"/>
+        <result property="targetDate" column="TARGET_DATE"/>
+        <result property="employeeId" column="EMPLOYEE_ID"/>
+    </resultMap>
+
+    <!-- 설명. 팀 실적 목표 ResultMap -->
+    <resultMap id="TeamGoalResultMap" type="com.clover.salad.goal.command.application.dto.GoalDTO">
+        <id property="id" column="ID"/>
+        <result property="rentalProductCount" column="SUM(EG.RENTAL_PRODUCT_COUNT)"/>
+        <result property="rentalRetentionCount" column="SUM(EG.RENTAL_RETENTION_COUNT)"/>
+        <result property="totalRentalCount" column="SUM(EG.TOTAL_RENTAL_COUNT)"/>
+        <result property="newCustomerCount" column="SUM(EG.NEW_CUSTOMER_COUNT)"/>
+        <result property="totalRentalAmount" column="SUM(EG.TOTAL_RENTAL_AMOUNT)"/>
+        <result property="customerFeedbackScore" column="ROUND(AVG(EG.CUSTOMER_FEEDBACK_SCORE), 1)"/>
+        <result property="customerFeedbackCount" column="SUM(EG.CUSTOMER_FEEDBACK_COUNT)"/>
         <result property="targetDate" column="TARGET_DATE"/>
         <result property="employeeId" column="EMPLOYEE_ID"/>
     </resultMap>
 
     <!-- 설명. 설정 기간의 사원별 실적 목표 조회 -->
-    <select id="selectEmployeeGoalByEIdAndTargetDate" resultMap="EmployeeGoalResultMap"
+    <select id="selectGoalByEmployeeId" resultMap="GoalResultMap"
             parameterType="com.clover.salad.goal.command.application.dto.SearchTermDTO">
         SELECT
                EG.ID
              , EG.RENTAL_PRODUCT_COUNT
-             , EG.RENTAL_RETENTION_RATE
+             , EG.RENTAL_RETENTION_COUNT
+             , EG.TOTAL_RENTAL_COUNT
              , EG.NEW_CUSTOMER_COUNT
              , EG.TOTAL_RENTAL_AMOUNT
              , EG.CUSTOMER_FEEDBACK_SCORE
+             , EG.CUSTOMER_FEEDBACK_COUNT
              , EG.TARGET_DATE
              , EG.EMPLOYEE_ID
           FROM EMPLOYEE_GOAL EG
-         WHERE EG.EMPLOYEE_ID = #{id}
+         WHERE EG.EMPLOYEE_ID = #{targetId}
         <if test="startDate != null">
            AND EG.TARGET_DATE >= #{startDate}
         </if>
@@ -43,10 +61,10 @@
             <![CDATA[AND EG.RENTAL_PRODUCT_COUNT <= #{maxRentalProductCount}]]>
         </if>
         <if test="minRentalRetentionRate != null">
-            AND EG.RENTAL_RETENTION_RATE >= #{minRentalRetentionRate}
+            AND EG.RENTAL_RETENTION_COUNT * 100 / EG.TOTAL_RENTAL_COUNT >= #{minRentalRetentionRate}
         </if>
         <if test="maxRentalRetentionRate != null">
-            <![CDATA[AND EG.RENTAL_RETENTION_RATE <= #{maxRentalRetentionRate}]]>
+            <![CDATA[AND EG.RENTAL_RETENTION_RATE * 100 / EG.TOTAL_RENTAL_COUNT <= #{maxRentalRetentionRate}]]>
         </if>
         <if test="minNewCustomerCount != null">
             AND EG.NEW_CUSTOMER_COUNT >= #{minNewCustomerCount}
@@ -66,58 +84,63 @@
         <if test="maxCustomerFeedbackScore != null">
             <![CDATA[AND EG.CUSTOMER_FEEDBACK_SCORE <= #{maxCustomerFeedbackScore}]]>
         </if>
+        ORDER BY EG.TARGET_DATE DESC
     </select>
 
     <!-- 설명. 설정 기간의 팀 단위 실적 목표 조회 -->
-    <select id="selectEmployeeGoalByDepartmentId" resultMap="EmployeeGoalResultMap"
+    <select id="selectGoalByDepartmentId" resultMap="TeamGoalResultMap"
             parameterType="com.clover.salad.goal.command.application.dto.SearchTermDTO">
         SELECT
-               EG.ID
-             , EG.RENTAL_PRODUCT_COUNT
-             , EG.RENTAL_RETENTION_RATE
-             , EG.NEW_CUSTOMER_COUNT
-             , EG.TOTAL_RENTAL_AMOUNT
-             , EG.CUSTOMER_FEEDBACK_SCORE
+               SUM(EG.RENTAL_PRODUCT_COUNT)
+             , SUM(EG.RENTAL_RETENTION_COUNT)
+             , SUM(EG.TOTAL_RENTAL_COUNT)
+             , SUM(EG.NEW_CUSTOMER_COUNT)
+             , SUM(EG.TOTAL_RENTAL_AMOUNT)
+             , ROUND(AVG(EG.CUSTOMER_FEEDBACK_SCORE), 1)
+             , SUM(EG.CUSTOMER_FEEDBACK_COUNT)
              , EG.TARGET_DATE
-             , EG.EMPLOYEE_ID
           FROM EMPLOYEE_GOAL EG
           JOIN EMPLOYEE E ON EG.EMPLOYEE_ID = E.ID
-         WHERE E.DEPARTMENT_ID = #{id}
+         WHERE E.DEPARTMENT_ID = #{targetId}
         <if test="startDate != null">
             AND EG.TARGET_DATE >= #{startDate}
         </if>
         <if test="endDate != null">
             <![CDATA[AND EG.TARGET_DATE <= #{endDate}]]>
         </if>
-        <if test="minRentalProductCount != null">
-            AND EG.RENTAL_PRODUCT_COUNT >= #{minRentalProductCount}
-        </if>
-        <if test="maxRentalProductCount != null">
-            <![CDATA[AND EG.RENTAL_PRODUCT_COUNT <= #{maxRentalProductCount}]]>
-        </if>
-        <if test="minRentalRetentionRate != null">
-            AND EG.RENTAL_RETENTION_RATE >= #{minRentalRetentionRate}
-        </if>
-        <if test="maxRentalRetentionRate != null">
-            <![CDATA[AND EG.RENTAL_RETENTION_RATE <= #{maxRentalRetentionRate}]]>
-        </if>
-        <if test="minNewCustomerCount != null">
-            AND EG.NEW_CUSTOMER_COUNT >= #{minNewCustomerCount}
-        </if>
-        <if test="maxNewCustomerCount != null">
-            <![CDATA[AND EG.NEW_CUSTOMER_COUNT <= #{maxNewCustomerCount}]]>
-        </if>
-        <if test="minTotalRentalAmount != null">
-            AND EG.TOTAL_RENTAL_AMOUNT >= #{minTotalRentalAmount}
-        </if>
-        <if test="maxTotalRentalAmount != null">
-            <![CDATA[AND EG.TOTAL_RENTAL_AMOUNT <= #{maxTotalRentalAmount}]]>
-        </if>
-        <if test="minCustomerFeedbackScore != null">
-            AND EG.CUSTOMER_FEEDBACK_SCORE >= #{minCustomerFeedbackScore}
-        </if>
-        <if test="maxCustomerFeedbackScore != null">
-            <![CDATA[AND EG.CUSTOMER_FEEDBACK_SCORE <= #{maxCustomerFeedbackScore}]]>
-        </if>
+         GROUP BY EG.TARGET_DATE
+        <trim prefix="HAVING" prefixOverrides="AND">
+            <if test="minRentalProductCount != null">
+                AND SUM(EG.RENTAL_PRODUCT_COUNT) >= #{minRentalProductCount}
+            </if>
+            <if test="maxRentalProductCount != null">
+                <![CDATA[AND SUM(EG.RENTAL_PRODUCT_COUNT) <= #{maxRentalProductCount}]]>
+            </if>
+            <if test="minRentalRetentionRate != null">
+                AND ROUND(SUM(EG.RENTAL_RETENTION_COUNT) * 100 / SUM(EG.TOTAL_RENTAL_COUNT)) >= #{minRentalRetentionRate}
+            </if>
+            <if test="maxRentalRetentionRate != null">
+                <![CDATA[AND ROUND(SUM(EG.RENTAL_RETENTION_COUNT) * 100 / SUM(EG.TOTAL_RENTAL_COUNT)) <= #{maxRentalRetentionRate}]]>
+            </if>
+            <if test="minNewCustomerCount != null">
+                AND SUM(EG.NEW_CUSTOMER_COUNT) >= #{minNewCustomerCount}
+            </if>
+            <if test="maxNewCustomerCount != null">
+                <![CDATA[AND SUM(EG.NEW_CUSTOMER_COUNT) <= #{maxNewCustomerCount}]]>
+            </if>
+            <if test="minTotalRentalAmount != null">
+                AND SUM(EG.TOTAL_RENTAL_AMOUNT) >= #{minTotalRentalAmount}
+            </if>
+            <if test="maxTotalRentalAmount != null">
+                <![CDATA[AND SUM(EG.TOTAL_RENTAL_AMOUNT) <= #{maxTotalRentalAmount}]]>
+            </if>
+            <if test="minCustomerFeedbackScore != null">
+                AND ROUND(AVG(EG.CUSTOMER_FEEDBACK_SCORE), 1) >= #{minCustomerFeedbackScore}
+            </if>
+            <if test="maxCustomerFeedbackScore != null">
+                <![CDATA[AND ROUND(AVG(EG.CUSTOMER_FEEDBACK_SCORE), 1) <= #{maxCustomerFeedbackScore}]]>
+            </if>
+        </trim>
+         ORDER BY EG.TARGET_DATE DESC
     </select>
 </mapper>

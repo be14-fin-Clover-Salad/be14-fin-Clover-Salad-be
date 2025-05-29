@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.clover.salad.goal.command.application.dto.EGoalDTO;
+import com.clover.salad.goal.command.application.dto.GoalDTO;
 import com.clover.salad.goal.command.application.dto.SearchTermDTO;
 import com.clover.salad.goal.query.mapper.GoalMapper;
 
@@ -18,14 +18,12 @@ public class GoalQueryServiceImpl implements GoalQueryService {
 	private final GoalMapper goalMapper;
 	
 	@Override
-	public List<EGoalDTO> searchEGoalByEIdAndTargetDate(int employeeId, SearchTermDTO searchTerm) {
-		searchTerm.setId(employeeId);
-		return goalMapper.selectEmployeeGoalByEIdAndTargetDate(searchTerm);
+	public List<GoalDTO> searchGoalByEmployeeId(SearchTermDTO searchTerm) {
+		return goalMapper.selectGoalByEmployeeId(searchTerm);
 	}
 	
 	@Override
-	public List<EGoalDTO> searchEGoalByDepartmentId(int departmentId, SearchTermDTO searchTerm) {
-		searchTerm.setId(departmentId);
-		return goalMapper.selectEmployeeGoalByDepartmentId(searchTerm);
+	public List<GoalDTO> searchGoalByDepartmentId(SearchTermDTO searchTerm) {
+		return goalMapper.selectGoalByDepartmentId(searchTerm);
 	}
 }

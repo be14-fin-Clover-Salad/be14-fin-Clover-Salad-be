@@ -18,6 +18,7 @@ public class CustomerDTO {
 	private String name;
 	private String birthdate;
 	private String phone;
+	private String address;
 	private String email;
 	private String registerAt;
 	@JsonProperty("isDeleted")

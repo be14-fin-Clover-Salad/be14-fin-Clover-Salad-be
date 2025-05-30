@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.clover.salad.notice.query.dto.NoticeListDTO;
+import com.clover.salad.notice.query.dto.NoticeDTO;
 
 @Mapper
 public interface NoticeMapper {
-	List<NoticeListDTO> findNoticeList();
+	List<NoticeDTO> findNoticeList();
+
+	NoticeDTO findNoticeDetail(int noticeId);
 }

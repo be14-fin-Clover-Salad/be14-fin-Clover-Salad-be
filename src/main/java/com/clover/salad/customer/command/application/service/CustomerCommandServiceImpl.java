@@ -1,7 +1,6 @@
 package com.clover.salad.customer.command.application.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 import org.springframework.stereotype.Service;
 
@@ -23,7 +22,6 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 		customerRep.save(customerDTOToCustomer(customerDTO));
 	}
 
-
 	private Customer customerDTOToCustomer(CustomerDTO customerDTO) {
 		Customer customer = new Customer();
 		customer.setId(customerDTO.getId());
@@ -31,13 +29,8 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 		customer.setBirthdate(customerDTO.getBirthdate());
 		customer.setPhone(customerDTO.getPhone());
 		customer.setEmail(customerDTO.getEmail());
-
-		// registerAt: String → LocalDateTime 변환
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		LocalDateTime registerAt = LocalDateTime.parse(customerDTO.getRegisterAt(), formatter);
-		customer.setRegisterAt(registerAt);
-
-		customer.setDeleted(customerDTO.isDeleted()); // boolean 필드
+		customer.setRegisterAt(LocalDate.now());
+		customer.setDeleted(customerDTO.isDeleted());
 		customer.setType(customerDTO.getType());
 		customer.setEtc(customerDTO.getEtc());
 

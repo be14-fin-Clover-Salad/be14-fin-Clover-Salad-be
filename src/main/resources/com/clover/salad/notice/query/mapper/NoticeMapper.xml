@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clover.salad.notice.query.mapper.NoticeMapper">
+
+    <resultMap id="NoticeResultMap" type="com.clover.salad.notice.query.dto.NoticeListDTO">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="employeeId" column="employee_id"/>
+    </resultMap>
+    
+    <select id="findNoticeList" resultMap="NoticeResultMap">
+        SELECT
+               id,
+               title,
+               created_at,
+               is_deleted,
+               employee_id
+          FROM notice
+         ORDER BY created_at DESC
+    </select>
+</mapper>

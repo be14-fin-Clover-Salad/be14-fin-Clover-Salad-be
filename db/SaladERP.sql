@@ -339,17 +339,17 @@ CREATE TABLE CONTRACT_PRODUCT
 
 CREATE TABLE APPROVAL
 (
-    id          INT         NOT NULL AUTO_INCREMENT,
-    code        VARCHAR(11) NOT NULL,
-    title       VARCHAR(20) NOT NULL,
-    content     TEXT        NOT NULL,
-    req_date    DATETIME    NOT NULL,
-    aprv_date   DATETIME    NULL,
-    state       VARCHAR(20) NOT NULL,
-    comment     VARCHAR(20) NULL,
-    req_id      INT         NOT NULL,
-    aprv_id     INT         NOT NULL,
-    contract_id INT         NOT NULL,
+    id          INT          NOT NULL AUTO_INCREMENT,
+    code        VARCHAR(100) NOT NULL UNIQUE,
+    title       VARCHAR(100) NOT NULL,
+    content     TEXT         NOT NULL,
+    req_date    DATETIME     NOT NULL,
+    aprv_date   DATETIME     NULL,
+    state       VARCHAR(100) NOT NULL,
+    comment     VARCHAR(300) NULL,
+    req_id      INT          NOT NULL,
+    aprv_id     INT          NOT NULL,
+    contract_id INT          NOT NULL,
     CONSTRAINT PK_APPROVAL PRIMARY KEY (id),
     CONSTRAINT FK_EMPLOYEE_TO_APPROVAL_REQ
         FOREIGN KEY (req_id)

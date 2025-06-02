@@ -54,7 +54,7 @@ public class WebSecurity {
 					.requestMatchers("/login").permitAll()
 					.requestMatchers("/employee").permitAll()
 					.requestMatchers("/employee/**").permitAll()
-					.anyRequest().authenticated()
+					.anyRequest().permitAll()
 			)
 			.authenticationManager(manager)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

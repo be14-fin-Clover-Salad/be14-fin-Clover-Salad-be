@@ -51,10 +51,11 @@ public class WebSecurity {
 		http.authorizeHttpRequests(authz ->
 				authz
 					// 개발용 일시적 허용
+					.requestMatchers("/**").permitAll()
 					.requestMatchers("/login").permitAll()
 					.requestMatchers("/employee").permitAll()
 					.requestMatchers("/employee/**").permitAll()
-					.anyRequest().permitAll()
+					.anyRequest().authenticated()
 			)
 			.authenticationManager(manager)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

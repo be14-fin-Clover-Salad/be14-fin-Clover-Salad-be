@@ -29,6 +29,7 @@ public class GoalCommandController {
 		int tempEmployeeId = 1;
 		
 		try {
+			log.info("Registering goal");
 			goalCommandService.registerGoal(goalList, tempEmployeeId);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());

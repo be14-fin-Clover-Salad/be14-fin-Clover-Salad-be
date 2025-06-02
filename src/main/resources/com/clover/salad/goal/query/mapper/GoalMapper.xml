@@ -39,7 +39,7 @@
         <result property="rentalRetentionCount" column="RENTAL_RETENTION_COUNT"/>
         <result property="newCustomerCount" column="NEW_CUSTOMER_COUNT"/>
         <result property="totalRentalAmount" column="TOTAL_RENTAL_AMOUNT"/>
-        <result property="customerFeedbackScore" column="(EG.CUSTOMER_FEEDBACK_SCORE * 10)"/>
+        <result property="customerFeedbackScore" column="(DG.CUSTOMER_FEEDBACK_SCORE * 10)"/>
         <result property="targetYear" column="TARGET_YEAR"/>
     </resultMap>
 
@@ -164,7 +164,7 @@
              , DG.RENTAL_RETENTION_RATE
              , DG.NEW_CUSTOMER_COUNT
              , DG.TOTAL_RENTAL_AMOUNT
-             , DG.CUSTOMER_FEEDBACK_SCORE
+             , (DG.CUSTOMER_FEEDBACK_SCORE * 10)
              , DG.TARGET_YEAR
           FROM DEFAULT_GOAL DG
          WHERE DG.LEVEL = #{employeeLevel}

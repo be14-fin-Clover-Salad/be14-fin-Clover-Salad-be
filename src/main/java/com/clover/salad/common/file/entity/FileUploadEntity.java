@@ -1,4 +1,4 @@
-package com.clover.salad.common.file.entity;
+package com.clover.salad.employee.command.domain.aggregate.entity;
 
 import java.time.LocalDateTime;
 
@@ -9,33 +9,36 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-@Entity
-@Table(name = "file_upload")
-@Getter
-@Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@Entity
+@Table(name = "file_upload")
 public class FileUploadEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	@Column(name = "id")
+	private int id;
 
-	@Column(name = "origin_file")
+	@Column(name = "origin_file", nullable = false)
 	private String originFile;
 
-	@Column(name = "rename_file")
+	@Column(name = "rename_file", nullable = false)
 	private String renameFile;
 
-	@Column(name = "path")
+	@Column(name = "path", nullable = false)
 	private String path;
 
-	@Column(name = "created_at")
+	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt;
-	private String type; // 예: 계약서
+
+	@Column(name = "type", nullable = false)
+	private String type;
 }

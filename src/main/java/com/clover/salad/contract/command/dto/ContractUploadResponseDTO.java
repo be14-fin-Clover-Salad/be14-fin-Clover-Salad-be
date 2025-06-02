@@ -13,8 +13,8 @@ public class ContractUploadResponseDTO {
 	private int contractId;
 	private String message;
 
-	public ContractUploadResponseDTO(Long id, String message) {
-		this.contractId = (id != null) ? id.intValue() : -1; // null 처리
+	public ContractUploadResponseDTO(Integer id, String message) {
+		this.contractId = (id != null) ? id : -1; // null 처리
 		this.message = message;
 	}
 }

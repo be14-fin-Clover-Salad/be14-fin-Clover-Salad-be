@@ -1,6 +1,8 @@
 package com.clover.salad.contract.command.service;
 
 import com.clover.salad.contract.command.dto.*;
+import com.clover.salad.contract.document.entity.DocumentOrigin;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -13,7 +15,7 @@ import java.util.regex.*;
 @Service
 public class PdfContractParserService {
 
-	public ContractUploadRequestDTO parsePdf(File pdfFile) {
+	public ContractUploadRequestDTO parsePdf(File pdfFile, DocumentOrigin documentOrigin) {
 		try (PDDocument document = PDDocument.load(pdfFile)) {
 			PDFTextStripper stripper = new PDFTextStripper();
 			String text = stripper.getText(document);
@@ -21,22 +23,27 @@ public class PdfContractParserService {
 			CustomerDTO customer = new CustomerDTO();
 			customer.setName(find(text, "성명\\s*([가-힣]+)"));
 			customer.setBirthdate(find(text, "생년월일\\s*([\\d\\-]+)"));
-			customer.setGender(text.contains("□ 남") ? "남" : "여");
 			customer.setPhone(find(text, "휴대전화\\s*([\\d\\-]+)"));
 			customer.setAddress(find(text, "주소\\s*(.+?)\\s*휴대전화"));
 			customer.setEmail(find(text, "E-mail\\s*([\\w@.]+)"));
+			customer.setCustomerType("고객");
 
 			ContractDTO contract = new ContractDTO();
-			contract.setContractNumber(find(text, "계약번호\\s*([\\w\\-]+)"));
-			contract.setProductName(find(text, "렌탈제품\\s*(\\S+)"));
-			contract.setMonthlyFee(find(text, "월 렌탈료\\s*(\\S+)"));
-			contract.setTotalFee(find(text, "총 렌탈료\\s*(\\S+)"));
-			contract.setRentalPeriod(find(text, "렌탈기간\\s*(\\S+)"));
-			contract.setPaymentMethod(find(text, "납부방법\\s*(□ 카드결제|□ 자동이체)"));
+			contract.setStartDate(null); // 날짜 파싱 정규표현식 추가 필요
+			contract.setEndDate(null);
+			contract.setAmount(0);
+			contract.setBankName(find(text, "은행명\\s*([가-힣]+)"));
+			contract.setBankAccount(find(text, "계좌번호\\s*(\\d{10,})"));
+			contract.setPaymentDay(25);
+			contract.setDepositOwner(find(text, "예금주\\s*([가-힣]+)"));
+			contract.setRelationship(find(text, "관계\\s*([가-힣]+)"));
+			contract.setPaymentEmail(find(text, "결제 이메일\\s*([\\w@.]+)"));
 
 			ContractUploadRequestDTO result = new ContractUploadRequestDTO();
 			result.setCustomer(customer);
 			result.setContract(contract);
+			result.setDocumentOrigin(documentOrigin);
+
 			return result;
 
 		} catch (Exception e) {

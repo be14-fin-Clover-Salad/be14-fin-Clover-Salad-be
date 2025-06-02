@@ -3,6 +3,8 @@ package com.clover.salad.security;
 import java.security.Key;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -72,5 +74,14 @@ public class JwtUtil {
 
 	public String getUsername(String token) {
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+	}
+
+	private Claims parseClaims(String token) {
+		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+	}
+
+	public LocalDateTime getExpiration(String token) {
+		Date expirationDate = parseClaims(token).getExpiration();
+		return Instant.ofEpochMilli(expirationDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
 	}
 }

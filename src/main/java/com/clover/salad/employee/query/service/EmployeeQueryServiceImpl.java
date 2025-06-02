@@ -18,6 +18,9 @@ import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.mapper.EmployeeMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 
@@ -41,7 +44,7 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 		EmployeeEntity employee = employeeRepository.findByCode(username)
 			.orElseThrow(() -> new UsernameNotFoundException("해당 사번을 가진 사용자를 찾을 수 없습니다: " + username));
 
-		System.out.println("[DEBUG] 로그인 사용자 로드됨: " + employee.getCode() + ", isAdmin: " + employee.isAdmin());
+		log.info("로그인 사용자 로드됨: {}, isAdmin: {}", employee.getCode(), employee.isAdmin());
 
 		return new User(
 			employee.getCode(),
@@ -53,10 +56,10 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 	private Collection<? extends GrantedAuthority> getAuthorities(EmployeeEntity employee) {
 		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 		if (employee.isAdmin()) {
-			System.out.println("[DEBUG] 권한 부여: ROLE_ADMIN");
+			log.info("권한 부여: ROLE_ADMIN");
 			authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 		} else {
-			System.out.println("[DEBUG] 권한 부여: ROLE_MEMBER");
+			log.info("권한 부여: ROLE_MEMBER");
 			authorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
 		}
 		return authorities;

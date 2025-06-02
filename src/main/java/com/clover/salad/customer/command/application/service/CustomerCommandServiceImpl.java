@@ -30,17 +30,24 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 	public void updateCustomer(int customerId, CustomerDTO customerDTO) {
 		Customer existing = customerRepository.findById(customerId).orElseThrow(
 				() -> new RuntimeException("Customer with id " + customerId + " not found"));
-		// 추후 CustomerNotFoundException 등으로 대체 가능
 
-		existing.setName(customerDTO.getName());
-		existing.setBirthdate(customerDTO.getBirthdate());
-		existing.setPhone(customerDTO.getPhone());
-		existing.setEmail(customerDTO.getEmail());
-		existing.setType(customerDTO.getType());
-		existing.setEtc(customerDTO.getEtc());
+		Customer updated = Customer.builder().id(existing.getId())
+				.name(customerDTO.getName() != null ? customerDTO.getName() : existing.getName())
+				.birthdate(customerDTO.getBirthdate() != null ? customerDTO.getBirthdate()
+						: existing.getBirthdate())
+				.phone(customerDTO.getPhone() != null ? customerDTO.getPhone()
+						: existing.getPhone())
+				.address(customerDTO.getAddress() != null ? customerDTO.getAddress()
+						: existing.getAddress())
+				.email(customerDTO.getEmail() != null ? customerDTO.getEmail()
+						: existing.getEmail())
+				.registerAt(existing.getRegisterAt()).isDeleted(existing.isDeleted())
+				.type(customerDTO.getType() != null ? customerDTO.getType() : existing.getType())
+				.etc(customerDTO.getEtc() != null ? customerDTO.getEtc() : existing.getEtc())
+				.build();
 
-		customerRepository.save(existing);
-		log.info("Updated customer: {}", existing.getName());
+		customerRepository.save(updated);
+		log.info("Updated customer: {}", updated.getName());
 	}
 
 	@Override
@@ -48,14 +55,19 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 		Customer customer = customerRepository.findById(customerId).orElseThrow(
 				() -> new RuntimeException("Customer with id " + customerId + " not found"));
 
-		customer.setDeleted(true);
-		customerRepository.save(customer);
-		log.info("Soft deleted customer: {}", customer.getName());
+		Customer deletedCustomer = Customer.builder().id(customer.getId()).name(customer.getName())
+				.birthdate(customer.getBirthdate()).phone(customer.getPhone())
+				.address(customer.getAddress()).email(customer.getEmail())
+				.registerAt(customer.getRegisterAt()).isDeleted(true).type(customer.getType())
+				.etc(customer.getEtc()).build();
+
+		customerRepository.save(deletedCustomer);
+		log.info("Soft deleted customer: {}", deletedCustomer.getName());
 	}
 
 	private Customer convertToEntity(CustomerDTO dto) {
 		return Customer.builder().id(dto.getId()).name(dto.getName()).birthdate(dto.getBirthdate())
-				.phone(dto.getPhone()).email(dto.getEmail()).deleted(dto.isDeleted())
-				.type(dto.getType()).etc(dto.getEtc()).build();
+				.phone(dto.getPhone()).address(dto.getAddress()).email(dto.getEmail())
+				.isDeleted(dto.isDeleted()).type(dto.getType()).etc(dto.getEtc()).build();
 	}
 }

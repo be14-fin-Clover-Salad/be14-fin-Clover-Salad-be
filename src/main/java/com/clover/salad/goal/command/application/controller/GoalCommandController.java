@@ -25,7 +25,7 @@ public class GoalCommandController {
 	@PostMapping("/register")
 	public ResponseEntity<String> registerGoal(@RequestBody List<GoalDTO> goalList) {
 		
-		/* 설명. 임시 사원 id(토큰에서 파싱) */
+		/* TODO. 설명. 임시 사원 id(토큰에서 파싱) */
 		int tempEmployeeId = 1;
 		
 		try {

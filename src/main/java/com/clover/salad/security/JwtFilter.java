@@ -27,10 +27,14 @@ public class JwtFilter extends OncePerRequestFilter {
 		String authHeader = request.getHeader("Authorization");
 		if (authHeader != null && authHeader.startsWith("Bearer ")) {
 			String token = authHeader.substring(7);
+
+			// 로그아웃된 토큰인지 확인
 			if ("logout".equals(redisTemplate.opsForValue().get("blacklist:" + token))) {
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				return;
 			}
+
+			// 유효한 토큰이면 SecurityContext에 등록
 			if (jwtUtil.validateToken(token)) {
 				Authentication authentication = jwtUtil.getAuthentication(token);
 				SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -38,4 +42,4 @@ public class JwtFilter extends OncePerRequestFilter {
 		}
 		filterChain.doFilter(request, response);
 	}
-}
+	}

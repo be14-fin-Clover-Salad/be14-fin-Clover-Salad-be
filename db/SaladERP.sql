@@ -167,7 +167,7 @@ CREATE TABLE CUSTOMER
     id          INT          NOT NULL AUTO_INCREMENT,
     name        VARCHAR(20)  NOT NULL,
     birthdate   VARCHAR(20)  NULL,
-    address     VARCHAR(20)  NULL,
+    address     VARCHAR(100)  NULL,
     phone       VARCHAR(11)  NOT NULL,
     email       VARCHAR(255) NULL,
     register_at DATE         NULL,

@@ -1,9 +1,11 @@
 package com.clover.salad.contract.document.service;
 
-import com.clover.salad.common.file.repository.FileUploadRepository;
 import com.clover.salad.common.file.entity.FileUploadEntity;
+import com.clover.salad.common.file.repository.FileUploadRepository;
 import com.clover.salad.contract.document.entity.DocumentOrigin;
+import com.clover.salad.contract.document.entity.DocumentTemplate;
 import com.clover.salad.contract.document.repository.DocumentOriginRepository;
+import com.clover.salad.contract.document.repository.DocumentTemplateRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,9 +25,10 @@ public class DocumentOriginService {
 
 	private final FileUploadRepository fileUploadRepository;
 	private final DocumentOriginRepository documentOriginRepository;
+	private final DocumentTemplateRepository documentTemplateRepository;
 
 	@Value("${file.upload.dir}")
-	private String uploadDir; // C:/contracttest 로 주입
+	private String uploadDir;
 
 	@Transactional
 	public DocumentOrigin uploadAndSave(File tempFile, String originalFilename) throws IOException {
@@ -34,7 +37,7 @@ public class DocumentOriginService {
 		}
 
 		// 1. 저장 디렉토리 생성
-		File saveDir = new File(uploadDir); // C:/contracttest
+		File saveDir = new File(uploadDir);
 		if (!saveDir.exists()) {
 			saveDir.mkdirs();
 		}
@@ -43,11 +46,11 @@ public class DocumentOriginService {
 		String storedFileName = UUID.randomUUID() + "_" + originalFilename;
 		File savedFile = new File(saveDir, storedFileName);
 
-		// 3. 파일 이동 (복사 후 삭제)
+		// 3. 파일 이동
 		Files.copy(tempFile.toPath(), savedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		tempFile.delete(); // 임시 파일 삭제
+		tempFile.delete();
 
-		// 4. 파일 DB 기록
+		// 4. 파일 업로드 정보 저장
 		FileUploadEntity fileUpload = fileUploadRepository.save(FileUploadEntity.builder()
 			.originFile(originalFilename)
 			.renameFile(storedFileName)
@@ -56,15 +59,18 @@ public class DocumentOriginService {
 			.type("계약서")
 			.build());
 
-		// 5. 문서 기록
+		// 5. 기본 템플릿 조회
+		DocumentTemplate defaultTemplate = documentTemplateRepository.findById(1)
+			.orElseThrow(() -> new IllegalStateException("기본 템플릿이 존재하지 않습니다."));
+
+		// 6. 문서 원본 저장
 		DocumentOrigin documentOrigin = DocumentOrigin.builder()
 			.fileUpload(fileUpload)
+			.documentTemplate(defaultTemplate)
 			.isDeleted(false)
 			.createdAt(LocalDateTime.now())
 			.build();
 
-		documentOriginRepository.save(documentOrigin);
-
-		return documentOrigin;
+		return documentOriginRepository.save(documentOrigin);
 	}
 }

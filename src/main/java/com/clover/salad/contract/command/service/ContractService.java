@@ -34,9 +34,17 @@ public class ContractService {
 	}
 
 	private String generateContractCode() {
-		String prefix = "C";
-		String datePart = java.time.LocalDate.now().toString().replace("-", "");
-		String seq = String.format("%04d", contractRepository.count() + 1); // 단순 예시
-		return prefix + datePart + seq;
+		String prefix = "C-";
+		java.time.LocalDate now = java.time.LocalDate.now();
+
+		// 연도 앞 두 자리, 월
+		String yy = String.format("%02d", now.getYear() % 100); // "25"
+		String mm = String.format("%02d", now.getMonthValue()); // "06"
+
+		String datePart = yy + mm; // "2506"
+		String seq = String.format("%04d", contractRepository.count() + 1); // "0001" ~ "9999"
+
+		return prefix + datePart + "-" + seq; // C-2506-0001
 	}
+
 }

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import com.clover.salad.contract.document.entity.DocumentOrigin;
 import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
+import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -50,5 +51,9 @@ public class ContractEntity {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "customer_id", nullable = false)
 	private Customer customer;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "employee_id", nullable = false)
+	private EmployeeEntity employee;
 
 }

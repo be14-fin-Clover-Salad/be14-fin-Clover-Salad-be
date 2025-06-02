@@ -2,6 +2,7 @@ package com.clover.salad.common.file.entity;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,9 +26,16 @@ public class FileUploadEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
+	@Column(name = "origin_file")
 	private String originFile;
+
+	@Column(name = "rename_file")
 	private String renameFile;
+
+	@Column(name = "path")
 	private String path;
+
+	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 	private String type; // 예: 계약서
 }

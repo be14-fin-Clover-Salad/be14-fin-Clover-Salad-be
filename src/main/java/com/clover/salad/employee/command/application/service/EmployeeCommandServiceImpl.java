@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.clover.salad.employee.command.application.dto.RequestRegisterDTO;
-import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 
 @Service
@@ -27,11 +25,5 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 	}
 
-	@Override
-	public void registerUser(RequestRegisterDTO requestRegisterDTO) {
-		requestRegisterDTO.setUserId(UUID.randomUUID().toString());
-		EmployeeEntity registerUser = modelMapper.map(requestRegisterDTO, EmployeeEntity.class);
-		registerUser.setEncPwd(bCryptPasswordEncoder.encode(requestRegisterDTO.getPassword()));
-		employeeRepository.save(registerUser);
-	}
+
 }

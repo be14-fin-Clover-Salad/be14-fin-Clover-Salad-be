@@ -21,6 +21,6 @@ public enum EmployeeLevel {
 				return level;
 			}
 		}
-		throw new IllegalArgumentException("Unknown label: " + label);
+		throw new IllegalArgumentException("알 수 없는 직급: " + label);
 	}
 }

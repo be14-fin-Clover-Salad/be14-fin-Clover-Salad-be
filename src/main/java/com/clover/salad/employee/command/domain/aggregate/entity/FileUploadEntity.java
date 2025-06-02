@@ -18,7 +18,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "file_upload")
 public class FileUploadEntity {

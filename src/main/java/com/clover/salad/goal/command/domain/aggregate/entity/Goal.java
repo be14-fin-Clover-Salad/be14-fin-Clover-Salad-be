@@ -38,7 +38,7 @@ public class Goal {
 	private Long totalRentalAmount;
 	
 	@Column(name = "customer_feedback_score")
-	private Integer customerFeedbackScore;
+	private Double customerFeedbackScore;
 	
 	@Column(name = "customer_feedback_count")
 	private Integer customerFeedbackCount;

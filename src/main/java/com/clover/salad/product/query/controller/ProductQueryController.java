@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.clover.salad.product.command.application.dto.ProductDTO;
+import com.clover.salad.product.command.application.dto.SearchTermDTO;
 import com.clover.salad.product.query.service.ProductQueryService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,10 @@ public class ProductQueryController {
 	
 	/* 설명. 상품 목록 조회 */
 	@GetMapping("/list")
-	public ResponseEntity<List<ProductDTO>> searchProductList() {
-		return ResponseEntity.ok(productQSer.searchProductList());
+	public ResponseEntity<List<ProductDTO>> searchProductList(SearchTermDTO searchTerm) {
+		log.info("Search term: {}", searchTerm);
+		List<ProductDTO> productList = productQSer.searchProductList(searchTerm);
+		log.info("Search result: {}", productList);
+		return ResponseEntity.ok(productList);
 	}
 }

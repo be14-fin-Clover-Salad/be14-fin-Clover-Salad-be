@@ -50,18 +50,20 @@ CREATE TABLE FILE_UPLOAD
 
 CREATE TABLE EMPLOYEE
 (
-    id            INT         NOT NULL AUTO_INCREMENT,
-    code          INT         NOT NULL,
-    password      VARCHAR(20) NOT NULL,
-    name          VARCHAR(10) NOT NULL,
-    phone         VARCHAR(11) NOT NULL,
-    level         VARCHAR(3)  NOT NULL DEFAULT '사원',
-    hire_date     DATE        NULL,
-    resign_date   DATE        NULL,
-    is_deleted    BOOLEAN     NOT NULL DEFAULT FALSE,
-    work_place    VARCHAR(10) NULL,
-    department_id INT         NOT NULL DEFAULT 1,
-    profile       INT         NOT NULL,
+    id            INT          NOT NULL AUTO_INCREMENT,
+    code          VARCHAR(100) NOT NULL UNIQUE,
+    password      VARCHAR(100) NOT NULL,
+    name          VARCHAR(10)  NOT NULL,
+    phone         VARCHAR(11)  NOT NULL UNIQUE,
+    email         VARCHAR(50)  NOT NULL UNIQUE,
+    level         VARCHAR(50)  NOT NULL DEFAULT '사원',
+    hire_date     DATE         NOT NULL,
+    resign_date   DATE         NULL,
+    is_admin      BOOLEAN      NOT NULL DEFAULT FALSE,
+    is_deleted    BOOLEAN      NOT NULL DEFAULT FALSE,
+    work_place    VARCHAR(50)  NULL,
+    department_id INT          NOT NULL DEFAULT 1,
+    profile       INT          NOT NULL,
     CONSTRAINT PK_EMPLOYEE PRIMARY KEY (id),
     CONSTRAINT FK_DEPARTMENT_TO_EMPLOYEE
         FOREIGN KEY (department_id)
@@ -75,16 +77,20 @@ CREATE TABLE EMPLOYEE_PERFORMANCE
 (
     id                      INT           NOT NULL AUTO_INCREMENT,
     rental_product_count    INT           NULL,
-    rental_retention_rate   INT           NULL,
+    rental_retention_count  INT           NULL,
+    total_rental_count      INT           NULL,
     new_customer_count      INT           NULL,
     total_rental_amount     BIGINT        NULL,
     customer_feedback_score DECIMAL(2, 1) NULL,
+    customer_feedback_count INT           NULL,
     target_date             INT(6)        NOT NULL,
     employee_id             INT           NOT NULL,
     CONSTRAINT PK_EMPLOYEE_PERFORMANCE PRIMARY KEY (id),
     CONSTRAINT FK_EMPLOYEE_TO_EMPLOYEE_PERFORMANCE
         FOREIGN KEY (employee_id)
-            REFERENCES EMPLOYEE (id)
+            REFERENCES EMPLOYEE (id),
+    CONSTRAINT UQ_TARGET_DATE_EMPLOYEE_ID
+        UNIQUE (target_date, employee_id)
 );
 
 CREATE TABLE NOTICE
@@ -107,7 +113,7 @@ CREATE TABLE PRODUCT
     category       VARCHAR(30)  NOT NULL,
     name           VARCHAR(255) NOT NULL,
     serial_number  VARCHAR(255) NOT NULL,
-    product_code   VARCHAR(255) NOT NULL,
+    product_code   VARCHAR(255) NOT NULL UNIQUE,
     company        VARCHAR(255) NOT NULL,
     origin_cost    INT          NOT NULL,
     rental_cost    INT          NOT NULL,
@@ -140,16 +146,20 @@ CREATE TABLE DEPARTMENT_PERFORMANCE
 (
     id                      INT           NOT NULL AUTO_INCREMENT,
     rental_product_count    INT           NULL,
-    rental_retention_rate   INT           NULL,
+    rental_retention_count  INT           NULL,
+    total_rental_count      INT           NULL,
     new_customer_count      INT           NULL,
     total_rental_amount     BIGINT        NULL,
     customer_feedback_score DECIMAL(2, 1) NULL,
+    customer_feedback_count INT           NULL,
     target_date             INT(6)        NOT NULL,
     department_id           INT           NOT NULL,
     CONSTRAINT PK_DEPARTMENT_PERFORMANCE PRIMARY KEY (id),
     CONSTRAINT FK_DEPARTMENT_TO_DEPARTMENT_PERFORMANCE
         FOREIGN KEY (department_id)
-            REFERENCES DEPARTMENT (id)
+            REFERENCES DEPARTMENT (id),
+    CONSTRAINT UQ_TARGET_DATE_DEPARTMENT_ID
+        UNIQUE (target_date, department_id)
 );
 
 CREATE TABLE CUSTOMER
@@ -249,16 +259,20 @@ CREATE TABLE EMPLOYEE_GOAL
 (
     id                      INT           NOT NULL AUTO_INCREMENT,
     rental_product_count    INT           NOT NULL,
-    rental_retention_rate   INT           NOT NULL,
+    rental_retention_count  INT           NOT NULL,
+    total_rental_count      INT           NOT NULL,
     new_customer_count      INT           NOT NULL,
     total_rental_amount     BIGINT        NOT NULL,
     customer_feedback_score DECIMAL(2, 1) NOT NULL,
+    customer_feedback_count INT           NOT NULL,
     target_date             INT(6)        NOT NULL,
     employee_id             INT           NOT NULL,
     CONSTRAINT PK_EMPLOYEE_GOAL PRIMARY KEY (id),
     CONSTRAINT FK_EMPLOYEE_TO_EMPLOYEE_GOAL
         FOREIGN KEY (employee_id)
-            REFERENCES EMPLOYEE (id)
+            REFERENCES EMPLOYEE (id),
+    CONSTRAINT UQ_TARGET_DATE_EMPLOYEE_ID
+        UNIQUE (target_date, employee_id)
 );
 
 CREATE TABLE CONTRACT
@@ -325,17 +339,17 @@ CREATE TABLE CONTRACT_PRODUCT
 
 CREATE TABLE APPROVAL
 (
-    id          INT         NOT NULL AUTO_INCREMENT,
-    code        VARCHAR(11) NOT NULL,
-    title       VARCHAR(20) NOT NULL,
-    content     TEXT        NOT NULL,
-    req_date    DATETIME    NOT NULL,
-    aprv_date   DATETIME    NULL,
-    state       VARCHAR(20) NOT NULL,
-    comment     VARCHAR(20) NULL,
-    req_id      INT         NOT NULL,
-    aprv_id     INT         NOT NULL,
-    contract_id INT         NOT NULL,
+    id          INT          NOT NULL AUTO_INCREMENT,
+    code        VARCHAR(100) NOT NULL UNIQUE,
+    title       VARCHAR(100) NOT NULL,
+    content     TEXT         NOT NULL,
+    req_date    DATETIME     NOT NULL,
+    aprv_date   DATETIME     NULL,
+    state       VARCHAR(100) NOT NULL,
+    comment     VARCHAR(300) NULL,
+    req_id      INT          NOT NULL,
+    aprv_id     INT          NOT NULL,
+    contract_id INT          NOT NULL,
     CONSTRAINT PK_APPROVAL PRIMARY KEY (id),
     CONSTRAINT FK_EMPLOYEE_TO_APPROVAL_REQ
         FOREIGN KEY (req_id)

@@ -1,11 +1,12 @@
 package com.clover.salad.customer.command.application.service;
 
-import com.clover.salad.customer.command.application.dto.CustomerDTO;
+import com.clover.salad.customer.command.application.dto.CustomerCreateRequest;
+import com.clover.salad.customer.command.application.dto.CustomerUpdateRequest;
 
 public interface CustomerCommandService {
-	void registerCustomer(CustomerDTO CustomerDTO);
+	void registerCustomer(CustomerCreateRequest request);
 
-	void updateCustomer(int customerId, CustomerDTO customerDTO);
+	void updateCustomer(int id, CustomerUpdateRequest request);
 
-	void deleteCustomer(int customerId);
+	void deleteCustomer(int id);
 }

@@ -12,15 +12,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
 @Table(name = "customer")
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-// @Setter
-@ToString
 @Builder(toBuilder = true)
 public class Customer {
 
@@ -28,30 +25,44 @@ public class Customer {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@Column(name = "name", nullable = false)
+	@Column(nullable = false, length = 20)
 	private String name;
 
-	@Column(name = "birthdate")
+	@Column(length = 20)
 	private String birthdate;
 
-	@Column(name = "phone")
+	@Column(nullable = false, length = 11)
 	private String phone;
 
-	@Column(name = "address")
+	@Column(length = 100)
 	private String address;
 
-	@Column(name = "email")
+	@Column(unique = true, length = 255)
 	private String email;
 
 	@Column(name = "register_at")
 	private LocalDate registerAt;
 
-	@Column(name = "is_deleted")
+	@Column(name = "is_deleted", nullable = false)
 	private boolean isDeleted;
 
-	@Column(name = "type")
+	@Column(nullable = false, length = 20)
 	private String type;
 
-	@Column(name = "etc")
+	@Column(length = 20)
 	private String etc;
+
+	public void update(Customer updated) {
+		this.name = updated.name != null ? updated.name : this.name;
+		this.birthdate = updated.birthdate != null ? updated.birthdate : this.birthdate;
+		this.phone = updated.phone != null ? updated.phone : this.phone;
+		this.address = updated.address != null ? updated.address : this.address;
+		this.email = updated.email != null ? updated.email : this.email;
+		this.type = updated.type != null ? updated.type : this.type;
+		this.etc = updated.etc != null ? updated.etc : this.etc;
+	}
+
+	public void softDelete() {
+		this.isDeleted = true;
+	}
 }

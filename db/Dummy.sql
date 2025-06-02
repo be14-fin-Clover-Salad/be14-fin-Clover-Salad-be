@@ -3,171 +3,221 @@ USE saladdb;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- DEPARTMENT
-INSERT INTO DEPARTMENT (id, name, is_deleted, sup_dept_id) VALUES (1, '총무', False, NULL);
-INSERT INTO DEPARTMENT (id, name, is_deleted, sup_dept_id) VALUES (2, '영업1팀', False, 1);
-INSERT INTO DEPARTMENT (id, name, is_deleted, sup_dept_id) VALUES (3, '영업2팀', False, 1);
-INSERT INTO DEPARTMENT (id, name, is_deleted, sup_dept_id) VALUES (4, '고객지원팀', False, 1);
-INSERT INTO DEPARTMENT (id, name, is_deleted, sup_dept_id) VALUES (5, '기술지원팀', False, 1);
+INSERT INTO DEPARTMENT (id, name, is_deleted, sup_dept_id)
+VALUES (1, '본부', False, NULL),
+       (2, '영업1팀', False, 1),
+       (3, '영업2팀', False, 1),
+       (4, '고객지원팀', False, 1),
+       (5, '기술지원팀', False, 1);
 
 -- FILE_UPLOAD
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (1, 'profile1.png', 'uuid1.png', '/uploads/', '2025-05-28 02:13:22', 'IMG');
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (2, 'profile2.png', 'uuid2.png', '/uploads/', '2025-05-28 02:13:22', 'IMG');
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (3, 'profile3.png', 'uuid3.png', '/uploads/', '2025-05-28 02:13:22', 'IMG');
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (4, 'profile4.png', 'uuid4.png', '/uploads/', '2025-05-28 02:13:22', 'IMG');
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (5, 'profile5.png', 'uuid5.png', '/uploads/', '2025-05-28 02:13:22', 'IMG');
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (6, 'profile6.png', 'uuid6.png', '/uploads/', '2025-05-28 02:13:22', 'IMG');
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type) VALUES (7, 'profile7.png', 'uuid7.png', '/uploads/', '2025-05-28 02:13:22', 'IMG');
+INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type)
+VALUES (1, 'profile1.png', 'uuid1.png', '/uploads/', '2025-05-28 02:13:22', '프로필'),
+       (2, 'profile2.png', 'uuid2.png', '/uploads/', '2025-05-28 02:13:22', '계약서'),
+       (3, 'profile3.png', 'uuid3.png', '/uploads/', '2025-05-28 02:13:22', '상품');
 
 -- EMPLOYEE
-INSERT INTO EMPLOYEE (id, code, password, name, phone, level, hire_date, resign_date, is_deleted, work_place, department_id, profile) VALUES (1, 1001, 'pw1234', '김민수', '01012340001', '사원', '2024-05-28', NULL, False, '서울', 4, 1);
-INSERT INTO EMPLOYEE (id, code, password, name, phone, level, hire_date, resign_date, is_deleted, work_place, department_id, profile) VALUES (2, 1002, 'pw1234', '이서연', '01012340002', '주임', '2023-05-29', NULL, False, '부산', 3, 2);
-INSERT INTO EMPLOYEE (id, code, password, name, phone, level, hire_date, resign_date, is_deleted, work_place, department_id, profile) VALUES (3, 1003, 'pw1234', '박지훈', '01012340003', '대리', '2022-05-29', NULL, False, '대전', 2, 3);
-INSERT INTO EMPLOYEE (id, code, password, name, phone, level, hire_date, resign_date, is_deleted, work_place, department_id, profile) VALUES (4, 1004, 'pw1234', '최유진', '01012340004', '과장', '2021-05-29', NULL, False, '광주', 4, 4);
-INSERT INTO EMPLOYEE (id, code, password, name, phone, level, hire_date, resign_date, is_deleted, work_place, department_id, profile) VALUES (5, 1005, 'pw1234', '정우성', '01012340005', '팀장', '2020-05-29', NULL, False, '인천', 5, 5);
-INSERT INTO EMPLOYEE (id, code, password, name, phone, level, hire_date, resign_date, is_deleted, work_place, department_id, profile) VALUES (6, 1006, 'pw1234', '한예슬', '01012340006', '사원', '2019-05-30', NULL, False, '대구', 1, 6);
-INSERT INTO EMPLOYEE (id, code, password, name, phone, level, hire_date, resign_date, is_deleted, work_place, department_id, profile) VALUES (7, 1007, 'pw1234', '장동건', '01012340007', '대리', '2018-05-30', NULL, False, '울산', 2, 7);
+INSERT INTO EMPLOYEE (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted,
+                      work_place, department_id, profile)
+VALUES ('202501001', 'pass01', '홍길동', '01012345678', 'hong@example.com', '사원', '2025-01-01', NULL, FALSE, FALSE, '서울본사',
+        1, 1),
+       ('202501002', 'pass02', '홍길둉', '01012345679', 'hong1@example.com', '팀장', '2024-01-01', NULL, FALSE, FALSE,
+        '강남씨티빌딩', 2, 2);
+
 
 -- CUSTOMER
-INSERT INTO CUSTOMER (id, name, birthdate, address, phone, email, register_at, is_deleted, type, etc) VALUES (1, '홍길동', '1981-02-15', '도시1', '01088880001', 'customer1@email.com', '2025-05-18', False, '법인', NULL);
-INSERT INTO CUSTOMER (id, name, birthdate, address, phone, email, register_at, is_deleted, type, etc) VALUES (2, '이영희', '1982-03-15', '도시2', '01088880002', 'customer2@email.com', '2025-05-08', False, '개인', NULL);
-INSERT INTO CUSTOMER (id, name, birthdate, address, phone, email, register_at, is_deleted, type, etc) VALUES (3, '최준호', '1983-04-15', '도시3', '01088880003', 'customer3@email.com', '2025-04-28', False, '법인', 'VIP');
-INSERT INTO CUSTOMER (id, name, birthdate, address, phone, email, register_at, is_deleted, type, etc) VALUES (4, '김예림', '1984-05-15', '도시4', '01088880004', 'customer4@email.com', '2025-04-18', False, '개인', NULL);
-INSERT INTO CUSTOMER (id, name, birthdate, address, phone, email, register_at, is_deleted, type, etc) VALUES (5, '박상우', '1985-06-15', '도시5', '01088880005', 'customer5@email.com', '2025-04-08', False, '법인', NULL);
-INSERT INTO CUSTOMER (id, name, birthdate, address, phone, email, register_at, is_deleted, type, etc) VALUES (6, '윤미래', '1986-07-15', '도시6', '01088880006', 'customer6@email.com', '2025-03-29', False, '개인', 'VIP');
-INSERT INTO CUSTOMER (id, name, birthdate, address, phone, email, register_at, is_deleted, type, etc) VALUES (7, '정수빈', '1987-08-15', '도시7', '01088880007', 'customer7@email.com', '2025-03-19', False, '법인', NULL);
+INSERT INTO CUSTOMER (id, name, birthdate, address, phone, email, register_at, is_deleted, type, etc)
+VALUES (1, '홍길동', '1981-02-15', '도시1', '01088880001', 'customer1@email.com', '2025-05-18', False, '법인', NULL),
+       (2, '이영희', '1982-03-15', '도시2', '01088880002', 'customer2@email.com', '2025-05-08', False, '개인', NULL),
+       (3, '최준호', '1983-04-15', '도시3', '01088880003', 'customer3@email.com', '2025-04-28', False, '법인', 'VIP'),
+       (4, '김예림', '1984-05-15', '도시4', '01088880004', 'customer4@email.com', '2025-04-18', False, '개인', NULL),
+       (5, '박상우', '1985-06-15', '도시5', '01088880005', 'customer5@email.com', '2025-04-08', False, '법인', NULL),
+       (6, '윤미래', '1986-07-15', '도시6', '01088880006', 'customer6@email.com', '2025-03-29', False, '개인', 'VIP'),
+       (7, '정수빈', '1987-08-15', '도시7', '01088880007', 'customer7@email.com', '2025-03-19', False, '법인', NULL);
 
 -- PRODUCT
-INSERT INTO PRODUCT (id, category, name, serial_number, product_code, company, origin_cost, rental_cost, description, is_deleted, file_upload_id) VALUES (1, '청소기', '청소기 1호', 'SN20240001', 'P0001', '삼성', 150000, 13000, '청소기 설명입니다.', False, 1);
-INSERT INTO PRODUCT (id, category, name, serial_number, product_code, company, origin_cost, rental_cost, description, is_deleted, file_upload_id) VALUES (2, '정수기', '정수기 2호', 'SN20240002', 'P0002', 'LG', 200000, 16000, '정수기 설명입니다.', False, 1);
-INSERT INTO PRODUCT (id, category, name, serial_number, product_code, company, origin_cost, rental_cost, description, is_deleted, file_upload_id) VALUES (3, '비데', '비데 3호', 'SN20240003', 'P0003', '쿠쿠', 250000, 19000, '비데 설명입니다.', False, 1);
-INSERT INTO PRODUCT (id, category, name, serial_number, product_code, company, origin_cost, rental_cost, description, is_deleted, file_upload_id) VALUES (4, '에어컨', '에어컨 4호', 'SN20240004', 'P0004', '위니아', 300000, 22000, '에어컨 설명입니다.', False, 1);
-INSERT INTO PRODUCT (id, category, name, serial_number, product_code, company, origin_cost, rental_cost, description, is_deleted, file_upload_id) VALUES (5, '세탁기', '세탁기 5호', 'SN20240005', 'P0005', 'SK매직', 350000, 25000, '세탁기 설명입니다.', False, 1);
-INSERT INTO PRODUCT (id, category, name, serial_number, product_code, company, origin_cost, rental_cost, description, is_deleted, file_upload_id) VALUES (6, '건조기', '건조기 6호', 'SN20240006', 'P0006', '코웨이', 400000, 28000, '건조기 설명입니다.', False, 1);
-INSERT INTO PRODUCT (id, category, name, serial_number, product_code, company, origin_cost, rental_cost, description, is_deleted, file_upload_id) VALUES (7, '냉장고', '냉장고 7호', 'SN20240007', 'P0007', '청호', 450000, 31000, '냉장고 설명입니다.', False, 1);
+INSERT INTO PRODUCT (id, category, name, serial_number, product_code, company, origin_cost, rental_cost, description,
+                     is_deleted, file_upload_id)
+VALUES (1, '청소기', '청소기 1호', 'SN20240001', 'P0001', '삼성', 150000, 13000, '청소기 설명입니다.', False, 1),
+       (2, '정수기', '정수기 2호', 'SN20240002', 'P0002', 'LG', 200000, 16000, '정수기 설명입니다.', False, 1),
+       (3, '비데', '비데 3호', 'SN20240003', 'P0003', '쿠쿠', 250000, 19000, '비데 설명입니다.', False, 1),
+       (4, '에어컨', '에어컨 4호', 'SN20240004', 'P0004', '위니아', 300000, 22000, '에어컨 설명입니다.', False, 1),
+       (5, '세탁기', '세탁기 5호', 'SN20240005', 'P0005', 'SK매직', 350000, 25000, '세탁기 설명입니다.', False, 1),
+       (6, '건조기', '건조기 6호', 'SN20240006', 'P0006', '코웨이', 400000, 28000, '건조기 설명입니다.', False, 1),
+       (7, '냉장고', '냉장고 7호', 'SN20240007', 'P0007', '청호', 450000, 31000, '냉장고 설명입니다.', False, 1);
 
 -- NOTICE
-INSERT INTO NOTICE (id, title, content, created_at, is_deleted, employee_id) VALUES (1, '중요 공지 1', '공지사항 내용 1입니다. 시스템 점검 안내 등', '2025-05-01 15:28:15.537438', False, 2);
-INSERT INTO NOTICE (id, title, content, created_at, is_deleted, employee_id) VALUES (2, '중요 공지 2', '공지사항 내용 2입니다. 시스템 점검 안내 등', '2025-05-04 17:46:16.537449', False, 3);
-INSERT INTO NOTICE (id, title, content, created_at, is_deleted, employee_id) VALUES (3, '중요 공지 3', '공지사항 내용 3입니다. 시스템 점검 안내 등', '2025-05-08 07:12:35.537462', False, 4);
-INSERT INTO NOTICE (id, title, content, created_at, is_deleted, employee_id) VALUES (4, '중요 공지 4', '공지사항 내용 4입니다. 시스템 점검 안내 등', '2025-05-11 00:26:06.537464', False, 5);
-INSERT INTO NOTICE (id, title, content, created_at, is_deleted, employee_id) VALUES (5, '중요 공지 5', '공지사항 내용 5입니다. 시스템 점검 안내 등', '2025-05-13 13:39:39.537466', False, 6);
-INSERT INTO NOTICE (id, title, content, created_at, is_deleted, employee_id) VALUES (6, '중요 공지 6', '공지사항 내용 6입니다. 시스템 점검 안내 등', '2025-05-17 06:21:27.537468', False, 7);
-INSERT INTO NOTICE (id, title, content, created_at, is_deleted, employee_id) VALUES (7, '중요 공지 7', '공지사항 내용 7입니다. 시스템 점검 안내 등', '2025-05-20 07:56:26.537470', False, 1);
+INSERT INTO NOTICE (id, title, content, created_at, is_deleted, employee_id)
+VALUES (1, '중요 공지 1', '공지사항 내용 1입니다. 시스템 점검 안내 등', '2025-05-01 15:28:15.537438', False, 2),
+       (2, '중요 공지 2', '공지사항 내용 2입니다. 시스템 점검 안내 등', '2025-05-04 17:46:16.537449', False, 3),
+       (3, '중요 공지 3', '공지사항 내용 3입니다. 시스템 점검 안내 등', '2025-05-08 07:12:35.537462', False, 4),
+       (4, '중요 공지 4', '공지사항 내용 4입니다. 시스템 점검 안내 등', '2025-05-11 00:26:06.537464', False, 5),
+       (5, '중요 공지 5', '공지사항 내용 5입니다. 시스템 점검 안내 등', '2025-05-13 13:39:39.537466', False, 6),
+       (6, '중요 공지 6', '공지사항 내용 6입니다. 시스템 점검 안내 등', '2025-05-17 06:21:27.537468', False, 7),
+       (7, '중요 공지 7', '공지사항 내용 7입니다. 시스템 점검 안내 등', '2025-05-20 07:56:26.537470', False, 1);
 
 -- QNA
-INSERT INTO QNA (id, title, content, created_at, answer_status, answer_content, is_deleted, employee_id) VALUES (1, '문의 제목 1', '이 제품은 어떤 기능이 있나요?', '2025-05-02 06:54:50.537606', '답변완료', '답변 드리겠습니다.', False, 2);
-INSERT INTO QNA (id, title, content, created_at, answer_status, answer_content, is_deleted, employee_id) VALUES (2, '문의 제목 2', '이 제품은 어떤 기능이 있나요?', '2025-05-04 12:21:07.537610', '미답변', NULL, False, 3);
-INSERT INTO QNA (id, title, content, created_at, answer_status, answer_content, is_deleted, employee_id) VALUES (3, '문의 제목 3', '이 제품은 어떤 기능이 있나요?', '2025-05-08 01:02:51.537612', '답변완료', '답변 드리겠습니다.', False, 4);
-INSERT INTO QNA (id, title, content, created_at, answer_status, answer_content, is_deleted, employee_id) VALUES (4, '문의 제목 4', '이 제품은 어떤 기능이 있나요?', '2025-05-10 22:06:49.537613', '미답변', NULL, False, 5);
-INSERT INTO QNA (id, title, content, created_at, answer_status, answer_content, is_deleted, employee_id) VALUES (5, '문의 제목 5', '이 제품은 어떤 기능이 있나요?', '2025-05-13 10:19:10.537615', '답변완료', '답변 드리겠습니다.', False, 6);
-INSERT INTO QNA (id, title, content, created_at, answer_status, answer_content, is_deleted, employee_id) VALUES (6, '문의 제목 6', '이 제품은 어떤 기능이 있나요?', '2025-05-16 23:24:34.537616', '미답변', NULL, False, 7);
-INSERT INTO QNA (id, title, content, created_at, answer_status, answer_content, is_deleted, employee_id) VALUES (7, '문의 제목 7', '이 제품은 어떤 기능이 있나요?', '2025-05-20 06:11:17.537618', '답변완료', '답변 드리겠습니다.', False, 1);
+INSERT INTO QNA (id, title, content, created_at, answer_status, answer_content, is_deleted, employee_id)
+VALUES (1, '문의 제목 1', '이 제품은 어떤 기능이 있나요?', '2025-05-02 06:54:50.537606', '답변완료', '답변 드리겠습니다.', False, 2),
+       (2, '문의 제목 2', '이 제품은 어떤 기능이 있나요?', '2025-05-04 12:21:07.537610', '미답변', NULL, False, 3),
+       (3, '문의 제목 3', '이 제품은 어떤 기능이 있나요?', '2025-05-08 01:02:51.537612', '답변완료', '답변 드리겠습니다.', False, 4),
+       (4, '문의 제목 4', '이 제품은 어떤 기능이 있나요?', '2025-05-10 22:06:49.537613', '미답변', NULL, False, 5),
+       (5, '문의 제목 5', '이 제품은 어떤 기능이 있나요?', '2025-05-13 10:19:10.537615', '답변완료', '답변 드리겠습니다.', False, 6),
+       (6, '문의 제목 6', '이 제품은 어떤 기능이 있나요?', '2025-05-16 23:24:34.537616', '미답변', NULL, False, 7),
+       (7, '문의 제목 7', '이 제품은 어떤 기능이 있나요?', '2025-05-20 06:11:17.537618', '답변완료', '답변 드리겠습니다.', False, 1);
 
 -- CONTRACT
-INSERT INTO CONTRACT (id, code, created_at, start_date, end_date, status, amount, bank_name, bank_account, payment_day, deposit_owner, relationship, payment_email, is_deleted, etc, document_origin_id, customer_id, employee_id) VALUES (1, 'CNTR2024001', '2025-05-01 13:16:26.385656', '2025-05-26', '2026-05-28', '완료', 1100000, '신한은행', '110-001-56789', 11, '예금주1', '본인', 'user1@email.com', False, NULL, 1, 2, 2);
-INSERT INTO CONTRACT (id, code, created_at, start_date, end_date, status, amount, bank_name, bank_account, payment_day, deposit_owner, relationship, payment_email, is_deleted, etc, document_origin_id, customer_id, employee_id) VALUES (2, 'CNTR2024002', '2025-05-05 07:11:14.385684', '2025-05-24', '2026-05-28', '진행중', 1200000, '신한은행', '110-002-56789', 12, '예금주2', '본인', 'user2@email.com', False, NULL, 1, 3, 3);
-INSERT INTO CONTRACT (id, code, created_at, start_date, end_date, status, amount, bank_name, bank_account, payment_day, deposit_owner, relationship, payment_email, is_deleted, etc, document_origin_id, customer_id, employee_id) VALUES (3, 'CNTR2024003', '2025-05-08 03:27:11.385696', '2025-05-22', '2026-05-28', '완료', 1300000, '신한은행', '110-003-56789', 13, '예금주3', '본인', 'user3@email.com', False, NULL, 1, 4, 4);
-INSERT INTO CONTRACT (id, code, created_at, start_date, end_date, status, amount, bank_name, bank_account, payment_day, deposit_owner, relationship, payment_email, is_deleted, etc, document_origin_id, customer_id, employee_id) VALUES (4, 'CNTR2024004', '2025-05-10 14:09:14.385705', '2025-05-20', '2026-05-28', '진행중', 1400000, '신한은행', '110-004-56789', 14, '예금주4', '본인', 'user4@email.com', False, NULL, 1, 5, 5);
-INSERT INTO CONTRACT (id, code, created_at, start_date, end_date, status, amount, bank_name, bank_account, payment_day, deposit_owner, relationship, payment_email, is_deleted, etc, document_origin_id, customer_id, employee_id) VALUES (5, 'CNTR2024005', '2025-05-14 00:26:21.385715', '2025-05-18', '2026-05-28', '완료', 1500000, '신한은행', '110-005-56789', 15, '예금주5', '본인', 'user5@email.com', False, NULL, 1, 6, 6);
-INSERT INTO CONTRACT (id, code, created_at, start_date, end_date, status, amount, bank_name, bank_account, payment_day, deposit_owner, relationship, payment_email, is_deleted, etc, document_origin_id, customer_id, employee_id) VALUES (6, 'CNTR2024006', '2025-05-16 02:13:58.385726', '2025-05-16', '2026-05-28', '진행중', 1600000, '신한은행', '110-006-56789', 16, '예금주6', '본인', 'user6@email.com', False, NULL, 1, 7, 7);
-INSERT INTO CONTRACT (id, code, created_at, start_date, end_date, status, amount, bank_name, bank_account, payment_day, deposit_owner, relationship, payment_email, is_deleted, etc, document_origin_id, customer_id, employee_id) VALUES (7, 'CNTR2024007', '2025-05-14 02:13:58.385736', '2025-05-14', '2026-05-28', '완료', 1700000, '신한은행', '110-007-56789', 17, '예금주7', '본인', 'user7@email.com', False, NULL, 1, 1, 1);
+INSERT INTO CONTRACT (id, code, created_at, start_date, end_date, status, amount, bank_name, bank_account, payment_day,
+                      deposit_owner, relationship, payment_email, is_deleted, etc, document_origin_id, customer_id,
+                      employee_id)
+VALUES (1, 'CNTR2024001', '2025-05-01 13:16:26.385656', '2025-05-26', '2026-05-28', '완료', 1100000, '신한은행',
+        '110-001-56789', 11, '예금주1', '본인', 'user1@email.com', False, NULL, 1, 2, 2),
+       (2, 'CNTR2024002', '2025-05-05 07:11:14.385684', '2025-05-24', '2026-05-28', '진행중', 1200000, '신한은행',
+        '110-002-56789', 12, '예금주2', '본인', 'user2@email.com', False, NULL, 1, 3, 3),
+       (3, 'CNTR2024003', '2025-05-08 03:27:11.385696', '2025-05-22', '2026-05-28', '완료', 1300000, '신한은행',
+        '110-003-56789', 13, '예금주3', '본인', 'user3@email.com', False, NULL, 1, 4, 4),
+       (4, 'CNTR2024004', '2025-05-10 14:09:14.385705', '2025-05-20', '2026-05-28', '진행중', 1400000, '신한은행',
+        '110-004-56789', 14, '예금주4', '본인', 'user4@email.com', False, NULL, 1, 5, 5),
+       (5, 'CNTR2024005', '2025-05-14 00:26:21.385715', '2025-05-18', '2026-05-28', '완료', 1500000, '신한은행',
+        '110-005-56789', 15, '예금주5', '본인', 'user5@email.com', False, NULL, 1, 6, 6),
+       (6, 'CNTR2024006', '2025-05-16 02:13:58.385726', '2025-05-16', '2026-05-28', '진행중', 1600000, '신한은행',
+        '110-006-56789', 16, '예금주6', '본인', 'user6@email.com', False, NULL, 1, 7, 7),
+       (7, 'CNTR2024007', '2025-05-14 02:13:58.385736', '2025-05-14', '2026-05-28', '완료', 1700000, '신한은행',
+        '110-007-56789', 17, '예금주7', '본인', 'user7@email.com', False, NULL, 1, 1, 1);
 
 -- CONSULTATION
-INSERT INTO CONSULTATION (id, consult_at, content, is_deleted, etc, feedback_score, employee_id, customer_id) VALUES (1, '2025-05-01 13:18:08.385986', '1번 고객의 제품 관련 상담 내용입니다.', False, NULL, 5.0, 2, 1);
-INSERT INTO CONSULTATION (id, consult_at, content, is_deleted, etc, feedback_score, employee_id, customer_id) VALUES (2, '2025-05-04 17:13:13.385993', '2번 고객의 제품 관련 상담 내용입니다.', False, NULL, 4.0, 3, 2);
-INSERT INTO CONSULTATION (id, consult_at, content, is_deleted, etc, feedback_score, employee_id, customer_id) VALUES (3, '2025-05-08 00:51:44.385996', '3번 고객의 제품 관련 상담 내용입니다.', False, NULL, 5.0, 4, 3);
-INSERT INTO CONSULTATION (id, consult_at, content, is_deleted, etc, feedback_score, employee_id, customer_id) VALUES (4, '2025-05-11 07:48:14.385999', '4번 고객의 제품 관련 상담 내용입니다.', False, NULL, 4.0, 5, 4);
-INSERT INTO CONSULTATION (id, consult_at, content, is_deleted, etc, feedback_score, employee_id, customer_id) VALUES (5, '2025-05-14 01:26:36.386004', '5번 고객의 제품 관련 상담 내용입니다.', False, NULL, 5.0, 6, 5);
-INSERT INTO CONSULTATION (id, consult_at, content, is_deleted, etc, feedback_score, employee_id, customer_id) VALUES (6, '2025-04-28 02:13:58.386007', '6번 고객의 제품 관련 상담 내용입니다.', False, NULL, 4.0, 7, 6);
-INSERT INTO CONSULTATION (id, consult_at, content, is_deleted, etc, feedback_score, employee_id, customer_id) VALUES (7, '2025-04-23 02:13:58.386011', '7번 고객의 제품 관련 상담 내용입니다.', False, NULL, 5.0, 1, 7);
+INSERT INTO CONSULTATION (id, consult_at, content, is_deleted, etc, feedback_score, employee_id, customer_id)
+VALUES (1, '2025-05-01 13:18:08.385986', '1번 고객의 제품 관련 상담 내용입니다.', False, NULL, 5.0, 2, 1),
+       (2, '2025-05-04 17:13:13.385993', '2번 고객의 제품 관련 상담 내용입니다.', False, NULL, 4.0, 3, 2),
+       (3, '2025-05-08 00:51:44.385996', '3번 고객의 제품 관련 상담 내용입니다.', False, NULL, 5.0, 4, 3),
+       (4, '2025-05-11 07:48:14.385999', '4번 고객의 제품 관련 상담 내용입니다.', False, NULL, 4.0, 5, 4),
+       (5, '2025-05-14 01:26:36.386004', '5번 고객의 제품 관련 상담 내용입니다.', False, NULL, 5.0, 6, 5),
+       (6, '2025-04-28 02:13:58.386007', '6번 고객의 제품 관련 상담 내용입니다.', False, NULL, 4.0, 7, 6),
+       (7, '2025-04-23 02:13:58.386011', '7번 고객의 제품 관련 상담 내용입니다.', False, NULL, 5.0, 1, 7);
 
 -- DOCUMENT_TEMPLATE
-INSERT INTO DOCUMENT_TEMPLATE (id, name, version, description, created_at, is_deleted, file_upload_id) VALUES (1, '계약서 템플릿1', 'v1.1', '설명 1', '2025-05-01 23:28:44.466860', False, 1);
-INSERT INTO DOCUMENT_TEMPLATE (id, name, version, description, created_at, is_deleted, file_upload_id) VALUES (2, '계약서 템플릿2', 'v1.2', '설명 2', '2025-05-04 17:41:40.466865', False, 2);
-INSERT INTO DOCUMENT_TEMPLATE (id, name, version, description, created_at, is_deleted, file_upload_id) VALUES (3, '계약서 템플릿3', 'v1.3', '설명 3', '2025-05-08 01:46:46.466867', False, 3);
-INSERT INTO DOCUMENT_TEMPLATE (id, name, version, description, created_at, is_deleted, file_upload_id) VALUES (4, '계약서 템플릿4', 'v1.4', '설명 4', '2025-05-11 05:09:30.466868', False, 4);
-INSERT INTO DOCUMENT_TEMPLATE (id, name, version, description, created_at, is_deleted, file_upload_id) VALUES (5, '계약서 템플릿5', 'v1.5', '설명 5', '2025-05-14 06:37:43.466870', False, 5);
-INSERT INTO DOCUMENT_TEMPLATE (id, name, version, description, created_at, is_deleted, file_upload_id) VALUES (6, '계약서 템플릿6', 'v1.6', '설명 6', '2025-05-28 02:14:09.466872', False, 6);
-INSERT INTO DOCUMENT_TEMPLATE (id, name, version, description, created_at, is_deleted, file_upload_id) VALUES (7, '계약서 템플릿7', 'v1.7', '설명 7', '2025-05-28 02:14:09.466873', False, 7);
+INSERT INTO DOCUMENT_TEMPLATE (id, name, version, description, created_at, is_deleted, file_upload_id)
+VALUES (1, '계약서 템플릿1', 'v1.1', '설명 1', '2025-05-01 23:28:44.466860', False, 1),
+       (2, '계약서 템플릿2', 'v1.2', '설명 2', '2025-05-04 17:41:40.466865', False, 2),
+       (3, '계약서 템플릿3', 'v1.3', '설명 3', '2025-05-08 01:46:46.466867', False, 3),
+       (4, '계약서 템플릿4', 'v1.4', '설명 4', '2025-05-11 05:09:30.466868', False, 4),
+       (5, '계약서 템플릿5', 'v1.5', '설명 5', '2025-05-14 06:37:43.466870', False, 5),
+       (6, '계약서 템플릿6', 'v1.6', '설명 6', '2025-05-28 02:14:09.466872', False, 6),
+       (7, '계약서 템플릿7', 'v1.7', '설명 7', '2025-05-28 02:14:09.466873', False, 7);
 
 -- DOCUMENT_ORIGIN
-INSERT INTO DOCUMENT_ORIGIN (id, created_at, is_deleted, document_template_id, file_upload_id) VALUES (1, '2025-05-02 05:29:54.466978', False, 1, 1);
-INSERT INTO DOCUMENT_ORIGIN (id, created_at, is_deleted, document_template_id, file_upload_id) VALUES (2, '2025-05-05 06:35:25.466979', False, 2, 2);
-INSERT INTO DOCUMENT_ORIGIN (id, created_at, is_deleted, document_template_id, file_upload_id) VALUES (3, '2025-05-07 23:21:51.466979', False, 3, 3);
-INSERT INTO DOCUMENT_ORIGIN (id, created_at, is_deleted, document_template_id, file_upload_id) VALUES (4, '2025-05-11 04:05:03.466980', False, 4, 4);
-INSERT INTO DOCUMENT_ORIGIN (id, created_at, is_deleted, document_template_id, file_upload_id) VALUES (5, '2025-05-13 18:06:55.466980', False, 5, 5);
-INSERT INTO DOCUMENT_ORIGIN (id, created_at, is_deleted, document_template_id, file_upload_id) VALUES (6, '2025-05-28 02:14:09.466981', False, 6, 6);
-INSERT INTO DOCUMENT_ORIGIN (id, created_at, is_deleted, document_template_id, file_upload_id) VALUES (7, '2025-05-28 02:14:09.466981', False, 7, 7);
+INSERT INTO DOCUMENT_ORIGIN (id, created_at, is_deleted, document_template_id, file_upload_id)
+VALUES (1, '2025-05-02 05:29:54.466978', False, 1, 1),
+       (2, '2025-05-05 06:35:25.466979', False, 2, 2),
+       (3, '2025-05-07 23:21:51.466979', False, 3, 3),
+       (4, '2025-05-11 04:05:03.466980', False, 4, 4),
+       (5, '2025-05-13 18:06:55.466980', False, 5, 5),
+       (6, '2025-05-28 02:14:09.466981', False, 6, 6),
+       (7, '2025-05-28 02:14:09.466981', False, 7, 7);
 
 -- APPROVAL
-INSERT INTO APPROVAL (id, code, title, content, req_date, aprv_date, state, comment, req_id, aprv_id, contract_id) VALUES (1, 'APR2024001', '승인 요청 제목1', '승인 요청 내용1', '2025-05-01 23:48:33.467055', '2025-05-01 23:48:33.467056', '반려', '코멘트1', 2, 3, 1);
-INSERT INTO APPROVAL (id, code, title, content, req_date, aprv_date, state, comment, req_id, aprv_id, contract_id) VALUES (2, 'APR2024002', '승인 요청 제목2', '승인 요청 내용2', '2025-05-04 18:38:04.467058', '2025-05-04 18:38:04.467059', '승인', '코멘트2', 3, 4, 2);
-INSERT INTO APPROVAL (id, code, title, content, req_date, aprv_date, state, comment, req_id, aprv_id, contract_id) VALUES (3, 'APR2024003', '승인 요청 제목3', '승인 요청 내용3', '2025-05-07 20:34:51.467061', '2025-05-07 20:34:51.467061', '반려', '코멘트3', 4, 5, 3);
-INSERT INTO APPROVAL (id, code, title, content, req_date, aprv_date, state, comment, req_id, aprv_id, contract_id) VALUES (4, 'APR2024004', '승인 요청 제목4', '승인 요청 내용4', '2025-05-11 00:29:46.467062', '2025-05-11 00:29:46.467063', '승인', '코멘트4', 5, 6, 4);
-INSERT INTO APPROVAL (id, code, title, content, req_date, aprv_date, state, comment, req_id, aprv_id, contract_id) VALUES (5, 'APR2024005', '승인 요청 제목5', '승인 요청 내용5', '2025-05-13 21:16:18.467064', '2025-05-13 21:16:18.467065', '반려', '코멘트5', 6, 7, 5);
-INSERT INTO APPROVAL (id, code, title, content, req_date, aprv_date, state, comment, req_id, aprv_id, contract_id) VALUES (6, 'APR2024006', '승인 요청 제목6', '승인 요청 내용6', '2025-05-28 02:14:09.467066', '2025-05-28 02:14:09.467067', '승인', '코멘트6', 7, 1, 6);
-INSERT INTO APPROVAL (id, code, title, content, req_date, aprv_date, state, comment, req_id, aprv_id, contract_id) VALUES (7, 'APR2024007', '승인 요청 제목7', '승인 요청 내용7', '2025-05-28 02:14:09.467068', '2025-05-28 02:14:09.467068', '반려', '코멘트7', 1, 2, 7);
+INSERT INTO APPROVAL (id, code, title, content, req_date, aprv_date, state, comment, req_id, aprv_id, contract_id)
+VALUES (1, 'APR2024001', '승인 요청 제목1', '승인 요청 내용1', '2025-05-01 23:48:33.467055', '2025-05-01 23:48:33.467056', '반려',
+        '코멘트1', 2, 3, 1),
+       (2, 'APR2024002', '승인 요청 제목2', '승인 요청 내용2', '2025-05-04 18:38:04.467058', '2025-05-04 18:38:04.467059', '승인',
+        '코멘트2', 3, 4, 2),
+       (3, 'APR2024003', '승인 요청 제목3', '승인 요청 내용3', '2025-05-07 20:34:51.467061', '2025-05-07 20:34:51.467061', '반려',
+        '코멘트3', 4, 5, 3),
+       (4, 'APR2024004', '승인 요청 제목4', '승인 요청 내용4', '2025-05-11 00:29:46.467062', '2025-05-11 00:29:46.467063', '승인',
+        '코멘트4', 5, 6, 4),
+       (5, 'APR2024005', '승인 요청 제목5', '승인 요청 내용5', '2025-05-13 21:16:18.467064', '2025-05-13 21:16:18.467065', '반려',
+        '코멘트5', 6, 7, 5),
+       (6, 'APR2024006', '승인 요청 제목6', '승인 요청 내용6', '2025-05-28 02:14:09.467066', '2025-05-28 02:14:09.467067', '승인',
+        '코멘트6', 7, 1, 6),
+       (7, 'APR2024007', '승인 요청 제목7', '승인 요청 내용7', '2025-05-28 02:14:09.467068', '2025-05-28 02:14:09.467068', '반려',
+        '코멘트7', 1, 2, 7);
 
 -- SALES
-INSERT INTO SALES (id, sales_date, department, employee_name, amount, is_deleted, contract_id) VALUES (1, '2025-05-28', '영업2팀', '직원1', 1050000, False, 1);
-INSERT INTO SALES (id, sales_date, department, employee_name, amount, is_deleted, contract_id) VALUES (2, '2025-05-28', '영업3팀', '직원2', 1100000, False, 2);
-INSERT INTO SALES (id, sales_date, department, employee_name, amount, is_deleted, contract_id) VALUES (3, '2025-05-28', '영업1팀', '직원3', 1150000, False, 3);
-INSERT INTO SALES (id, sales_date, department, employee_name, amount, is_deleted, contract_id) VALUES (4, '2025-05-28', '영업2팀', '직원4', 1200000, False, 4);
-INSERT INTO SALES (id, sales_date, department, employee_name, amount, is_deleted, contract_id) VALUES (5, '2025-05-28', '영업3팀', '직원5', 1250000, False, 5);
-INSERT INTO SALES (id, sales_date, department, employee_name, amount, is_deleted, contract_id) VALUES (6, '2025-05-28', '영업1팀', '직원6', 1300000, False, 6);
-INSERT INTO SALES (id, sales_date, department, employee_name, amount, is_deleted, contract_id) VALUES (7, '2025-05-28', '영업2팀', '직원7', 1350000, False, 7);
+INSERT INTO SALES (id, sales_date, department, employee_name, amount, is_deleted, contract_id)
+VALUES (1, '2025-05-28', '영업2팀', '직원1', 1050000, False, 1),
+       (2, '2025-05-28', '영업3팀', '직원2', 1100000, False, 2),
+       (3, '2025-05-28', '영업1팀', '직원3', 1150000, False, 3),
+       (4, '2025-05-28', '영업2팀', '직원4', 1200000, False, 4),
+       (5, '2025-05-28', '영업3팀', '직원5', 1250000, False, 5),
+       (6, '2025-05-28', '영업1팀', '직원6', 1300000, False, 6),
+       (7, '2025-05-28', '영업2팀', '직원7', 1350000, False, 7);
 
 -- CONTRACT_PRODUCT
-INSERT INTO CONTRACT_PRODUCT (id, quantity, contract_id, product_id) VALUES (1, 4, 1, 1);
-INSERT INTO CONTRACT_PRODUCT (id, quantity, contract_id, product_id) VALUES (2, 3, 2, 2);
-INSERT INTO CONTRACT_PRODUCT (id, quantity, contract_id, product_id) VALUES (3, 5, 3, 3);
-INSERT INTO CONTRACT_PRODUCT (id, quantity, contract_id, product_id) VALUES (4, 4, 4, 4);
-INSERT INTO CONTRACT_PRODUCT (id, quantity, contract_id, product_id) VALUES (5, 2, 5, 5);
-INSERT INTO CONTRACT_PRODUCT (id, quantity, contract_id, product_id) VALUES (6, 1, 6, 6);
-INSERT INTO CONTRACT_PRODUCT (id, quantity, contract_id, product_id) VALUES (7, 5, 7, 7);
+INSERT INTO CONTRACT_PRODUCT (id, quantity, contract_id, product_id)
+VALUES (1, 4, 1, 1),
+       (2, 3, 2, 2),
+       (3, 5, 3, 3),
+       (4, 4, 4, 4),
+       (5, 2, 5, 5),
+       (6, 1, 6, 6),
+       (7, 5, 7, 7);
 
 -- EMPLOYEE_GOAL
-INSERT INTO EMPLOYEE_GOAL (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, employee_id) VALUES (1, 6, 81, 4, 1100000, 4.5, 202405, 1);
-INSERT INTO EMPLOYEE_GOAL (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, employee_id) VALUES (2, 7, 82, 5, 1200000, 4.0, 202405, 2);
-INSERT INTO EMPLOYEE_GOAL (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, employee_id) VALUES (3, 8, 83, 6, 1300000, 4.5, 202405, 3);
-INSERT INTO EMPLOYEE_GOAL (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, employee_id) VALUES (4, 9, 84, 7, 1400000, 4.0, 202405, 4);
-INSERT INTO EMPLOYEE_GOAL (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, employee_id) VALUES (5, 10, 85, 8, 1500000, 4.5, 202405, 5);
-INSERT INTO EMPLOYEE_GOAL (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, employee_id) VALUES (6, 11, 86, 9, 1600000, 4.0, 202405, 6);
-INSERT INTO EMPLOYEE_GOAL (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, employee_id) VALUES (7, 12, 87, 10, 1700000, 4.5, 202405, 7);
+INSERT INTO EMPLOYEE_GOAL (rental_product_count, rental_retention_count, total_rental_count, new_customer_count,
+                           total_rental_amount, customer_feedback_score, customer_feedback_count, target_date,
+                           employee_id)
+VALUES (6, 81, 100, 4, 1100000, 4.5, 50, 202405, 1),
+       (7, 82, 101, 5, 1200000, 4.0, 51, 202405, 2),
+       (8, 83, 102, 6, 1300000, 4.5, 52, 202405, 3),
+       (9, 84, 103, 7, 1400000, 4.0, 53, 202405, 4),
+       (10, 85, 104, 8, 1500000, 4.5, 54, 202405, 5),
+       (11, 86, 105, 9, 1600000, 4.0, 55, 202404, 1),
+       (11, 86, 105, 9, 1600000, 4.0, 55, 202404, 2),
+       (11, 86, 105, 9, 1600000, 4.0, 55, 202404, 3),
+       (11, 86, 105, 9, 1600000, 4.0, 55, 202404, 4),
+       (11, 86, 105, 9, 1600000, 4.0, 55, 202404, 5),
+       (11, 86, 105, 9, 1600000, 4.0, 55, 202404, 6),
+       (6, 81, 100, 4, 1100000, 4.5, 50, 202401, 1),
+       (6, 81, 100, 4, 1100000, 4.5, 50, 202402, 1),
+       (6, 81, 100, 4, 1100000, 4.5, 50, 202403, 1),
+       (9, 84, 103, 7, 1400000, 4.0, 53, 202401, 4),
+       (9, 84, 103, 7, 1400000, 4.0, 53, 202402, 4),
+       (9, 84, 103, 7, 1400000, 4.0, 53, 202403, 4),
+       (12, 87, 106, 10, 1700000, 4.5, 56, 202405, 7);
 
 -- DEFAULT_GOAL
-INSERT INTO DEFAULT_GOAL (id, level, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_year) VALUES (1, '사원', 6, 85, 4, 1250000, 4.3, 2024);
-INSERT INTO DEFAULT_GOAL (id, level, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_year) VALUES (2, '대리', 7, 85, 5, 1300000, 4.0, 2024);
-INSERT INTO DEFAULT_GOAL (id, level, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_year) VALUES (3, '과장', 8, 85, 6, 1350000, 4.3, 2024);
-INSERT INTO DEFAULT_GOAL (id, level, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_year) VALUES (4, '부장', 9, 85, 7, 1400000, 4.0, 2024);
-INSERT INTO DEFAULT_GOAL (id, level, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_year) VALUES (5, '차장', 10, 85, 8, 1450000, 4.3, 2024);
-INSERT INTO DEFAULT_GOAL (id, level, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_year) VALUES (6, '팀장', 11, 85, 9, 1500000, 4.0, 2024);
-INSERT INTO DEFAULT_GOAL (id, level, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_year) VALUES (7, '본부장', 12, 85, 10, 1550000, 4.3, 2024);
+INSERT INTO DEFAULT_GOAL (id, level, rental_product_count, rental_retention_rate, new_customer_count,
+                          total_rental_amount, customer_feedback_score, target_year)
+VALUES (1, '사원', 6, 85, 4, 1250000, 4.3, 2024),
+       (2, '대리', 7, 85, 5, 1300000, 4.0, 2024),
+       (3, '과장', 8, 85, 6, 1350000, 4.3, 2024),
+       (4, '부장', 9, 85, 7, 1400000, 4.0, 2024),
+       (5, '차장', 10, 85, 8, 1450000, 4.3, 2024),
+       (6, '팀장', 11, 85, 9, 1500000, 4.0, 2024),
+       (7, '본부장', 12, 85, 10, 1550000, 4.3, 2024);
 
 -- EMPLOYEE_NOTICE
-INSERT INTO EMPLOYEE_NOTICE (id, is_checked, employee_id, notice_id) VALUES (1, False, 1, 1);
-INSERT INTO EMPLOYEE_NOTICE (id, is_checked, employee_id, notice_id) VALUES (2, False, 2, 2);
-INSERT INTO EMPLOYEE_NOTICE (id, is_checked, employee_id, notice_id) VALUES (3, False, 3, 3);
-INSERT INTO EMPLOYEE_NOTICE (id, is_checked, employee_id, notice_id) VALUES (4, False, 4, 4);
-INSERT INTO EMPLOYEE_NOTICE (id, is_checked, employee_id, notice_id) VALUES (5, False, 5, 5);
-INSERT INTO EMPLOYEE_NOTICE (id, is_checked, employee_id, notice_id) VALUES (6, False, 6, 6);
-INSERT INTO EMPLOYEE_NOTICE (id, is_checked, employee_id, notice_id) VALUES (7, False, 7, 7);
+INSERT INTO EMPLOYEE_NOTICE (id, is_checked, employee_id, notice_id)
+VALUES (1, False, 1, 1),
+       (2, False, 2, 2),
+       (3, False, 3, 3),
+       (4, False, 4, 4),
+       (5, False, 5, 5),
+       (6, False, 6, 6),
+       (7, False, 7, 7);
 
 -- DEPARTMENT_PERFORMANCE
-INSERT INTO DEPARTMENT_PERFORMANCE (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, department_id) VALUES (1, 21, 86, 11, 4100000, 5.0, 202405, 2);
-INSERT INTO DEPARTMENT_PERFORMANCE (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, department_id) VALUES (2, 22, 87, 12, 4200000, 4.0, 202405, 3);
-INSERT INTO DEPARTMENT_PERFORMANCE (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, department_id) VALUES (3, 23, 88, 13, 4300000, 5.0, 202405, 4);
-INSERT INTO DEPARTMENT_PERFORMANCE (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, department_id) VALUES (4, 24, 89, 14, 4400000, 4.0, 202405, 5);
-INSERT INTO DEPARTMENT_PERFORMANCE (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, department_id) VALUES (5, 25, 90, 15, 4500000, 5.0, 202405, 1);
-INSERT INTO DEPARTMENT_PERFORMANCE (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, department_id) VALUES (6, 26, 91, 16, 4600000, 4.0, 202405, 2);
-INSERT INTO DEPARTMENT_PERFORMANCE (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, department_id) VALUES (7, 27, 92, 17, 4700000, 5.0, 202405, 3);
+INSERT INTO DEPARTMENT_PERFORMANCE (id, rental_product_count, rental_retention_count, total_rental_count,
+                                    new_customer_count,
+                                    total_rental_amount, customer_feedback_score, customer_feedback_count, target_date,
+                                    department_id)
+VALUES (1, 6, 81, 100, 4, 1100000, 4.5, 50, 202405, 1),
+       (2, 7, 82, 101, 5, 1200000, 4.0, 51, 202405, 2),
+       (3, 8, 83, 102, 6, 1300000, 4.5, 52, 202405, 3),
+       (4, 9, 84, 103, 7, 1400000, 4.0, 53, 202405, 4),
+       (5, 10, 85, 104, 8, 1500000, 4.5, 54, 202405, 5),
+       (6, 11, 86, 105, 9, 1600000, 4.0, 55, 202405, 6),
+       (7, 12, 87, 106, 10, 1700000, 4.5, 56, 202405, 7);
 
 -- EMPLOYEE_PERFORMANCE
-INSERT INTO EMPLOYEE_PERFORMANCE (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, employee_id) VALUES (1, 11, 90, 5, 2100000, 4.3, 202405, 1);
-INSERT INTO EMPLOYEE_PERFORMANCE (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, employee_id) VALUES (2, 12, 90, 6, 2200000, 4.6, 202405, 2);
-INSERT INTO EMPLOYEE_PERFORMANCE (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, employee_id) VALUES (3, 13, 90, 7, 2300000, 4.0, 202405, 3);
-INSERT INTO EMPLOYEE_PERFORMANCE (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, employee_id) VALUES (4, 14, 90, 8, 2400000, 4.3, 202405, 4);
-INSERT INTO EMPLOYEE_PERFORMANCE (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, employee_id) VALUES (5, 15, 90, 9, 2500000, 4.6, 202405, 5);
-INSERT INTO EMPLOYEE_PERFORMANCE (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, employee_id) VALUES (6, 16, 90, 10, 2600000, 4.0, 202405, 6);
-INSERT INTO EMPLOYEE_PERFORMANCE (id, rental_product_count, rental_retention_rate, new_customer_count, total_rental_amount, customer_feedback_score, target_date, employee_id) VALUES (7, 17, 90, 11, 2700000, 4.3, 202405, 7);
-
+INSERT INTO EMPLOYEE_PERFORMANCE (id, rental_product_count, rental_retention_count, total_rental_count,
+                                  new_customer_count,
+                                  total_rental_amount, customer_feedback_score, customer_feedback_count, target_date,
+                                  employee_id)
+VALUES (1, 6, 81, 100, 4, 1100000, 4.5, 50, 202405, 1),
+       (2, 7, 82, 101, 5, 1200000, 4.0, 51, 202405, 2),
+       (3, 8, 83, 102, 6, 1300000, 4.5, 52, 202405, 3),
+       (4, 9, 84, 103, 7, 1400000, 4.0, 53, 202405, 4),
+       (5, 10, 85, 104, 8, 1500000, 4.5, 54, 202405, 5),
+       (6, 11, 86, 105, 9, 1600000, 4.0, 55, 202405, 6),
+       (7, 12, 87, 106, 10, 1700000, 4.5, 56, 202405, 7);

@@ -35,8 +35,9 @@
     <!-- 설명. 기본 실적 목표 ResultMap -->
     <resultMap id="DefaultGoalResultMap" type="com.clover.salad.goal.command.application.dto.DefaultGoalDTO">
         <id property="id" column="ID"/>
+        <result property="level" column="LEVEL"/>
         <result property="rentalProductCount" column="RENTAL_PRODUCT_COUNT"/>
-        <result property="rentalRetentionCount" column="RENTAL_RETENTION_COUNT"/>
+        <result property="rentalRetentionRate" column="RENTAL_RETENTION_RATE"/>
         <result property="newCustomerCount" column="NEW_CUSTOMER_COUNT"/>
         <result property="totalRentalAmount" column="TOTAL_RENTAL_AMOUNT"/>
         <result property="customerFeedbackScore" column="(DG.CUSTOMER_FEEDBACK_SCORE * 10)"/>

@@ -105,13 +105,13 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		log.info("Checking Yearly Goal");
 		if (yearlyGoal.getRentalProductCount() < defaultGoal.getRentalProductCount()) return false;
 		log.info("1");
-		if (yearlyGoal.getRentalProductCount() < defaultGoal.getRentalProductCount()) return false;
-		log.info("2");
 		if (yearlyGoal.getRentalRetentionCount() * 100 / yearlyGoal.getTotalRentalCount() < defaultGoal.getRentalRetentionRate()) return false;
-		log.info("3");
+		log.info("2");
 		if (yearlyGoal.getNewCustomerCount() < defaultGoal.getNewCustomerCount()) return false;
-		log.info("4");
+		log.info("3");
 		if (yearlyGoal.getTotalRentalAmount() < defaultGoal.getTotalRentalAmount()) return false;
+		log.info("4");
+		if (yearlyGoal.getCustomerFeedbackScore() / yearlyGoal.getCustomerFeedbackCount() < defaultGoal.getCustomerFeedbackScore()) return false;
 		log.info("5");
 		
 		/* 설명. 개인 월간 목표가 월간 최저 목표(연간 목표 / 12 * 0.1 * 월간하한비율)를 넘는지 체크 */

@@ -15,4 +15,8 @@ public class AuthService {
 	public AuthService(EmployeeQueryService employeeQueryService) {
 		this.employeeQueryService = employeeQueryService;
 	}
+
+	public UserDetails loadUserDetails(String code) {
+		return employeeQueryService.loadUserByUsername(code);
+	}
 }

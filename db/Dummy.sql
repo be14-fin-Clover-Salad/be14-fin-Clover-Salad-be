@@ -24,12 +24,8 @@ VALUES ('profile1.png', 'uuid1.png', '/uploads/', '2025-05-28 02:13:22', '프로
      , ('profile4.png', 'uuid10.png', '/uploads/', '2025-05-29 23:34:38', '프로필');
 
 -- EMPLOYEE
-INSERT INTO EMPLOYEE (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted,
-                      work_place, department_id, profile)
-VALUES ('202501001', 'pass01', '홍길동', '01012345678', 'hong@example.com', '사원', '2025-01-01', NULL, FALSE, FALSE, '서울본사',
-        1, 1),
-       ('202501002', 'pass02', '홍길둉', '01012345679', 'hong1@example.com', '팀장', '2024-01-01', NULL, FALSE, FALSE,
-        '강남씨티빌딩', 2, 2);
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted,work_place, department_id, profile)
+VALUES ('202501001', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','홍길동','01012345678','teamflover@naver.com','사원','2025-01-01',NULL,FALSE,FALSE,'서울본사',1,1);
 
 -- CUSTOMER
 INSERT INTO CUSTOMER (id, name, birthdate, address, phone, email, register_at, is_deleted, type, etc)

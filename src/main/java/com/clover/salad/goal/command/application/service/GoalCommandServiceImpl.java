@@ -26,8 +26,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	/* 설명. 실적 목표 등록 */
 	@Override
 	public void registerGoal(List<GoalDTO> goalList, int employeeId) throws Exception {
-		if(validateGoal(goalList, employeeId)) {
-			log.info("Goal Validated");
+		if (validateGoal(goalList, employeeId)) {
 			for (GoalDTO goalDTO : goalList) {
 				Goal goal = goalDTOToGoal(goalDTO);
 				goalRepository.save(goal);
@@ -37,9 +36,21 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		}
 	}
 	
+	@Override
+	public void changeGoal(List<GoalDTO> goalList, int employeeId) throws Exception {
+		if (validateGoal(goalList, employeeId)) {
+			for (GoalDTO goalDTO : goalList) {
+				Goal goal = goalRepository.findByEmployeeIdAndTargetDate(employeeId, goalDTO.getTargetDate());
+				goalRepository.save(updateGoal(goal, goalDTO));
+			}
+		} else {
+			throw new Exception("목표의 조건을 확인하고 설정해주세요!");
+		}
+	}
+	
 	/* 설명. 실적 목표가 회사에서 제시한 연간 목표 조건에 부합하는지 확인하는 메소드
-	*   프론트에서 항목 별로 한 번 체크하고 최종 등록 전 체크
-	* */
+	 *  프론트에서 항목 별로 한 번 체크하고 최종 등록 전 체크
+	 * */
 	private boolean validateGoal(List<GoalDTO> goalList, int employeeId) {
 		
 		/* 설명. 설정한 월간 목표들을 연간 목표로 변환 */
@@ -85,6 +96,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		
 		/* 설명. 회사의 연간 목표보다 설정한 목표가 높거나 같은지 체크 */
 		log.info("Checking Yearly Goal");
+		if (yearlyGoal.getRentalProductCount() < defaultGoal.getRentalProductCount()) return false;
 		log.info("1");
 		if (yearlyGoal.getRentalProductCount() < defaultGoal.getRentalProductCount()) return false;
 		log.info("2");
@@ -94,7 +106,6 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		log.info("4");
 		if (yearlyGoal.getTotalRentalAmount() < defaultGoal.getTotalRentalAmount()) return false;
 		log.info("5");
-		if (yearlyGoal.getCustomerFeedbackScore() / yearlyGoal.getCustomerFeedbackCount() < defaultGoal.getCustomerFeedbackScore()) return false;
 		
 		/* 설명. 개인 월간 목표가 월간 최저 목표(연간 목표 / 12 * 0.1 * 월간하한비율)를 넘는지 체크 */
 		log.info("Checking Monthly Goal");
@@ -113,11 +124,19 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 			if (goalDTO.getCustomerFeedbackScore() / goalDTO.getCustomerFeedbackCount() < monthlyCustomerFeedbackScore) return false;
 		}
 		
+		log.info("Goal Validated");
 		return true;
 	}
 	
 	private Goal goalDTOToGoal(GoalDTO goalDTO) {
 		Goal goal = new Goal();
+		updateGoal(goal, goalDTO);
+		goal.setTargetDate(goalDTO.getTargetDate());
+		goal.setEmployeeId(goalDTO.getEmployeeId());
+		return goal;
+	}
+	
+	private Goal updateGoal(Goal goal, GoalDTO goalDTO) {
 		goal.setRentalProductCount(goalDTO.getRentalProductCount());
 		goal.setRentalRetentionCount(goalDTO.getRentalRetentionCount());
 		goal.setTotalRentalCount(goalDTO.getTotalRentalCount());
@@ -125,8 +144,6 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		goal.setTotalRentalAmount(goalDTO.getTotalRentalAmount());
 		goal.setCustomerFeedbackScore(goalDTO.getCustomerFeedbackScore().doubleValue() / 10);
 		goal.setCustomerFeedbackCount(goalDTO.getCustomerFeedbackCount());
-		goal.setTargetDate(goalDTO.getTargetDate());
-		goal.setEmployeeId(goalDTO.getEmployeeId());
 		return goal;
 	}
 }

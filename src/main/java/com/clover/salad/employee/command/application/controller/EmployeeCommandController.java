@@ -51,13 +51,13 @@ public class EmployeeCommandController {
 		return ResponseEntity.ok("로그아웃 성공 (토큰 블랙리스트 등록 완료)");
 	}
 
-	@PostMapping("/password-reset-requests")
+	@PostMapping("/password-reset")
 	public ResponseEntity<String> requestResetPassword(@RequestBody RequestResetPasswordDTO dto) {
 		employeeCommandService.sendResetPasswordLink(dto.getCode(), dto.getEmail());
 		return ResponseEntity.ok("비밀번호 재설정 링크를 이메일로 전송했습니다.");
 	}
 
-	@PostMapping("/password-reset-responses")
+	@PostMapping("/password-resets/confirm")
 	public ResponseEntity<String> confirmResetPassword(@RequestBody RequestConfirmResetPasswordDTO dto) {
 		employeeCommandService.confirmResetPassword(dto.getToken(), dto.getNewPassword());
 		return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");

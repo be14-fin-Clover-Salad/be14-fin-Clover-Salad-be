@@ -14,11 +14,13 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.clover.salad.employee.command.application.dto.EmployeeUpdateDTO;
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 import com.clover.salad.security.JwtUtil;
 
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 
 @Service
 public class EmployeeCommandServiceImpl implements EmployeeCommandService {
@@ -106,5 +108,18 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		employeeRepository.save(employee);
 
 		redisTemplate.delete(redisKey);
+	}
+
+	@Override
+	@Transactional
+	public void updateEmployee(String code, EmployeeUpdateDTO dto) {
+		EmployeeEntity employee = employeeRepository.findByCode(code)
+			.orElseThrow(() -> new RuntimeException("해당 사번의 사원을 찾을 수 없습니다."));
+
+		if (dto.getName() != null) employee.setName(dto.getName());
+		if (dto.getEmail() != null) employee.setEmail(dto.getEmail());
+		if (dto.getPhone() != null) employee.setPhone(dto.getPhone());
+
+		employeeRepository.save(employee);
 	}
 }

@@ -1,5 +1,6 @@
 package com.clover.salad.employee.command.application.controller;
 
+import com.clover.salad.employee.command.application.dto.EmployeeUpdateDTO;
 import com.clover.salad.employee.command.application.dto.RequestConfirmResetPasswordDTO;
 import com.clover.salad.employee.command.application.dto.RequestResetPasswordDTO;
 import com.clover.salad.employee.command.application.service.EmployeeCommandService;
@@ -54,7 +55,7 @@ public class EmployeeCommandController {
 		return ResponseEntity.ok("비밀번호 재설정 링크를 이메일로 전송했습니다.");
 	}
 
-	@PostMapping("/confirm-reset-password")
+	@PostMapping("/password-reset-responses")
 	public ResponseEntity<String> confirmResetPassword(@RequestBody RequestConfirmResetPasswordDTO dto) {
 		employeeCommandService.confirmResetPassword(dto.getToken(), dto.getNewPassword());
 		return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
@@ -99,5 +100,17 @@ public class EmployeeCommandController {
 		response.addHeader("Authorization", "Bearer " + newAccessToken);
 
 		return ResponseEntity.ok().build();
+	}
+
+	@PatchMapping("/update")
+	public ResponseEntity<String> updateEmployee(
+		@RequestHeader("Authorization") String token,
+		@RequestBody EmployeeUpdateDTO dto) {
+
+		String pureToken = token.replace("Bearer ", "");
+		String code = jwtUtil.getUsername(pureToken);
+
+		employeeCommandService.updateEmployee(code, dto);
+		return ResponseEntity.ok("직원 정보가 수정되었습니다.");
 	}
 }

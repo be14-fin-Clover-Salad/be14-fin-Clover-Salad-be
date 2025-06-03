@@ -40,9 +40,9 @@ CREATE TABLE DEPARTMENT
 CREATE TABLE FILE_UPLOAD
 (
     id          INT         NOT NULL AUTO_INCREMENT,
-    origin_file VARCHAR(20) NOT NULL,
-    rename_file VARCHAR(20) NOT NULL,
-    path        VARCHAR(50) NOT NULL,
+    origin_file VARCHAR(512) NOT NULL,
+    rename_file VARCHAR(512) NOT NULL,
+    path        VARCHAR(512) NOT NULL,
     created_at  DATETIME    NOT NULL,
     type        VARCHAR(3)  NOT NULL,
     CONSTRAINT PK_FILE_UPLOAD PRIMARY KEY (id)

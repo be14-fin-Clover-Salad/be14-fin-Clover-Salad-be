@@ -32,6 +32,17 @@
         <result property="employeeId" column="EMPLOYEE_ID"/>
     </resultMap>
 
+    <!-- 설명. 기본 실적 목표 ResultMap -->
+    <resultMap id="DefaultGoalResultMap" type="com.clover.salad.goal.command.application.dto.DefaultGoalDTO">
+        <id property="id" column="ID"/>
+        <result property="rentalProductCount" column="RENTAL_PRODUCT_COUNT"/>
+        <result property="rentalRetentionCount" column="RENTAL_RETENTION_COUNT"/>
+        <result property="newCustomerCount" column="NEW_CUSTOMER_COUNT"/>
+        <result property="totalRentalAmount" column="TOTAL_RENTAL_AMOUNT"/>
+        <result property="customerFeedbackScore" column="(DG.CUSTOMER_FEEDBACK_SCORE * 10)"/>
+        <result property="targetYear" column="TARGET_YEAR"/>
+    </resultMap>
+
     <!-- 설명. 설정 기간의 사원별 실적 목표 조회 -->
     <select id="selectGoalByEmployeeId" resultMap="GoalResultMap"
             parameterType="com.clover.salad.goal.command.application.dto.SearchTermDTO">
@@ -142,5 +153,21 @@
             </if>
         </trim>
          ORDER BY EG.TARGET_DATE DESC
+    </select>
+
+    <!-- 설명. 직급과 연도로 기본 목표 조회 -->
+    <select id="selectDefaultGoalByLevelAndTargetYear" resultMap="DefaultGoalResultMap" parameterType="map">
+        SELECT
+               DG.ID
+             , DG.LEVEL
+             , DG.RENTAL_PRODUCT_COUNT
+             , DG.RENTAL_RETENTION_RATE
+             , DG.NEW_CUSTOMER_COUNT
+             , DG.TOTAL_RENTAL_AMOUNT
+             , (DG.CUSTOMER_FEEDBACK_SCORE * 10)
+             , DG.TARGET_YEAR
+          FROM DEFAULT_GOAL DG
+         WHERE DG.LEVEL = #{employeeLevel}
+           AND DG.TARGET_YEAR = #{targetYear}
     </select>
 </mapper>

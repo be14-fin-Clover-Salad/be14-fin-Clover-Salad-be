@@ -30,7 +30,7 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 	private final RedisTemplate<String, String> redisTemplate;
 	private final JavaMailSender mailSender;
 
-	@Value("${salad.frontend.reset-url}")
+	@Value("${salad.frontend.reset-url}") // 예: http://localhost:5173/reset-password?token=
 	private String frontendResetUrl;
 
 	private static final long EXPIRATION_MINUTES = 5;
@@ -68,7 +68,8 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		}
 
 		String token = UUID.randomUUID().toString();
-		redisTemplate.opsForHash().put("reset_token:" + token, "email", email);
+
+		redisTemplate.opsForValue().set("reset_token:" + token, email, Duration.ofMinutes(EXPIRATION_MINUTES));
 
 		String resetLink = frontendResetUrl + token;
 

@@ -53,4 +53,18 @@ public class GoalCommandController {
 		}
 		return ResponseEntity.ok("Goal Changed");
 	}
+	
+	/* 설명. 관리자가 퇴사 등으로 인해 달성할 수 없어진 목표를 삭제하는 기능
+	 *  목표를 조회 후 선택해서 삭제
+	 * */
+	@DeleteMapping("/delete")
+	public ResponseEntity<String> deleteGoal(@RequestBody List<GoalDTO> goalList) {
+		try {
+			log.info("Deleting goal");
+			goalCommandService.deleteGoal(goalList);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+		return ResponseEntity.ok("Goals Deleted");
+	}
 }

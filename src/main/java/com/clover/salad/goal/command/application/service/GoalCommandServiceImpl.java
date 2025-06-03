@@ -48,6 +48,13 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		}
 	}
 	
+	@Override
+	public void deleteGoal(List<GoalDTO> goalList) {
+		for (GoalDTO goalDTO : goalList) {
+			goalRepository.delete(goalDTOToGoal(goalDTO));
+		}
+	}
+	
 	/* 설명. 실적 목표가 회사에서 제시한 연간 목표 조건에 부합하는지 확인하는 메소드
 	 *  프론트에서 항목 별로 한 번 체크하고 최종 등록 전 체크
 	 * */

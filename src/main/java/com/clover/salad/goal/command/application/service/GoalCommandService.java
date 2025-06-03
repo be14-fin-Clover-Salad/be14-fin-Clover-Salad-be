@@ -8,4 +8,6 @@ public interface GoalCommandService {
 	void registerGoal(List<GoalDTO> goalList, int employeeId) throws Exception;
 	
 	void changeGoal(List<GoalDTO> goalList, int employeeId) throws Exception;
+	
+	void deleteGoal(List<GoalDTO> goalList);
 }

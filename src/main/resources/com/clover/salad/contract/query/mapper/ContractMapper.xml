@@ -25,6 +25,10 @@
         <result property="productNames" column="product_names"/>
     </resultMap>
 
+    <resultMap id="ContractDetailResult" type="com.clover.salad.contract.query.dto.ContractDetailInfoResponseDTO">
+
+    </resultMap>
+
 
     <select id="selectContractInfo" parameterType="int" resultMap="ContractResultMap">
         SELECT

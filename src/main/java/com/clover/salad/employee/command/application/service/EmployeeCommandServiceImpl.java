@@ -11,10 +11,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.clover.salad.employee.command.application.dto.EmployeeUpdateDTO;
+import com.clover.salad.employee.command.application.dto.RequestChangePasswordDTO;
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 import com.clover.salad.security.JwtUtil;
@@ -31,6 +35,7 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final JavaMailSender mailSender;
+	private final PasswordEncoder passwordEncoder;
 
 	@Value("${salad.frontend.reset-url}") // 예: http://localhost:5173/reset-password?token=
 	private String frontendResetUrl;
@@ -43,13 +48,15 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		BCryptPasswordEncoder bCryptPasswordEncoder,
 		JwtUtil jwtUtil,
 		RedisTemplate<String, String> redisTemplate,
-		JavaMailSender mailSender) {
+		JavaMailSender mailSender,
+		PasswordEncoder passwordEncoder) {
 		this.employeeRepository = employeeRepository;
 		this.modelMapper = modelMapper;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 		this.jwtUtil = jwtUtil;
 		this.redisTemplate = redisTemplate;
 		this.mailSender = mailSender;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
@@ -120,6 +127,20 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		if (dto.getEmail() != null) employee.setEmail(dto.getEmail());
 		if (dto.getPhone() != null) employee.setPhone(dto.getPhone());
 
+		employeeRepository.save(employee);
+	}
+
+	@Override
+	public void changePassword(String code, RequestChangePasswordDTO dto) {
+		EmployeeEntity employee = employeeRepository.findByCode(code)
+			.orElseThrow(() -> new RuntimeException("해당 사번을 가진 사용자가 존재하지 않습니다."));
+
+		if (!passwordEncoder.matches(dto.getCurrentPassword(), employee.getEncPwd())) {
+			throw new RuntimeException("현재 비밀번호가 일치하지 않습니다.");
+		}
+
+		String newEncodedPassword = passwordEncoder.encode(dto.getNewPassword());
+		employee.setEncPwd(newEncodedPassword);
 		employeeRepository.save(employee);
 	}
 }

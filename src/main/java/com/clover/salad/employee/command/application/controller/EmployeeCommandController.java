@@ -1,8 +1,10 @@
 package com.clover.salad.employee.command.application.controller;
 
 import com.clover.salad.employee.command.application.dto.EmployeeUpdateDTO;
+import com.clover.salad.employee.command.application.dto.RequestChangePasswordDTO;
 import com.clover.salad.employee.command.application.dto.RequestConfirmResetPasswordDTO;
 import com.clover.salad.employee.command.application.dto.RequestResetPasswordDTO;
+import com.clover.salad.employee.command.application.dto.ResponseChangePasswordDTO;
 import com.clover.salad.employee.command.application.service.EmployeeCommandService;
 import com.clover.salad.security.AuthService;
 import com.clover.salad.security.JwtUtil;
@@ -112,5 +114,17 @@ public class EmployeeCommandController {
 
 		employeeCommandService.updateEmployee(code, dto);
 		return ResponseEntity.ok("직원 정보가 수정되었습니다.");
+	}
+
+	@PostMapping("/password-change")
+	public ResponseEntity<ResponseChangePasswordDTO> changePassword(
+		@RequestHeader("Authorization") String token,
+		@RequestBody RequestChangePasswordDTO dto) {
+
+		String pureToken = token.replace("Bearer ", "");
+		String code = jwtUtil.getUsername(pureToken);
+
+		employeeCommandService.changePassword(code, dto);
+		return ResponseEntity.ok(new ResponseChangePasswordDTO("비밀번호가 변경되었습니다."));
 	}
 }

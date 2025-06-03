@@ -52,10 +52,12 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 			goalDTO.setEmployeeId(employeeId);
 			goalArray[0] += goalDTO.getRentalProductCount();
 			goalArray[1] += goalDTO.getRentalRetentionCount();
+			if (goalDTO.getTotalRentalCount() == null || goalDTO.getTotalRentalCount() == 0) return false;
 			goalArray[2] += goalDTO.getTotalRentalCount();
 			goalArray[3] += goalDTO.getNewCustomerCount();
 			goalArray[4] += goalDTO.getTotalRentalAmount();
 			goalArray[5] += goalDTO.getCustomerFeedbackScore();
+			if (goalDTO.getCustomerFeedbackCount() == null || goalDTO.getCustomerFeedbackCount() == 0) return false;
 			goalArray[6] += goalDTO.getCustomerFeedbackCount();
 		}
 		

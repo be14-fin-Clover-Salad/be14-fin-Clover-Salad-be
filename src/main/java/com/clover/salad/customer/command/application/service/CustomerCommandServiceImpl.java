@@ -1,5 +1,6 @@
 package com.clover.salad.customer.command.application.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -32,9 +33,9 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 		customer.setPhone(customerDTO.getPhone());
 		customer.setEmail(customerDTO.getEmail());
 
-		// registerAt: String → LocalDateTime 변환
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		LocalDateTime registerAt = LocalDateTime.parse(customerDTO.getRegisterAt(), formatter);
+		// registerAt: String → LocalDate 변환
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate registerAt = LocalDate.parse(customerDTO.getRegisterAt(), formatter);
 		customer.setRegisterAt(registerAt);
 
 		customer.setDeleted(customerDTO.isDeleted()); // boolean 필드

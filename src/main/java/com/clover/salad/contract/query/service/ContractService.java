@@ -3,7 +3,7 @@ package com.clover.salad.contract.query.service;
 import java.util.List;
 
 import com.clover.salad.contract.query.dto.ContractDTO;
-import com.clover.salad.contract.query.dto.ContractDetailInfoResponseDTO;
+import com.clover.salad.contract.query.dto.ContractResponseDTO;
 import com.clover.salad.contract.query.dto.ContractSearchDTO;
 
 public interface ContractService {
@@ -11,5 +11,5 @@ public interface ContractService {
 
 	List<ContractDTO> searchContracts(ContractSearchDTO contractSearchDTO);
 
-	ContractDetailInfoResponseDTO findDetailInfo(int contractId);
+	ContractResponseDTO findDetailInfo(int contractId);
 }

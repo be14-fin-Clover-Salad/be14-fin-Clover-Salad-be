@@ -25,9 +25,38 @@
         <result property="productNames" column="product_names"/>
     </resultMap>
 
-    <resultMap id="ContractDetailResult" type="com.clover.salad.contract.query.dto.ContractDetailInfoResponseDTO">
+    <resultMap id="ContractDetailResultMap" type="com.clover.salad.contract.query.dto.ContractResponseDTO">
+        <id property="id" column="id"/>
+        <result property="renameFile" column="rename_file"/>
+        <result property="code" column="code"/>
+        <result property="amount" column="amount"/>
 
+        <association property="customer" javaType="com.clover.salad.contract.query.dto.CustomerResponseDTO">
+            <result property="name" column="name"/>
+            <result property="address" column="address"/>
+            <result property="phone" column="phone"/>
+        </association>
+
+        <association property="employee" javaType="com.clover.salad.contract.query.dto.EmployeeResponseDTO">
+            <result property="name" column="employee_name"/>
+        </association>
+
+        <association property="product" javaType="com.clover.salad.contract.query.dto.ProductResponseDTO">
+            <result property="name" column="product_name"/>
+            <result property="serialNumber" column="serial_number"/>
+            <result property="quantity" column="quantity"/>
+            <result property="rentalCost" column="rental_cost"/>
+        </association>
+
+        <association property="approval" javaType="com.clover.salad.contract.query.dto.ApprovalResponseDTO">
+            <result property="title" column="aprv_title"/>
+            <result property="content" column="aprv_content"/>
+            <result property="state" column="aprv_state"/>
+            <result property="reqId" column="req_id"/>
+            <result property="aprvId" column="aprv_id"/>
+        </association>
     </resultMap>
+
 
 
     <select id="selectContractInfo" parameterType="int" resultMap="ContractResultMap">
@@ -149,4 +178,42 @@
         </where>
         GROUP BY c.id
     </select>
+
+    <select id="selectDetailContractInfo" parameterType="int" resultMap="ContractDetailResultMap">
+        SELECT
+            c.id,
+            f.rename_file,
+            c.code,
+            c.amount,
+
+            cu.name AS name,
+            cu.address AS address,
+            cu.phone AS phone,
+
+            e.name AS employee_name,
+
+            a.title AS aprv_title,
+            a.content AS aprv_content,
+            a.state AS aprv_state,
+            a.req_id,
+            a.aprv_id,
+
+            p.name AS product_name,
+            p.serial_number,
+            cp.quantity,
+            p.rental_cost
+
+        FROM contract c
+                 JOIN customer cu ON c.customer_id = cu.id
+                 JOIN employee e ON c.employee_id = e.id
+                 LEFT JOIN approval a ON a.contract_id = c.id
+                 LEFT JOIN contract_product cp ON cp.contract_id = c.id
+                 LEFT JOIN product p ON p.id = cp.product_id
+                 LEFT JOIN document_origin d ON c.document_origin_id = d.id
+                 LEFT JOIN file_upload f ON d.file_upload_id = f.id
+
+        WHERE c.id = #{contractId}
+    </select>
+
+
 </mapper>

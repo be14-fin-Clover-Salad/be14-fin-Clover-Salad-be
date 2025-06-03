@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.clover.salad.contract.query.dto.ContractDTO;
-import com.clover.salad.contract.query.dto.ContractDetailInfoResponseDTO;
+import com.clover.salad.contract.query.dto.ContractResponseDTO;
 import com.clover.salad.contract.query.dto.ContractSearchDTO;
 import com.clover.salad.contract.query.service.ContractService;
 
@@ -38,7 +38,7 @@ public class ContractController {
 	}
 
 	@GetMapping("/{contractId}/info")
-	public ResponseEntity<ContractDetailInfoResponseDTO> findDetailInfoByContractId(@PathVariable int contractId) {
+	public ResponseEntity<ContractResponseDTO> findDetailInfoByContractId(@PathVariable int contractId) {
 		return ResponseEntity.ok(contractService.findDetailInfo(contractId));
 	}
 }

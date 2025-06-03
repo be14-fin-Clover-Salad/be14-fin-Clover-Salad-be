@@ -6,4 +6,6 @@ import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 
 public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Integer> {
 	Optional<EmployeeEntity> findByCode(String code);
+
+	Optional<EmployeeEntity> findByEmail(String email);
 }

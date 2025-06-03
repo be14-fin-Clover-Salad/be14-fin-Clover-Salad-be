@@ -49,7 +49,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     implementation 'org.apache.pdfbox:pdfbox:2.0.27'
-
 }
 
 tasks.named('test') {

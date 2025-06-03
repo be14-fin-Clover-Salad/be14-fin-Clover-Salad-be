@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.clover.salad.common.exception.InvalidCurrentPasswordException;
 import com.clover.salad.employee.command.application.dto.EmployeeUpdateDTO;
 import com.clover.salad.employee.command.application.dto.RequestChangePasswordDTO;
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
@@ -135,8 +136,10 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		EmployeeEntity employee = employeeRepository.findByCode(code)
 			.orElseThrow(() -> new RuntimeException("해당 사번을 가진 사용자가 존재하지 않습니다."));
 
-		if (!passwordEncoder.matches(dto.getCurrentPassword(), employee.getEncPwd())) {
-			throw new RuntimeException("현재 비밀번호가 일치하지 않습니다.");
+		boolean matches = passwordEncoder.matches(dto.getCurrentPassword(), employee.getEncPwd());
+
+		if (!matches) {
+			throw new InvalidCurrentPasswordException();
 		}
 
 		String newEncodedPassword = passwordEncoder.encode(dto.getNewPassword());

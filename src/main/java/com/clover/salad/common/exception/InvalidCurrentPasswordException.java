@@ -1,4 +1,7 @@
 package com.clover.salad.common.exception;
 
-public class InvalidCurrentPasswordException {
+public class InvalidCurrentPasswordException extends RuntimeException {
+	public InvalidCurrentPasswordException() {
+		super("현재 비밀번호가 일치하지 않습니다.");
+	}
 }

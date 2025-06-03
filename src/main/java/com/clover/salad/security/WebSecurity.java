@@ -47,10 +47,11 @@ public class WebSecurity {
 		AuthenticationManager manager = authenticationManager();
 
 		http.csrf(csrf -> csrf.disable());
-		http.cors(cors -> {});
+
 		http.authorizeHttpRequests(authz ->
 				authz
-					.requestMatchers("/**").permitAll()	// 개발용 일시적 허용
+					// 개발용 일시적 허용
+					.requestMatchers("/**").permitAll()
 					.requestMatchers("/login").permitAll()
 					.requestMatchers("/employee").permitAll()
 					.requestMatchers("/employee/**").permitAll()

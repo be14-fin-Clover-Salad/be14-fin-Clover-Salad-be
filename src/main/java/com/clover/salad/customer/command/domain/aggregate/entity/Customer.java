@@ -1,5 +1,6 @@
 package com.clover.salad.customer.command.domain.aggregate.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -9,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +23,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@Builder
 public class Customer {
 
 	@Id
@@ -39,8 +42,11 @@ public class Customer {
 	@Column(name = "email")
 	private String email;
 
+	@Column(name = "address")
+	private String address;
+
 	@Column(name = "register_at")
-	private LocalDateTime registerAt;
+	private LocalDate registerAt;
 
 	@Column(name = "is_deleted")
 	private boolean isDeleted;

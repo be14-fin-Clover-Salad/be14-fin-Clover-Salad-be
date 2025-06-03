@@ -11,19 +11,21 @@ VALUES (1, '본부', False, NULL),
        (5, '기술지원팀', False, 1);
 
 -- FILE_UPLOAD
-INSERT INTO FILE_UPLOAD (id, origin_file, rename_file, path, created_at, type)
-VALUES (1, 'profile1.png', 'uuid1.png', '/uploads/', '2025-05-28 02:13:22', '프로필'),
-       (2, 'profile2.png', 'uuid2.png', '/uploads/', '2025-05-28 02:13:22', '계약서'),
-       (3, 'profile3.png', 'uuid3.png', '/uploads/', '2025-05-28 02:13:22', '상품');
+INSERT INTO FILE_UPLOAD (origin_file, rename_file, path, created_at, type)
+VALUES ('profile1.png', 'uuid1.png', '/uploads/', '2025-05-28 02:13:22', '프로필'),
+       ('contract1.png', 'uuid2.png', '/uploads/', '2025-05-28 02:13:22', '계약서'),
+       ('product1.png', 'uuid3.png', '/uploads/', '2025-05-28 02:13:22', '상품')
+     , ('profile2.png', 'uuid4.png', '/uploads/', '2025-05-29 23:34:38', '프로필')
+     , ('contract2.png', 'uuid5.png', '/uploads/', '2025-05-29 23:34:38', '계약서')
+     , ('product2.png', 'uuid6.png', '/uploads/', '2025-05-29 23:34:38', '상품')
+     , ('profile3.png', 'uuid7.png', '/uploads/', '2025-05-29 23:34:38', '프로필')
+     , ('contract3.png', 'uuid8.png', '/uploads/', '2025-05-29 23:34:38', '계약서')
+     , ('product3.png', 'uuid9.png', '/uploads/', '2025-05-29 23:34:38', '상품')
+     , ('profile4.png', 'uuid10.png', '/uploads/', '2025-05-29 23:34:38', '프로필');
 
 -- EMPLOYEE
-INSERT INTO EMPLOYEE (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted,
-                      work_place, department_id, profile)
-VALUES ('202501001', 'pass01', '홍길동', '01012345678', 'hong@example.com', '사원', '2025-01-01', NULL, FALSE, FALSE, '서울본사',
-        1, 1),
-       ('202501002', 'pass02', '홍길둉', '01012345679', 'hong1@example.com', '팀장', '2024-01-01', NULL, FALSE, FALSE,
-        '강남씨티빌딩', 2, 2);
-
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted,work_place, department_id, profile)
+VALUES ('202501001', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','홍길동','01012345678','teamflover@naver.com','사원','2025-01-01',NULL,FALSE,FALSE,'서울본사',1,1);
 
 -- CUSTOMER
 INSERT INTO CUSTOMER (id, name, birthdate, address, phone, email, register_at, is_deleted, type, etc)
@@ -36,15 +38,27 @@ VALUES (1, '홍길동', '1981-02-15', '도시1', '01088880001', 'customer1@email
        (7, '정수빈', '1987-08-15', '도시7', '01088880007', 'customer7@email.com', '2025-03-19', False, '법인', NULL);
 
 -- PRODUCT
-INSERT INTO PRODUCT (id, category, name, serial_number, product_code, company, origin_cost, rental_cost, description,
-                     is_deleted, file_upload_id)
-VALUES (1, '청소기', '청소기 1호', 'SN20240001', 'P0001', '삼성', 150000, 13000, '청소기 설명입니다.', False, 1),
-       (2, '정수기', '정수기 2호', 'SN20240002', 'P0002', 'LG', 200000, 16000, '정수기 설명입니다.', False, 1),
-       (3, '비데', '비데 3호', 'SN20240003', 'P0003', '쿠쿠', 250000, 19000, '비데 설명입니다.', False, 1),
-       (4, '에어컨', '에어컨 4호', 'SN20240004', 'P0004', '위니아', 300000, 22000, '에어컨 설명입니다.', False, 1),
-       (5, '세탁기', '세탁기 5호', 'SN20240005', 'P0005', 'SK매직', 350000, 25000, '세탁기 설명입니다.', False, 1),
-       (6, '건조기', '건조기 6호', 'SN20240006', 'P0006', '코웨이', 400000, 28000, '건조기 설명입니다.', False, 1),
-       (7, '냉장고', '냉장고 7호', 'SN20240007', 'P0007', '청호', 450000, 31000, '냉장고 설명입니다.', False, 1);
+INSERT INTO product (category, name, serial_number, product_code, company, origin_cost, rental_cost, description, is_deleted, file_upload_id)
+VALUES ('냉장고', '오브제컬렉션', 'S834BB30', 'LG-REF-S834BB30', 'LG', 2300000, 43900, 'LG에서 만든 예쁜 냉장고', FALSE, 1)
+     , ('TV', '2024 QLED 4K QDE1 (189 cm) + 3.1 ch 사운드바 B650D', 'KQ75QDE1-B6', 'SAMSUNG-TV-KQ75QDE1-B6', '삼성', 3369000, 67425, '삼성 QLED TV', FALSE, 1)
+     , ('세탁기', '비스포크 그랑데 AI 세탁기', 'WF24B7600KW', 'SAMSUNG-WASH-WF24B7600KW', '삼성', 1890000, 37900, 'AI 기능을 탑재한 삼성 세탁기', FALSE, 2)
+     , ('건조기', 'LG 트롬 듀얼 인버터 히트펌프', 'RH18VNA', 'LG-DRY-RH18VNA', 'LG', 1720000, 35500, '에너지 효율이 뛰어난 LG 건조기', FALSE, 2)
+     , ('에어컨', '휘센 듀얼 에어컨 2in1', 'FQ18DADWE2', 'LG-AC-FQ18DADWE2', 'LG', 2490000, 46800, '여름 필수품, LG 휘센 에어컨', FALSE, 3)
+     , ('청소기', '제트 무선 청소기 VS20A956B', 'VS20A956B', 'SAMSUNG-VAC-VS20A956B', '삼성', 1340000, 27900, '강력한 흡입력의 삼성 무선 청소기', FALSE, 3)
+     , ('오븐', '비스포크 큐커 AI 오븐', 'MC32A7035KT', 'SAMSUNG-OVEN-MC32A7035KT', '삼성', 590000, 12500, '다기능 삼성 오븐', FALSE, 4)
+     , ('식기세척기', '디오스 식기세척기 스팀', 'DUBJ1G', 'LG-DISH-DUBJ1G', 'LG', 1380000, 28900, '고온 스팀 살균 LG 식기세척기', FALSE, 4)
+     , ('냉장고', '비스포크 냉장고 4도어', 'RF85T9111AP', 'SAMSUNG-REF-RF85T9111AP', '삼성', 3100000, 58900, '고급형 삼성 냉장고', FALSE, 5)
+     , ('TV', 'LG OLED evo C3 65인치', 'OLED65C3KNA', 'LG-TV-OLED65C3KNA', 'LG', 2790000, 55300, '고화질 LG OLED TV', FALSE, 5)
+     , ('세탁기', 'LG 트윈워시 세탁기', 'F21VDP', 'LG-WASH-F21VDP', 'LG', 1980000, 39200, '세탁과 탈수를 동시에 LG 트윈워시', FALSE, 6)
+     , ('건조기', '삼성 AI 건조기', 'DV90T8240SH', 'SAMSUNG-DRY-DV90T8240SH', '삼성', 1790000, 36500, 'AI 제어 삼성 건조기', FALSE, 6)
+     , ('에어컨', '무풍에어컨 클래식', 'AF17A6474TZ', 'SAMSUNG-AC-AF17A6474TZ', '삼성', 2650000, 49500, '무풍 냉방 삼성 에어컨', FALSE, 7)
+     , ('청소기', '코드제로 A9S', 'A958VA', 'LG-VAC-A958VA', 'LG', 1190000, 24500, 'LG 코드제로 무선 청소기', FALSE, 7)
+     , ('오븐', 'LG 광파오븐 MA324B', 'MA324B', 'LG-OVEN-MA324B', 'LG', 540000, 11900, '간편한 요리를 위한 LG 오븐', FALSE, 8)
+     , ('식기세척기', '삼성 비스포크 식기세척기', 'DW60A8055UG', 'SAMSUNG-DISH-DW60A8055UG', '삼성', 1450000, 29900, '스마트 기능 탑재 식기세척기', FALSE, 8)
+     , ('공기청정기', 'LG 퓨리케어 360° 공기청정기', 'AS351NNFA', 'LG-AP-AS351NNFA', 'LG', 1040000, 20900, '360도 청정 기능 LG 공기청정기', FALSE, 9)
+     , ('공기청정기', '삼성 블루스카이 5000', 'AX60A5510WDD', 'SAMSUNG-AP-AX60A5510WDD', '삼성', 980000, 19900, '초미세먼지 제거 삼성 공기청정기', FALSE, 9)
+     , ('전자레인지', 'LG 전자레인지 MW25S', 'MW25S', 'LG-MIW-MW25S', 'LG', 210000, 4900, '간단 요리를 위한 전자레인지', FALSE, 10)
+     , ('제습기', '삼성 무풍 제습기', 'AY10R5171', 'SAMSUNG-DEH-AY10R5171', '삼성', 670000, 13900, '쾌적한 여름을 위한 삼성 제습기', FALSE, 10);
 
 -- NOTICE
 INSERT INTO NOTICE (id, title, content, created_at, is_deleted, employee_id)
@@ -156,20 +170,15 @@ VALUES (1, 4, 1, 1),
 INSERT INTO EMPLOYEE_GOAL (rental_product_count, rental_retention_count, total_rental_count, new_customer_count,
                            total_rental_amount, customer_feedback_score, customer_feedback_count, target_date,
                            employee_id)
-VALUES (6, 81, 100, 4, 1100000, 4.5, 50, 202405, 1),
-       (7, 82, 101, 5, 1200000, 4.0, 51, 202405, 2),
+VALUES (7, 82, 101, 5, 1200000, 4.0, 51, 202405, 2),
        (8, 83, 102, 6, 1300000, 4.5, 52, 202405, 3),
        (9, 84, 103, 7, 1400000, 4.0, 53, 202405, 4),
        (10, 85, 104, 8, 1500000, 4.5, 54, 202405, 5),
-       (11, 86, 105, 9, 1600000, 4.0, 55, 202404, 1),
        (11, 86, 105, 9, 1600000, 4.0, 55, 202404, 2),
        (11, 86, 105, 9, 1600000, 4.0, 55, 202404, 3),
        (11, 86, 105, 9, 1600000, 4.0, 55, 202404, 4),
        (11, 86, 105, 9, 1600000, 4.0, 55, 202404, 5),
        (11, 86, 105, 9, 1600000, 4.0, 55, 202404, 6),
-       (6, 81, 100, 4, 1100000, 4.5, 50, 202401, 1),
-       (6, 81, 100, 4, 1100000, 4.5, 50, 202402, 1),
-       (6, 81, 100, 4, 1100000, 4.5, 50, 202403, 1),
        (9, 84, 103, 7, 1400000, 4.0, 53, 202401, 4),
        (9, 84, 103, 7, 1400000, 4.0, 53, 202402, 4),
        (9, 84, 103, 7, 1400000, 4.0, 53, 202403, 4),

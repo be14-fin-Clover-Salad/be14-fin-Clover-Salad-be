@@ -3,14 +3,27 @@ package com.clover.salad.employee.command.domain.aggregate.entity;
 import java.time.LocalDate;
 import com.clover.salad.employee.command.domain.aggregate.enums.EmployeeLevel;
 import com.clover.salad.employee.command.domain.aggregate.enums.EmployeeLevelConverter;
-import jakarta.persistence.*;
-import lombok.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 @Table(name = "employee")
 public class EmployeeEntity {
 

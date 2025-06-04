@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.clover.salad.contract.command.dto.ContractDeleteResponseDTO;
 import com.clover.salad.contract.command.dto.ContractUpdateRequestDTO;
 import com.clover.salad.contract.command.dto.ContractUpdateResponseDTO;
 import com.clover.salad.contract.command.dto.ContractUploadRequestDTO;
@@ -73,6 +74,11 @@ public class ContractUploadController {
 		@RequestBody ContractUpdateRequestDTO request
 	) {
 		return ResponseEntity.ok(contractService.updateEtcOnly(contractId, request.getEtc()));
+	}
+
+	@PatchMapping("/delete/{contractId}")
+	public ResponseEntity<ContractDeleteResponseDTO> deleteContract(@PathVariable int contractId) {
+		return ResponseEntity.ok(contractService.deleteContract(contractId));
 	}
 
 }

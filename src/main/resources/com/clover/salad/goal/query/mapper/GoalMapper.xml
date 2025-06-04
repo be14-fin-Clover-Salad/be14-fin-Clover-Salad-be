@@ -35,8 +35,9 @@
     <!-- 설명. 기본 실적 목표 ResultMap -->
     <resultMap id="DefaultGoalResultMap" type="com.clover.salad.goal.command.application.dto.DefaultGoalDTO">
         <id property="id" column="ID"/>
+        <result property="level" column="LEVEL"/>
         <result property="rentalProductCount" column="RENTAL_PRODUCT_COUNT"/>
-        <result property="rentalRetentionCount" column="RENTAL_RETENTION_COUNT"/>
+        <result property="rentalRetentionRate" column="RENTAL_RETENTION_RATE"/>
         <result property="newCustomerCount" column="NEW_CUSTOMER_COUNT"/>
         <result property="totalRentalAmount" column="TOTAL_RENTAL_AMOUNT"/>
         <result property="customerFeedbackScore" column="(DG.CUSTOMER_FEEDBACK_SCORE * 10)"/>
@@ -169,5 +170,24 @@
           FROM DEFAULT_GOAL DG
          WHERE DG.LEVEL = #{employeeLevel}
            AND DG.TARGET_YEAR = #{targetYear}
+    </select>
+
+    <!-- 설명. 현재 목표의 사원 id와 대상연도로 연 단위 목표 조회 -->
+    <select id="selectYearGoalByCurrentGoalTargetDate" resultMap="GoalResultMap" parameterType="map">
+        SELECT
+               EG.ID
+             , EG.RENTAL_PRODUCT_COUNT
+             , EG.RENTAL_RETENTION_COUNT
+             , EG.TOTAL_RENTAL_COUNT
+             , EG.NEW_CUSTOMER_COUNT
+             , EG.TOTAL_RENTAL_AMOUNT
+             , (EG.CUSTOMER_FEEDBACK_SCORE * 10)
+             , EG.CUSTOMER_FEEDBACK_COUNT
+             , EG.TARGET_DATE
+             , EG.EMPLOYEE_ID
+          FROM EMPLOYEE_GOAL EG
+         WHERE EG.EMPLOYEE_ID = #{employeeId}
+           AND EG.TARGET_DATE LIKE CONCAT(#{targetYear}, '%')
+         ORDER BY TARGET_DATE
     </select>
 </mapper>

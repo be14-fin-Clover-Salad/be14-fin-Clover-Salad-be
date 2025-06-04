@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.clover.salad.common.exception.EmployeeNotFoundException;
+import com.clover.salad.common.exception.InvalidSearchTermException;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
@@ -28,7 +29,8 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	
 	/* 설명. 실적 목표 등록 */
 	@Override
-	public void registerGoal(List<GoalDTO> goalList, String employeeCode) throws Exception {
+	public void registerGoal(List<GoalDTO> goalList, String employeeCode)
+		throws InvalidSearchTermException, EmployeeNotFoundException {
 		int employeeId = getEmployeeIdByCode(employeeCode);
 		
 		if (validateGoal(goalList, employeeId, employeeCode)) {
@@ -37,12 +39,13 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 				goalRepository.save(goal);
 			}
 		} else {
-			throw new Exception("목표의 조건을 확인하고 설정해주세요!");
+			throw new InvalidSearchTermException();
 		}
 	}
 	
 	@Override
-	public void changeGoal(List<GoalDTO> goalList, String employeeCode) throws Exception {
+	public void changeGoal(List<GoalDTO> goalList, String employeeCode)
+		throws InvalidSearchTermException, EmployeeNotFoundException {
 		int employeeId = getEmployeeIdByCode(employeeCode);
 		
 		if (validateGoal(goalList, employeeId, employeeCode)) {
@@ -51,7 +54,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 				goalRepository.save(updateGoal(goal, goalDTO));
 			}
 		} else {
-			throw new Exception("목표의 조건을 확인하고 설정해주세요!");
+			throw new InvalidSearchTermException();
 		}
 	}
 	

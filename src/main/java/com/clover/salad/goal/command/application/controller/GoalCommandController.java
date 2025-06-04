@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.clover.salad.common.exception.EmployeeNotFoundException;
-import com.clover.salad.common.exception.GlobalExceptionHandler;
 import com.clover.salad.goal.command.application.dto.GoalDTO;
 import com.clover.salad.goal.command.application.service.GoalCommandService;
 import com.clover.salad.security.JwtUtil;
@@ -27,25 +25,19 @@ import lombok.extern.slf4j.Slf4j;
 public class GoalCommandController {
 	private final GoalCommandService goalCommandService;
 	private final JwtUtil jwtUtil;
-	private final GlobalExceptionHandler globalExceptionHandler;
 	
 	/* 설명. 실적 목표 등록 */
 	@PostMapping("/register")
 	public ResponseEntity<String> registerGoal(
 		@RequestHeader("Authorization") String token,
 		@RequestBody List<GoalDTO> goalList
-	) {
+	) throws Exception {
 		String pureToken = token.replace("Bearer ", "");
 		String code = jwtUtil.getUsername(pureToken);
 		
-		try {
-			log.info("Registering goal");
-			goalCommandService.registerGoal(goalList, code);
-		} catch (EmployeeNotFoundException e) {
-			return globalExceptionHandler.handleEmployeeNotFound(e);
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+		log.info("Registering goal");
+		goalCommandService.registerGoal(goalList, code);
+		
 		return ResponseEntity.ok("Goal Registered");
 	}
 	
@@ -54,19 +46,14 @@ public class GoalCommandController {
 	public ResponseEntity<String> changeGoal(
 		@RequestHeader("Authorization") String token,
 		@RequestBody List<GoalDTO> goalList
-	) {
+	) throws Exception {
 		
 		String pureToken = token.replace("Bearer ", "");
 		String code = jwtUtil.getUsername(pureToken);
 		
-		try {
-			log.info("Changing goal");
-			goalCommandService.changeGoal(goalList, code);
-		} catch (EmployeeNotFoundException e) {
-			return globalExceptionHandler.handleEmployeeNotFound(e);
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+		log.info("Changing goal");
+		goalCommandService.changeGoal(goalList, code);
+		
 		return ResponseEntity.ok("Goal Changed");
 	}
 	

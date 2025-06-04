@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
 import com.clover.salad.goal.command.application.dto.DefaultGoalDTO;
@@ -160,10 +161,12 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		return goal;
 	}
 	
-	private int getEmployeeIdByCode(String employeeCode) {
+	private int getEmployeeIdByCode(String employeeCode) throws Exception{
 		SearchEmployeeDTO searchEmployeeDTO = new SearchEmployeeDTO();
 		searchEmployeeDTO.setCode(employeeCode);
 		/* 설명. 코드로 검색해 무조건 한 명만 검색된다고 전제 */
-		return employeeQueryService.searchEmployees(searchEmployeeDTO).get(0).getId();
+		List<EmployeeQueryDTO> employeeList = employeeQueryService.searchEmployees(searchEmployeeDTO);
+		if (employeeList.isEmpty()) throw new Exception("Employee Code Not Found");
+		return employeeList.get(0).getId();
 	}
 }

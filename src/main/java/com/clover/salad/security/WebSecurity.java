@@ -1,5 +1,7 @@
 package com.clover.salad.security;
 
+import static org.springframework.security.config.Customizer.*;
+
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,7 @@ public class WebSecurity {
 		AuthenticationManager manager = authenticationManager();
 
 		http.csrf(csrf -> csrf.disable());
+		http.cors(withDefaults());
 
 		http.authorizeHttpRequests(authz ->
 				authz

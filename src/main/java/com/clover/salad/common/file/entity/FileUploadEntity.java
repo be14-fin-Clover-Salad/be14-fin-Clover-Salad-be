@@ -37,5 +37,7 @@ public class FileUploadEntity {
 
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
+
+	
 	private String type; // 예: 계약서
 }

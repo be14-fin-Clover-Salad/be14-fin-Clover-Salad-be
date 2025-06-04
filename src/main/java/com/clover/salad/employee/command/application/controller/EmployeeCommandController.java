@@ -70,10 +70,14 @@ public class EmployeeCommandController {
 		// 1. 쿠키에서 refreshToken 추출
 		if (request.getCookies() != null) {
 			for (Cookie cookie : request.getCookies()) {
+				System.out.println("[Cookie] name=" + cookie.getName() + ", value=" + cookie.getValue());
 				if ("refreshToken".equals(cookie.getName())) {
 					refreshToken = cookie.getValue();
+					System.out.println("[추출된 refreshToken] " + refreshToken);
 				}
 			}
+		} else {
+			System.out.println("[쿠키 없음]");
 		}
 
 		if (refreshToken == null) {

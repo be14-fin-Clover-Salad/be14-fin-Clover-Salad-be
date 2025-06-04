@@ -55,8 +55,10 @@ public class JwtUtil {
 	public boolean validateToken(String token) {
 		try {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+			System.out.println("[✅ Token 유효] " + token);
 			return true;
 		} catch (Exception e) {
+			System.out.println("[❌ Token 유효하지 않음] 이유: " + e.getClass().getSimpleName() + " - " + e.getMessage());
 			return false;
 		}
 	}
@@ -73,7 +75,9 @@ public class JwtUtil {
 	}
 
 	public String getUsername(String token) {
-		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+		String username = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+		System.out.println("[👤 Username from token] " + username);
+		return username;
 	}
 
 	private Claims parseClaims(String token) {
@@ -82,6 +86,8 @@ public class JwtUtil {
 
 	public LocalDateTime getExpiration(String token) {
 		Date expirationDate = parseClaims(token).getExpiration();
-		return Instant.ofEpochMilli(expirationDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+		LocalDateTime expiration = Instant.ofEpochMilli(expirationDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+		System.out.println("[⏳ Token 만료시간] " + expiration);
+		return expiration;
 	}
 }

@@ -3,12 +3,17 @@ package com.clover.salad.contract.command.controller;
 import java.io.File;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.clover.salad.contract.command.dto.ContractUpdateRequestDTO;
+import com.clover.salad.contract.command.dto.ContractUpdateResponseDTO;
 import com.clover.salad.contract.command.dto.ContractUploadRequestDTO;
 import com.clover.salad.contract.command.dto.ContractUploadResponseDTO;
 import com.clover.salad.contract.command.entity.ContractEntity;
@@ -18,7 +23,9 @@ import com.clover.salad.contract.document.entity.DocumentOrigin;
 import com.clover.salad.contract.document.service.DocumentOriginService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/command/contract")
 @RequiredArgsConstructor
@@ -58,6 +65,14 @@ public class ContractUploadController {
 				new ContractUploadResponseDTO(-1, "계약 등록 실패: " + e.getMessage())
 			);
 		}
+	}
+
+	@PatchMapping("/update/{contractId}")
+	public ResponseEntity<ContractUpdateResponseDTO> updateEtcOnly(
+		@PathVariable int contractId,
+		@RequestBody ContractUpdateRequestDTO request
+	) {
+		return ResponseEntity.ok(contractService.updateEtcOnly(contractId, request.getEtc()));
 	}
 
 }

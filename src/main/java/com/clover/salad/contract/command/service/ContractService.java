@@ -3,6 +3,7 @@ package com.clover.salad.contract.command.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.clover.salad.contract.command.dto.ContractDeleteResponseDTO;
 import com.clover.salad.contract.command.dto.ContractUpdateResponseDTO;
 import com.clover.salad.contract.command.dto.ContractUploadRequestDTO;
 import com.clover.salad.contract.command.entity.ContractEntity;
@@ -57,4 +58,12 @@ public class ContractService {
 		return new ContractUpdateResponseDTO(contract.getId(), contract.getEtc());
 	}
 
+	@Transactional
+	public ContractDeleteResponseDTO deleteContract(int contractId) {
+		ContractEntity contract = contractRepository.findById(contractId)
+			.orElseThrow(() -> new IllegalArgumentException("계약을 찾을 수 없습니다."));
+
+		contract.setDeleted(true);
+		return new ContractDeleteResponseDTO(contract.getId(), contract.isDeleted());
+	}
 }

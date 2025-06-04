@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import com.clover.salad.contract.document.entity.DocumentOrigin;
 import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,7 +42,11 @@ public class ContractEntity {
 	 */
 
 	private LocalDateTime createdAt;
+
+
+	@Column(name = "is_deleted", nullable = false)
 	private boolean isDeleted;
+
 	private String etc;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -65,7 +65,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	/* 설명. 실적 목표가 회사에서 제시한 연간 목표 조건에 부합하는지 확인하는 메소드
 	 *  프론트에서 항목 별로 한 번 체크하고 최종 등록 전 체크
 	 * */
-	private boolean validateGoal(List<GoalDTO> goalList, int employeeId, String employeeCode) {
+	private boolean validateGoal(List<GoalDTO> goalList, int employeeId, String employeeCode) throws Exception {
 		
 		/* 설명. 설정한 월간 목표들을 연간 목표로 변환 */
 		log.info("Changing GoalList To YearlyGoal");
@@ -103,6 +103,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		SearchEmployeeDTO searchEmployeeDTO = new SearchEmployeeDTO();
 		searchEmployeeDTO.setCode(employeeCode);
 		List<EmployeeQueryDTO> employeeList = employeeQueryService.searchEmployees(searchEmployeeDTO);
+		if (employeeList.isEmpty()) throw new Exception("Employee Code Not Found");
 		String employeeLevel = employeeList.get(0).getLevel();
 		
 		/* 설명. 직급과 기간으로 회사의 연간 목표 조회 */

@@ -1,5 +1,7 @@
 package com.clover.salad.contract.query.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,14 +21,11 @@ public class ContractResponseDTO {
 	private String code;
 	private int amount;
 
-
 	private String customerName;
 	private String customerAddress;
 	private String customerPhone;
 
-
 	private String employeeName;
-
 
 	private String aprvTitle;
 	private String aprvContent;
@@ -34,9 +33,5 @@ public class ContractResponseDTO {
 	private int reqId;
 	private int aprvId;
 
-
-	private String productName;
-	private String serialNumber;
-	private int quantity;
-	private int rentalCost;
+	private List<ProductDTO> productList;
 }

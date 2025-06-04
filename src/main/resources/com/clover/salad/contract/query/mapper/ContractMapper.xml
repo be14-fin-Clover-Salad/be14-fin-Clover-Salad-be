@@ -25,7 +25,7 @@
         <result property="productNames" column="product_names"/>
     </resultMap>
 
-    <resultMap id="ContractFlatResultMap" type="com.clover.salad.contract.query.dto.ContractResponseDTO">
+    <resultMap id="ContractWithProductsMap" type="com.clover.salad.contract.query.dto.ContractResponseDTO">
 
         <result property="id" column="id"/>
         <result property="renameFile" column="rename_file"/>
@@ -33,9 +33,9 @@
         <result property="amount" column="amount"/>
 
 
-        <result property="customerName" column="name"/>
-        <result property="customerAddress" column="address"/>
-        <result property="customerPhone" column="phone"/>
+        <result property="customerName" column="customer_name"/>
+        <result property="customerAddress" column="customer_address"/>
+        <result property="customerPhone" column="customer_phone"/>
 
 
         <result property="employeeName" column="employee_name"/>
@@ -48,13 +48,13 @@
         <result property="aprvId" column="aprv_id"/>
 
 
-        <result property="productName" column="product_name"/>
-        <result property="serialNumber" column="serial_number"/>
-        <result property="quantity" column="quantity"/>
-        <result property="rentalCost" column="rental_cost"/>
+        <collection property="productList" ofType="com.clover.salad.contract.query.dto.ProductDTO">
+            <result property="productName" column="product_name"/>
+            <result property="serialNumber" column="serial_number"/>
+            <result property="quantity" column="quantity"/>
+            <result property="rentalCost" column="rental_cost"/>
+        </collection>
     </resultMap>
-
-
 
 
     <select id="selectContractInfo" parameterType="int" resultMap="ContractResultMap">
@@ -177,16 +177,16 @@
         GROUP BY c.id
     </select>
 
-    <select id="selectDetailContractInfo" parameterType="int" resultMap="ContractFlatResultMap">
+    <select id="selectDetailContractInfo" parameterType="int" resultMap="ContractWithProductsMap">
         SELECT
             c.id,
             f.rename_file,
             c.code,
             c.amount,
 
-            cu.name AS name,
-            cu.address AS address,
-            cu.phone AS phone,
+            cu.name AS customer_name,
+            cu.address AS customer_address,
+            cu.phone AS customer_phone,
 
             e.name AS employee_name,
 
@@ -212,6 +212,5 @@
 
         WHERE c.id = #{contractId}
     </select>
-
 
 </mapper>

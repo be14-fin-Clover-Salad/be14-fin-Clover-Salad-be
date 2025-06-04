@@ -46,7 +46,7 @@
 
     <!-- 설명. 설정 기간의 사원별 실적 목표 조회 -->
     <select id="selectGoalByEmployeeId" resultMap="GoalResultMap"
-            parameterType="com.clover.salad.goal.command.application.dto.SearchTermDTO">
+            parameterType="com.clover.salad.goal.command.application.dto.EmployeeSearchTermDTO">
         SELECT
                EG.ID
              , EG.RENTAL_PRODUCT_COUNT
@@ -59,7 +59,9 @@
              , EG.TARGET_DATE
              , EG.EMPLOYEE_ID
           FROM EMPLOYEE_GOAL EG
-         WHERE EG.EMPLOYEE_ID = #{targetId}
+         WHERE EG.EMPLOYEE_ID IN (SELECT E.ID
+                                   FROM EMPLOYEE E
+                                  WHERE E.CODE LIKE CONCAT('%', #{employeeCode}, '%'))
         <if test="startDate != null">
            AND EG.TARGET_DATE >= #{startDate}
         </if>
@@ -101,7 +103,7 @@
 
     <!-- 설명. 설정 기간의 팀 단위 실적 목표 조회 -->
     <select id="selectGoalByDepartmentId" resultMap="TeamGoalResultMap"
-            parameterType="com.clover.salad.goal.command.application.dto.SearchTermDTO">
+            parameterType="com.clover.salad.goal.command.application.dto.DeptSearchTermDTO">
         SELECT
                SUM(EG.RENTAL_PRODUCT_COUNT)
              , SUM(EG.RENTAL_RETENTION_COUNT)
@@ -113,7 +115,9 @@
              , EG.TARGET_DATE
           FROM EMPLOYEE_GOAL EG
           JOIN EMPLOYEE E ON EG.EMPLOYEE_ID = E.ID
-         WHERE E.DEPARTMENT_ID = #{targetId}
+         WHERE E.DEPARTMENT_ID = (SELECT D.ID
+                                    FROM DEPARTMENT D
+                                   WHERE D.NAME LIKE CONCAT('%', #{deptName}, '%'))
         <if test="startDate != null">
             AND EG.TARGET_DATE >= #{startDate}
         </if>
@@ -186,7 +190,9 @@
              , EG.TARGET_DATE
              , EG.EMPLOYEE_ID
           FROM EMPLOYEE_GOAL EG
-         WHERE EG.EMPLOYEE_ID = #{employeeId}
+         WHERE EG.EMPLOYEE_ID = (SELECT E.ID
+                                   FROM EMPLOYEE E
+                                  WHERE E.CODE = #{employeeCode})
            AND EG.TARGET_DATE LIKE CONCAT(#{targetYear}, '%')
          ORDER BY TARGET_DATE
     </select>

@@ -11,8 +11,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class SearchTermDTO {
-	private Integer targetId;
+public class DeptSearchTermDTO {
+	private String deptName;
 	private Integer startDate;
 	private Integer endDate;
 	private Integer minRentalProductCount;

@@ -5,8 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.clover.salad.goal.command.application.dto.DefaultGoalDTO;
+import com.clover.salad.goal.command.application.dto.EmployeeSearchTermDTO;
 import com.clover.salad.goal.command.application.dto.GoalDTO;
-import com.clover.salad.goal.command.application.dto.SearchTermDTO;
+import com.clover.salad.goal.command.application.dto.DeptSearchTermDTO;
 import com.clover.salad.goal.query.mapper.GoalMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -19,12 +20,12 @@ public class GoalQueryServiceImpl implements GoalQueryService {
 	private final GoalMapper goalMapper;
 	
 	@Override
-	public List<GoalDTO> searchGoalByEmployeeId(SearchTermDTO searchTerm) {
+	public List<GoalDTO> searchGoalByEmployeeId(EmployeeSearchTermDTO searchTerm) {
 		return goalMapper.selectGoalByEmployeeId(searchTerm);
 	}
 	
 	@Override
-	public List<GoalDTO> searchGoalByDepartmentId(SearchTermDTO searchTerm) {
+	public List<GoalDTO> searchGoalByDepartmentId(DeptSearchTermDTO searchTerm) {
 		return goalMapper.selectGoalByDepartmentId(searchTerm);
 	}
 	
@@ -34,7 +35,7 @@ public class GoalQueryServiceImpl implements GoalQueryService {
 	}
 	
 	@Override
-	public List<GoalDTO> searchYearGoalByCurrentGoal(int employeeId, int targetYear) {
-		return goalMapper.selectYearGoalByCurrentGoalTargetDate(employeeId, targetYear);
+	public List<GoalDTO> searchYearGoalByCurrentGoal(String employeeCode, int targetYear) {
+		return goalMapper.selectYearGoalByCurrentGoalTargetDate(employeeCode, targetYear);
 	}
 }

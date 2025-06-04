@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
 import com.clover.salad.goal.command.application.dto.DefaultGoalDTO;
 import com.clover.salad.goal.command.application.dto.GoalDTO;
@@ -25,8 +26,10 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	
 	/* 설명. 실적 목표 등록 */
 	@Override
-	public void registerGoal(List<GoalDTO> goalList, int employeeId) throws Exception {
-		if (validateGoal(goalList, employeeId)) {
+	public void registerGoal(List<GoalDTO> goalList, String employeeCode) throws Exception {
+		int employeeId = getEmployeeIdByCode(employeeCode);
+		
+		if (validateGoal(goalList, employeeId, employeeCode)) {
 			for (GoalDTO goalDTO : goalList) {
 				Goal goal = goalDTOToGoal(goalDTO);
 				goalRepository.save(goal);
@@ -37,8 +40,10 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	}
 	
 	@Override
-	public void changeGoal(List<GoalDTO> goalList, int employeeId) throws Exception {
-		if (validateGoal(goalList, employeeId)) {
+	public void changeGoal(List<GoalDTO> goalList, String employeeCode) throws Exception {
+		int employeeId = getEmployeeIdByCode(employeeCode);
+		
+		if (validateGoal(goalList, employeeId, employeeCode)) {
 			for (GoalDTO goalDTO : goalList) {
 				Goal goal = goalRepository.findByEmployeeIdAndTargetDate(employeeId, goalDTO.getTargetDate());
 				goalRepository.save(updateGoal(goal, goalDTO));
@@ -51,14 +56,15 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	@Override
 	public void deleteGoal(List<GoalDTO> goalList) {
 		for (GoalDTO goalDTO : goalList) {
-			goalRepository.delete(goalDTOToGoal(goalDTO));
+			Goal goal = goalRepository.findByEmployeeIdAndTargetDate(goalDTO.getEmployeeId(), goalDTO.getTargetDate());
+			goalRepository.delete(updateGoal(goal, goalDTO));
 		}
 	}
 	
 	/* 설명. 실적 목표가 회사에서 제시한 연간 목표 조건에 부합하는지 확인하는 메소드
 	 *  프론트에서 항목 별로 한 번 체크하고 최종 등록 전 체크
 	 * */
-	private boolean validateGoal(List<GoalDTO> goalList, int employeeId) {
+	private boolean validateGoal(List<GoalDTO> goalList, int employeeId, String employeeCode) {
 		
 		/* 설명. 설정한 월간 목표들을 연간 목표로 변환 */
 		log.info("Changing GoalList To YearlyGoal");
@@ -91,10 +97,11 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		yearlyGoal.setTargetDate(goalList.get(0).getTargetDate() / 100);
 		log.info("Yearly Goal Target Date: {}", yearlyGoal.getTargetDate());
 		
-		/* TODO. 설명. 사원 id로 직급 뽑아오기 */
+		/* 설명. 사원 코드로 직급 뽑아오기 */
 		log.info("Getting Employee Level");
-		String employeeLevel = "사원";
-		// employeeQueryService
+		SearchEmployeeDTO searchEmployeeDTO = new SearchEmployeeDTO();
+		searchEmployeeDTO.setCode(employeeCode);
+		String employeeLevel = employeeQueryService.searchEmployees(searchEmployeeDTO).get(0).getLevel();
 		
 		/* 설명. 직급과 기간으로 회사의 연간 목표 조회 */
 		log.info("Getting Default Goal");
@@ -134,7 +141,6 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		log.info("Goal Validated");
 		return true;
 	}
-	
 	private Goal goalDTOToGoal(GoalDTO goalDTO) {
 		Goal goal = new Goal();
 		updateGoal(goal, goalDTO);
@@ -152,5 +158,12 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		goal.setCustomerFeedbackScore(goalDTO.getCustomerFeedbackScore().doubleValue() / 10);
 		goal.setCustomerFeedbackCount(goalDTO.getCustomerFeedbackCount());
 		return goal;
+	}
+	
+	private int getEmployeeIdByCode(String employeeCode) {
+		SearchEmployeeDTO searchEmployeeDTO = new SearchEmployeeDTO();
+		searchEmployeeDTO.setCode(employeeCode);
+		/* 설명. 코드로 검색해 무조건 한 명만 검색된다고 전제 */
+		return employeeQueryService.searchEmployees(searchEmployeeDTO).get(0).getId();
 	}
 }

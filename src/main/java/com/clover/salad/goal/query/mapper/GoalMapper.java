@@ -6,14 +6,15 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.clover.salad.goal.command.application.dto.DefaultGoalDTO;
+import com.clover.salad.goal.command.application.dto.EmployeeSearchTermDTO;
 import com.clover.salad.goal.command.application.dto.GoalDTO;
-import com.clover.salad.goal.command.application.dto.SearchTermDTO;
+import com.clover.salad.goal.command.application.dto.DeptSearchTermDTO;
 
 @Mapper
 public interface GoalMapper {
-	List<GoalDTO> selectGoalByEmployeeId(SearchTermDTO searchTerm);
+	List<GoalDTO> selectGoalByEmployeeId(EmployeeSearchTermDTO searchTerm);
 	
-	List<GoalDTO> selectGoalByDepartmentId(SearchTermDTO searchTerm);
+	List<GoalDTO> selectGoalByDepartmentId(DeptSearchTermDTO searchTerm);
 	
 	DefaultGoalDTO selectDefaultGoalByLevelAndTargetYear(
 		@Param("employeeLevel") String employeeLevel,
@@ -21,7 +22,7 @@ public interface GoalMapper {
 	);
 	
 	List<GoalDTO> selectYearGoalByCurrentGoalTargetDate(
-		@Param("employeeId") int employeeId,
+		@Param("employeeCode") String employeeCode,
 		@Param("targetYear") int targetYear
 	);
 }

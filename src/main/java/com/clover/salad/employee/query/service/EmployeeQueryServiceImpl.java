@@ -16,6 +16,7 @@ import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.aggregate.enums.EmployeeLevel;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
+import com.clover.salad.employee.query.dto.LoginHeaderInfoDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.mapper.EmployeeMapper;
 
@@ -52,6 +53,11 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 			employee.getEncPwd(),
 			getAuthorities(employee)
 		);
+	}
+
+	@Override
+	public LoginHeaderInfoDTO getLoginHeaderInfo(String code) {
+		return employeeMapper.findLoginHeaderInfoByCode(code);
 	}
 
 	private Collection<? extends GrantedAuthority> getAuthorities(EmployeeEntity employee) {

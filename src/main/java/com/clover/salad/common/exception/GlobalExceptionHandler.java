@@ -17,4 +17,9 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleRuntime(RuntimeException e) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 	}
+	
+	@ExceptionHandler(EmployeeNotFoundException.class)
+	public ResponseEntity<String> handleEmployeeNotFound(EmployeeNotFoundException e) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	}
 }

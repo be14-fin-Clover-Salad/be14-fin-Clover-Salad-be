@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.clover.salad.common.exception.EmployeeNotFoundException;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
@@ -65,7 +66,8 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	/* 설명. 실적 목표가 회사에서 제시한 연간 목표 조건에 부합하는지 확인하는 메소드
 	 *  프론트에서 항목 별로 한 번 체크하고 최종 등록 전 체크
 	 * */
-	private boolean validateGoal(List<GoalDTO> goalList, int employeeId, String employeeCode) throws Exception {
+	private boolean validateGoal(List<GoalDTO> goalList, int employeeId, String employeeCode)
+		throws EmployeeNotFoundException {
 		
 		/* 설명. 설정한 월간 목표들을 연간 목표로 변환 */
 		log.info("Changing GoalList To YearlyGoal");
@@ -103,7 +105,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		SearchEmployeeDTO searchEmployeeDTO = new SearchEmployeeDTO();
 		searchEmployeeDTO.setCode(employeeCode);
 		List<EmployeeQueryDTO> employeeList = employeeQueryService.searchEmployees(searchEmployeeDTO);
-		if (employeeList.isEmpty()) throw new Exception("Employee Code Not Found");
+		if (employeeList.isEmpty()) throw new EmployeeNotFoundException();
 		String employeeLevel = employeeList.get(0).getLevel();
 		
 		/* 설명. 직급과 기간으로 회사의 연간 목표 조회 */
@@ -163,12 +165,12 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		return goal;
 	}
 	
-	private int getEmployeeIdByCode(String employeeCode) throws Exception{
+	private int getEmployeeIdByCode(String employeeCode) throws EmployeeNotFoundException {
 		SearchEmployeeDTO searchEmployeeDTO = new SearchEmployeeDTO();
 		searchEmployeeDTO.setCode(employeeCode);
 		/* 설명. 코드로 검색해 무조건 한 명만 검색된다고 전제 */
 		List<EmployeeQueryDTO> employeeList = employeeQueryService.searchEmployees(searchEmployeeDTO);
-		if (employeeList.isEmpty()) throw new Exception("Employee Code Not Found");
+		if (employeeList.isEmpty()) throw new EmployeeNotFoundException();
 		return employeeList.get(0).getId();
 	}
 }

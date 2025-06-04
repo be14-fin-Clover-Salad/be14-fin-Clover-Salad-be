@@ -41,7 +41,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 				.address(request.getAddress()).email(request.getEmail()).type(request.getType())
 				.etc(request.getEtc()).build();
 
-		customer.update(updated); // 엔티티 내 update 메서드로 적용
+		customer.update(updated); // null 체크 병합 로직 내장
 	}
 
 	@Override

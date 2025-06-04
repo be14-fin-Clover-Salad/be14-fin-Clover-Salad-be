@@ -102,7 +102,8 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		log.info("Getting Employee Level");
 		SearchEmployeeDTO searchEmployeeDTO = new SearchEmployeeDTO();
 		searchEmployeeDTO.setCode(employeeCode);
-		String employeeLevel = employeeQueryService.searchEmployees(searchEmployeeDTO).get(0).getLevel();
+		List<EmployeeQueryDTO> employeeList = employeeQueryService.searchEmployees(searchEmployeeDTO);
+		String employeeLevel = employeeList.get(0).getLevel();
 		
 		/* 설명. 직급과 기간으로 회사의 연간 목표 조회 */
 		log.info("Getting Default Goal");

@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
+import com.clover.salad.employee.command.domain.aggregate.enums.EmployeeLevel;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
@@ -55,6 +56,8 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 
 	private Collection<? extends GrantedAuthority> getAuthorities(EmployeeEntity employee) {
 		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+		// 관리자 여부
 		if (employee.isAdmin()) {
 			log.info("권한 부여: ROLE_ADMIN");
 			authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
@@ -62,6 +65,13 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 			log.info("권한 부여: ROLE_MEMBER");
 			authorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
 		}
+
+		// 팀장 여부
+		if (employee.getLevel() == EmployeeLevel.L5) {
+			log.info("직급이 팀장 → ROLE_MANAGER 권한 추가 부여");
+			authorities.add(new SimpleGrantedAuthority("ROLE_MANAGER"));
+		}
+
 		return authorities;
 	}
 }

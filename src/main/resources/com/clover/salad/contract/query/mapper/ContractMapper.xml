@@ -25,37 +25,35 @@
         <result property="productNames" column="product_names"/>
     </resultMap>
 
-    <resultMap id="ContractDetailResultMap" type="com.clover.salad.contract.query.dto.ContractResponseDTO">
-        <id property="id" column="id"/>
+    <resultMap id="ContractFlatResultMap" type="com.clover.salad.contract.query.dto.ContractResponseDTO">
+
+        <result property="id" column="id"/>
         <result property="renameFile" column="rename_file"/>
         <result property="code" column="code"/>
         <result property="amount" column="amount"/>
 
-        <association property="customer" javaType="com.clover.salad.contract.query.dto.CustomerResponseDTO">
-            <result property="name" column="name"/>
-            <result property="address" column="address"/>
-            <result property="phone" column="phone"/>
-        </association>
 
-        <association property="employee" javaType="com.clover.salad.contract.query.dto.EmployeeResponseDTO">
-            <result property="name" column="employee_name"/>
-        </association>
+        <result property="customerName" column="name"/>
+        <result property="customerAddress" column="address"/>
+        <result property="customerPhone" column="phone"/>
 
-        <association property="product" javaType="com.clover.salad.contract.query.dto.ProductResponseDTO">
-            <result property="name" column="product_name"/>
-            <result property="serialNumber" column="serial_number"/>
-            <result property="quantity" column="quantity"/>
-            <result property="rentalCost" column="rental_cost"/>
-        </association>
 
-        <association property="approval" javaType="com.clover.salad.contract.query.dto.ApprovalResponseDTO">
-            <result property="title" column="aprv_title"/>
-            <result property="content" column="aprv_content"/>
-            <result property="state" column="aprv_state"/>
-            <result property="reqId" column="req_id"/>
-            <result property="aprvId" column="aprv_id"/>
-        </association>
+        <result property="employeeName" column="employee_name"/>
+
+
+        <result property="aprvTitle" column="aprv_title"/>
+        <result property="aprvContent" column="aprv_content"/>
+        <result property="aprvState" column="aprv_state"/>
+        <result property="reqId" column="req_id"/>
+        <result property="aprvId" column="aprv_id"/>
+
+
+        <result property="productName" column="product_name"/>
+        <result property="serialNumber" column="serial_number"/>
+        <result property="quantity" column="quantity"/>
+        <result property="rentalCost" column="rental_cost"/>
     </resultMap>
+
 
 
 
@@ -179,7 +177,7 @@
         GROUP BY c.id
     </select>
 
-    <select id="selectDetailContractInfo" parameterType="int" resultMap="ContractDetailResultMap">
+    <select id="selectDetailContractInfo" parameterType="int" resultMap="ContractFlatResultMap">
         SELECT
             c.id,
             f.rename_file,

@@ -29,8 +29,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	
 	/* 설명. 실적 목표 등록 */
 	@Override
-	public void registerGoal(List<GoalDTO> goalList, String employeeCode)
-		throws InvalidSearchTermException, EmployeeNotFoundException {
+	public void registerGoal(List<GoalDTO> goalList, String employeeCode) {
 		int employeeId = getEmployeeIdByCode(employeeCode);
 		
 		if (validateGoal(goalList, employeeId, employeeCode)) {
@@ -44,8 +43,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	}
 	
 	@Override
-	public void changeGoal(List<GoalDTO> goalList, String employeeCode)
-		throws InvalidSearchTermException, EmployeeNotFoundException {
+	public void changeGoal(List<GoalDTO> goalList, String employeeCode) {
 		int employeeId = getEmployeeIdByCode(employeeCode);
 		
 		if (validateGoal(goalList, employeeId, employeeCode)) {

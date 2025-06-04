@@ -31,7 +31,7 @@ public class GoalCommandController {
 	public ResponseEntity<String> registerGoal(
 		@RequestHeader("Authorization") String token,
 		@RequestBody List<GoalDTO> goalList
-	) throws Exception {
+	) {
 		String pureToken = token.replace("Bearer ", "");
 		String code = jwtUtil.getUsername(pureToken);
 		
@@ -46,7 +46,7 @@ public class GoalCommandController {
 	public ResponseEntity<String> changeGoal(
 		@RequestHeader("Authorization") String token,
 		@RequestBody List<GoalDTO> goalList
-	) throws Exception {
+	) {
 		
 		String pureToken = token.replace("Bearer ", "");
 		String code = jwtUtil.getUsername(pureToken);

@@ -1,7 +1,10 @@
 package com.clover.salad.employee.command.application.controller;
 
+import com.clover.salad.employee.command.application.dto.EmployeeUpdateDTO;
+import com.clover.salad.employee.command.application.dto.RequestChangePasswordDTO;
 import com.clover.salad.employee.command.application.dto.RequestConfirmResetPasswordDTO;
 import com.clover.salad.employee.command.application.dto.RequestResetPasswordDTO;
+import com.clover.salad.employee.command.application.dto.ResponseChangePasswordDTO;
 import com.clover.salad.employee.command.application.service.EmployeeCommandService;
 import com.clover.salad.security.AuthService;
 import com.clover.salad.security.JwtUtil;
@@ -48,13 +51,13 @@ public class EmployeeCommandController {
 		return ResponseEntity.ok("로그아웃 성공 (토큰 블랙리스트 등록 완료)");
 	}
 
-	@PostMapping("/password-reset-requests")
+	@PostMapping("/password-reset")
 	public ResponseEntity<String> requestResetPassword(@RequestBody RequestResetPasswordDTO dto) {
 		employeeCommandService.sendResetPasswordLink(dto.getCode(), dto.getEmail());
 		return ResponseEntity.ok("비밀번호 재설정 링크를 이메일로 전송했습니다.");
 	}
 
-	@PostMapping("/confirm-reset-password")
+	@PostMapping("/password-resets/confirm")
 	public ResponseEntity<String> confirmResetPassword(@RequestBody RequestConfirmResetPasswordDTO dto) {
 		employeeCommandService.confirmResetPassword(dto.getToken(), dto.getNewPassword());
 		return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
@@ -99,5 +102,29 @@ public class EmployeeCommandController {
 		response.addHeader("Authorization", "Bearer " + newAccessToken);
 
 		return ResponseEntity.ok().build();
+	}
+
+	@PatchMapping("/update")
+	public ResponseEntity<String> updateEmployee(
+		@RequestHeader("Authorization") String token,
+		@RequestBody EmployeeUpdateDTO dto) {
+
+		String pureToken = token.replace("Bearer ", "");
+		String code = jwtUtil.getUsername(pureToken);
+
+		employeeCommandService.updateEmployee(code, dto);
+		return ResponseEntity.ok("직원 정보가 수정되었습니다.");
+	}
+
+	@PostMapping("/password-change")
+	public ResponseEntity<ResponseChangePasswordDTO> changePassword(
+		@RequestHeader("Authorization") String token,
+		@RequestBody RequestChangePasswordDTO dto) {
+
+		String pureToken = token.replace("Bearer ", "");
+		String code = jwtUtil.getUsername(pureToken);
+
+		employeeCommandService.changePassword(code, dto);
+		return ResponseEntity.ok(new ResponseChangePasswordDTO("비밀번호가 변경되었습니다."));
 	}
 }

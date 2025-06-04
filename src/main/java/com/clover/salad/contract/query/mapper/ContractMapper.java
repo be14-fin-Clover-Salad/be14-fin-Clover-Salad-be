@@ -1,11 +1,11 @@
 package com.clover.salad.contract.query.mapper;
 
 import com.clover.salad.contract.query.dto.ContractDTO;
+import com.clover.salad.contract.query.dto.ContractResponseDTO;
 import com.clover.salad.contract.query.dto.ContractSearchDTO;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -15,5 +15,6 @@ public interface ContractMapper {
 
 	List<ContractDTO> searchContracts(ContractSearchDTO contractSearchDTO);
 
+	ContractResponseDTO selectDetailContractInfo(int contractId);
 }
 

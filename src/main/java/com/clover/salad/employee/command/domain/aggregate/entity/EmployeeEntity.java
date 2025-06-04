@@ -1,7 +1,6 @@
 package com.clover.salad.employee.command.domain.aggregate.entity;
 
 import java.time.LocalDate;
-
 import com.clover.salad.employee.command.domain.aggregate.enums.EmployeeLevel;
 import com.clover.salad.employee.command.domain.aggregate.enums.EmployeeLevelConverter;
 
@@ -13,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,31 +23,31 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 @Table(name = "employee")
 public class EmployeeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	private int id;
 
-	@Column(name = "code", nullable = false)
+	@Column(name = "code", nullable = false, unique = true)
 	private String code;
 
 	@Column(name = "password", nullable = false)
 	private String encPwd;
 
-	@Column(name = "name", nullable = false)
+	@Column(nullable = false)
 	private String name;
 
-	@Column(name = "phone", nullable = false)
+	@Column(nullable = false)
 	private String phone;
 
-	@Column(name = "email", nullable = false)
+	@Column(nullable = false)
 	private String email;
 
 	@Convert(converter = EmployeeLevelConverter.class)
-	@Column(name = "level", nullable = false)
+	@Column(nullable = false)
 	private EmployeeLevel level;
 
 	@Column(name = "hire_date")
@@ -68,7 +68,6 @@ public class EmployeeEntity {
 	@Column(name = "department_id", nullable = false)
 	private int departmentId;
 
-	@Column(name = "profile", nullable = false)
+	@Column(nullable = false)
 	private int profile;
-
 }

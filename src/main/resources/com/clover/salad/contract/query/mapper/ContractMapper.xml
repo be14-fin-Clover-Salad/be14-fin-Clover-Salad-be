@@ -25,6 +25,37 @@
         <result property="productNames" column="product_names"/>
     </resultMap>
 
+    <resultMap id="ContractWithProductsMap" type="com.clover.salad.contract.query.dto.ContractResponseDTO">
+
+        <result property="id" column="id"/>
+        <result property="renameFile" column="rename_file"/>
+        <result property="code" column="code"/>
+        <result property="amount" column="amount"/>
+
+
+        <result property="customerName" column="customer_name"/>
+        <result property="customerAddress" column="customer_address"/>
+        <result property="customerPhone" column="customer_phone"/>
+
+
+        <result property="employeeName" column="employee_name"/>
+
+
+        <result property="aprvTitle" column="aprv_title"/>
+        <result property="aprvContent" column="aprv_content"/>
+        <result property="aprvState" column="aprv_state"/>
+        <result property="reqId" column="req_id"/>
+        <result property="aprvId" column="aprv_id"/>
+
+
+        <collection property="productList" ofType="com.clover.salad.contract.query.dto.ProductDTO">
+            <result property="productName" column="product_name"/>
+            <result property="serialNumber" column="serial_number"/>
+            <result property="quantity" column="quantity"/>
+            <result property="rentalCost" column="rental_cost"/>
+        </collection>
+    </resultMap>
+
 
     <select id="selectContractInfo" parameterType="int" resultMap="ContractResultMap">
         SELECT
@@ -145,4 +176,41 @@
         </where>
         GROUP BY c.id
     </select>
+
+    <select id="selectDetailContractInfo" parameterType="int" resultMap="ContractWithProductsMap">
+        SELECT
+            c.id,
+            f.rename_file,
+            c.code,
+            c.amount,
+
+            cu.name AS customer_name,
+            cu.address AS customer_address,
+            cu.phone AS customer_phone,
+
+            e.name AS employee_name,
+
+            a.title AS aprv_title,
+            a.content AS aprv_content,
+            a.state AS aprv_state,
+            a.req_id,
+            a.aprv_id,
+
+            p.name AS product_name,
+            p.serial_number,
+            cp.quantity,
+            p.rental_cost
+
+        FROM contract c
+                 JOIN customer cu ON c.customer_id = cu.id
+                 JOIN employee e ON c.employee_id = e.id
+                 LEFT JOIN approval a ON a.contract_id = c.id
+                 LEFT JOIN contract_product cp ON cp.contract_id = c.id
+                 LEFT JOIN product p ON p.id = cp.product_id
+                 LEFT JOIN document_origin d ON c.document_origin_id = d.id
+                 LEFT JOIN file_upload f ON d.file_upload_id = f.id
+
+        WHERE c.id = #{contractId}
+    </select>
+
 </mapper>

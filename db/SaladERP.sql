@@ -40,9 +40,9 @@ CREATE TABLE DEPARTMENT
 CREATE TABLE FILE_UPLOAD
 (
     id          INT         NOT NULL AUTO_INCREMENT,
-    origin_file VARCHAR(20) NOT NULL,
-    rename_file VARCHAR(20) NOT NULL,
-    path        VARCHAR(50) NOT NULL,
+    origin_file VARCHAR(512) NOT NULL,
+    rename_file VARCHAR(512) NOT NULL,
+    path        VARCHAR(512) NOT NULL,
     created_at  DATETIME    NOT NULL,
     type        VARCHAR(3)  NOT NULL,
     CONSTRAINT PK_FILE_UPLOAD PRIMARY KEY (id)
@@ -167,7 +167,7 @@ CREATE TABLE CUSTOMER
     id          INT          NOT NULL AUTO_INCREMENT,
     name        VARCHAR(20)  NOT NULL,
     birthdate   VARCHAR(20)  NULL,
-    address     VARCHAR(100)  NULL,
+    address     VARCHAR(255)  NULL,
     phone       VARCHAR(11)  NOT NULL,
     email       VARCHAR(255) NULL,
     register_at DATE         NULL,
@@ -289,7 +289,7 @@ CREATE TABLE CONTRACT
     payment_day        INT         NOT NULL,
     deposit_owner      VARCHAR(20) NOT NULL,
     relationship       VARCHAR(20) NOT NULL,
-    payment_email      VARCHAR(20) NOT NULL,
+    payment_email      VARCHAR(255) NOT NULL,
     is_deleted         BOOLEAN     NOT NULL DEFAULT FALSE,
     etc                VARCHAR(20) NULL,
     document_origin_id INT         NOT NULL,

@@ -24,7 +24,8 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 		Customer customer = Customer.builder().name(request.getName())
 				.birthdate(request.getBirthdate()).phone(request.getPhone())
 				.address(request.getAddress()).email(request.getEmail()).type(request.getType())
-				.etc(request.getEtc()).registerAt(LocalDate.now()).isDeleted(false).build();
+				.etc(request.getEtc()).registerAt(LocalDate.now()) // 등록일은 현재 날짜 고정
+				.isDeleted(false).build();
 
 		customerRepository.save(customer);
 	}
@@ -40,7 +41,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 				.address(request.getAddress()).email(request.getEmail()).type(request.getType())
 				.etc(request.getEtc()).build();
 
-		customer.update(updated);
+		customer.update(updated); // 엔티티 내 update 메서드로 적용
 	}
 
 	@Override
@@ -49,6 +50,6 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 		Customer customer = customerRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("해당 ID의 고객이 존재하지 않습니다."));
 
-		customer.softDelete();
+		customer.softDelete(); // 소프트 삭제
 	}
 }

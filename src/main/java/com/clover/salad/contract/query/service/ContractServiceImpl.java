@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.clover.salad.contract.query.dto.ContractDTO;
+import com.clover.salad.contract.query.dto.ContractResponseDTO;
 import com.clover.salad.contract.query.dto.ContractSearchDTO;
 import com.clover.salad.contract.query.mapper.ContractMapper;
 
@@ -27,5 +28,10 @@ public class ContractServiceImpl implements ContractService {
 	@Override
 	public List<ContractDTO> searchContracts(ContractSearchDTO contractSearchDTO) {
 		return contractMapper.searchContracts(contractSearchDTO);
+	}
+
+	@Override
+	public ContractResponseDTO findDetailInfo(int contractId) {
+		return contractMapper.selectDetailContractInfo(contractId);
 	}
 }

@@ -32,4 +32,9 @@ public class GoalQueryServiceImpl implements GoalQueryService {
 	public DefaultGoalDTO searchDefaultGoalByLevelAndTargetYear(String employeeLevel, int targetYear) {
 		return goalMapper.selectDefaultGoalByLevelAndTargetYear(employeeLevel, targetYear);
 	}
+	
+	@Override
+	public List<GoalDTO> searchYearGoalByCurrentGoal(int employeeId, int targetYear) {
+		return goalMapper.selectYearGoalByCurrentGoalTargetDate(employeeId, targetYear);
+	}
 }

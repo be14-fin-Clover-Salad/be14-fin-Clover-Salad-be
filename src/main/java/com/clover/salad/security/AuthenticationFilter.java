@@ -41,7 +41,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			String body = request.getReader().lines().collect(Collectors.joining());
-			log.info("[AUTH FILTER] Raw request body: {}", body); // ✅ 바디 유무 확인
+			log.info("[AUTH FILTER] Raw request body: {}", body);
 
 			ObjectMapper mapper = new ObjectMapper();
 			RequestLoginVO creds = mapper.readValue(body, RequestLoginVO.class);

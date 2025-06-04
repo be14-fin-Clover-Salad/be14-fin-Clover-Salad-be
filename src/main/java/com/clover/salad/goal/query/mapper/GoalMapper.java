@@ -19,4 +19,9 @@ public interface GoalMapper {
 		@Param("employeeLevel") String employeeLevel,
 		@Param("targetYear") int targetYear
 	);
+	
+	List<GoalDTO> selectYearGoalByCurrentGoalTargetDate(
+		@Param("employeeId") int employeeId,
+		@Param("targetYear") int targetYear
+	);
 }

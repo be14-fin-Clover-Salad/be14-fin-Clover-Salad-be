@@ -7,4 +7,5 @@ import com.clover.salad.goal.command.domain.aggregate.entity.Goal;
 
 @Repository
 public interface GoalRepository extends JpaRepository<Goal, Integer> {
+	Goal findByEmployeeIdAndTargetDate(int employeeId, int targetDate);
 }

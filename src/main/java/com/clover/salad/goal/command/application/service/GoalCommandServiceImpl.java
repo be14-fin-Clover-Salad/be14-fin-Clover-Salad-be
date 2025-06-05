@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import com.clover.salad.common.exception.EmployeeNotFoundException;
 import com.clover.salad.common.exception.InvalidSearchTermException;
 import com.clover.salad.common.exception.UnauthorizedEmployeeException;
+import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.aggregate.enums.EmployeeLevel;
+import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
@@ -28,6 +30,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	private final GoalRepository goalRepository;
 	private final GoalQueryService goalQueryService;
 	private final EmployeeQueryService employeeQueryService;
+	private final EmployeeRepository employeeRepository;
 	
 	/* 설명. 실적 목표 등록 */
 	@Override
@@ -61,9 +64,9 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	@Override
 	public void deleteGoal(List<GoalDTO> goalList, String employeeCode) {
 		log.info("employeeCode: {}", employeeCode);
-		log.info("employee: {}", getEmployeeByCode(employeeCode).toString());
-		log.info("Current User Level: {}", getEmployeeByCode(employeeCode).getLevel());
-		if (!getEmployeeByCode(employeeCode).getLevel().equals(EmployeeLevel.ADMIN.getLabel())) {
+		EmployeeEntity employee = employeeRepository.findByCode(employeeCode).orElseThrow(EmployeeNotFoundException::new);
+		log.info("Current User Level: {}", employee.getLevel());
+		if (!employee.getLevel().equals(EmployeeLevel.ADMIN)) {
 			throw new UnauthorizedEmployeeException("관리자만 목표를 삭제할 수 있습니다");
 		}
 		for (GoalDTO goalDTO : goalList) {
@@ -111,11 +114,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		
 		/* 설명. 사원 코드로 직급 뽑아오기 */
 		log.info("Getting Employee Level");
-		SearchEmployeeDTO searchEmployeeDTO = new SearchEmployeeDTO();
-		searchEmployeeDTO.setCode(employeeCode);
-		List<EmployeeQueryDTO> employeeList = employeeQueryService.searchEmployees(searchEmployeeDTO);
-		if (employeeList.isEmpty()) throw new EmployeeNotFoundException();
-		String employeeLevel = employeeList.get(0).getLevel();
+		String employeeLevel = getEmployeeByCode(employeeCode).getLevel();
 		
 		/* 설명. 직급과 기간으로 회사의 연간 목표 조회 */
 		log.info("Getting Default Goal");

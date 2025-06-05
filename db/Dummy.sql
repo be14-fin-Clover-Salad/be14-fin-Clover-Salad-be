@@ -24,8 +24,13 @@ VALUES ('profile1.png', 'uuid1.png', '/uploads/', '2025-05-28 02:13:22', '프로
      , ('profile4.png', 'uuid10.png', '/uploads/', '2025-05-29 23:34:38', '프로필');
 
 -- EMPLOYEE
-INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted,work_place, department_id, profile)
-VALUES ('202501001', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','홍길동','01012345678','teamflover@naver.com','사원','2025-01-01',NULL,FALSE,FALSE,'서울본사',1,1);
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile)
+ VALUES ('202501001', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','강수지','01038679572','teamflover_s@naver.com','사원','2025-01-01',NULL,FALSE,FALSE,'서울본사',1,1),
+        ('202501002', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','고성연','01019990502','teamflover_j@naver.com','주임','2025-01-01',NULL,FALSE,FALSE,'서울본사',1,1),
+        ('202501003', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','고윤석','01095009870','teamflover_d@naver.com','대리','2025-01-01',NULL,FALSE,FALSE,'서울본사',1,1),
+        ('202501004', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','김성민','01046792202','teamflover_k@naver.com','과장','2025-01-01',NULL,FALSE,FALSE,'서울본사',1,1),
+        ('202501005', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','이청민','01020000101','teamflover_t@naver.com','팀장','2025-01-01',NULL,FALSE,FALSE,'서울본사',1,1),
+        ('202501006', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','관리자','01020250605','teamflover_a@naver.com','관리자','2025-01-01',NULL,TRUE,FALSE,'서울본사',1,1);
 
 -- CUSTOMER
 INSERT INTO CUSTOMER (id, name, birthdate, address, phone, email, register_at, is_deleted, type, etc)

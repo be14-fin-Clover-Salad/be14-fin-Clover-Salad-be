@@ -24,7 +24,7 @@ public class CustomerDTO {
 	private String address;
 	private String phone;
 	private String email;
-	private String customerType; // Enum 관리 고객, 리드
+	private CustomerType customerType;
 
 	public Customer toEntityWithDefaults() {
 		return Customer.builder()
@@ -33,7 +33,7 @@ public class CustomerDTO {
 			.phone(phone)
 			.address(address)
 			.email(email)
-			.type(String.valueOf(CustomerType.valueOf(customerType)))
+			.type(customerType.name())
 			.registerAt(LocalDate.now())
 			.isDeleted(false)
 			.etc(null)

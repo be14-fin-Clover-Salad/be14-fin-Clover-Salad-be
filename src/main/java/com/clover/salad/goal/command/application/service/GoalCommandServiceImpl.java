@@ -9,7 +9,6 @@ import com.clover.salad.common.exception.EmployeeNotFoundException;
 import com.clover.salad.common.exception.InvalidSearchTermException;
 import com.clover.salad.common.exception.UnauthorizedEmployeeException;
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
-import com.clover.salad.employee.command.domain.aggregate.enums.EmployeeLevel;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
@@ -66,7 +65,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		log.info("employeeCode: {}", employeeCode);
 		EmployeeEntity employee = employeeRepository.findByCode(employeeCode).orElseThrow(EmployeeNotFoundException::new);
 		log.info("Current User Level: {}", employee.getLevel());
-		if (!employee.getLevel().equals(EmployeeLevel.ADMIN)) {
+		if (!employee.isAdmin()) {
 			throw new UnauthorizedEmployeeException("관리자만 목표를 삭제할 수 있습니다");
 		}
 		for (GoalDTO goalDTO : goalList) {

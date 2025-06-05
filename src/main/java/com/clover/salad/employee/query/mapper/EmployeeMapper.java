@@ -14,4 +14,6 @@ public interface EmployeeMapper {
 	List<EmployeeQueryDTO> searchEmployees(SearchEmployeeDTO searchEmployeeDTO);
 
 	LoginHeaderInfoDTO findLoginHeaderInfoByCode(@Param("code") String code);
+
+	Boolean selectIsAdminByCode(@Param("code") String code);
 }

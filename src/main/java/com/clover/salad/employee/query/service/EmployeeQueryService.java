@@ -16,4 +16,6 @@ public interface EmployeeQueryService {
 	UserDetails loadUserByUsername(String subject);
 
 	LoginHeaderInfoDTO getLoginHeaderInfo(String code);
+
+	boolean checkIsAdmin(String code);
 }

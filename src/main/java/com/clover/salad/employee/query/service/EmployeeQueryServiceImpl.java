@@ -42,6 +42,11 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 	}
 
 	@Override
+	public boolean checkIsAdmin(String code) {
+		return employeeMapper.selectIsAdminByCode(code);
+	}
+
+	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		EmployeeEntity employee = employeeRepository.findByCode(username)
 			.orElseThrow(() -> new UsernameNotFoundException("해당 사번을 가진 사용자를 찾을 수 없습니다: " + username));

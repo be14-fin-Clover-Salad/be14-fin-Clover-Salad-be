@@ -10,16 +10,26 @@ import lombok.ToString;
 @Setter
 @ToString
 public class CustomerQueryDTO {
+
     private int id;
+
     private String name;
+
     private String birthdate;
+
     private String phone;
+
     private String address;
+
     private String email;
+
     @JsonProperty("registerAt")
     private String registerAt;
+
     @JsonProperty("isDeleted")
     private boolean isDeleted;
+
     private String type;
+
     private String etc;
 }

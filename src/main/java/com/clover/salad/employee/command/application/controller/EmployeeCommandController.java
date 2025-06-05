@@ -5,6 +5,7 @@ import com.clover.salad.employee.command.application.dto.RequestChangePasswordDT
 import com.clover.salad.employee.command.application.dto.RequestConfirmResetPasswordDTO;
 import com.clover.salad.employee.command.application.dto.RequestResetPasswordDTO;
 import com.clover.salad.employee.command.application.dto.ResponseChangePasswordDTO;
+import com.clover.salad.employee.command.application.dto.UpdateProfilePathDTO;
 import com.clover.salad.employee.command.application.service.EmployeeCommandService;
 import com.clover.salad.security.AuthService;
 import com.clover.salad.security.JwtUtil;
@@ -108,7 +109,7 @@ public class EmployeeCommandController {
 		return ResponseEntity.ok().build();
 	}
 
-	@PatchMapping("/update")
+	@PatchMapping("/mypage")
 	public ResponseEntity<String> updateEmployee(
 		@RequestHeader("Authorization") String token,
 		@RequestBody EmployeeUpdateDTO dto) {
@@ -130,5 +131,17 @@ public class EmployeeCommandController {
 
 		employeeCommandService.changePassword(code, dto);
 		return ResponseEntity.ok(new ResponseChangePasswordDTO("비밀번호가 변경되었습니다."));
+	}
+
+	@PatchMapping("/mypage/profile-path")
+	public ResponseEntity<String> updateProfilePath(
+		@RequestHeader("Authorization") String token,
+		@RequestBody UpdateProfilePathDTO dto) {
+
+		String pureToken = token.replace("Bearer ", "");
+		String code = jwtUtil.getUsername(pureToken);
+
+		employeeCommandService.updateProfilePath(code, dto.getPath());
+		return ResponseEntity.ok("프로필 경로가 성공적으로 수정되었습니다.");
 	}
 }

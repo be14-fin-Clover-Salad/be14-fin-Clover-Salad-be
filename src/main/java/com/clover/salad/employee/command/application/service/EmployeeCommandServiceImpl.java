@@ -18,10 +18,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.clover.salad.common.exception.InvalidCurrentPasswordException;
+import com.clover.salad.common.exception.InvalidEmployeeInfoException;
+import com.clover.salad.common.file.entity.FileUploadEntity;
+import com.clover.salad.common.file.repository.FileUploadRepository;
 import com.clover.salad.employee.command.application.dto.EmployeeUpdateDTO;
 import com.clover.salad.employee.command.application.dto.RequestChangePasswordDTO;
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
+import com.clover.salad.employee.query.mapper.EmployeeMapper;
 import com.clover.salad.security.JwtUtil;
 
 import jakarta.mail.internet.MimeMessage;
@@ -37,6 +41,8 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 	private final RedisTemplate<String, String> redisTemplate;
 	private final JavaMailSender mailSender;
 	private final PasswordEncoder passwordEncoder;
+	private final EmployeeMapper employeeMapper;
+	private final FileUploadRepository fileUploadRepository;
 
 	@Value("${salad.frontend.reset-url}") // 예: http://localhost:5173/reset-password?token=
 	private String frontendResetUrl;
@@ -50,7 +56,9 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		JwtUtil jwtUtil,
 		RedisTemplate<String, String> redisTemplate,
 		JavaMailSender mailSender,
-		PasswordEncoder passwordEncoder) {
+		PasswordEncoder passwordEncoder,
+		EmployeeMapper employeeMapper,
+		FileUploadRepository fileUploadRepository) {
 		this.employeeRepository = employeeRepository;
 		this.modelMapper = modelMapper;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -58,6 +66,8 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		this.redisTemplate = redisTemplate;
 		this.mailSender = mailSender;
 		this.passwordEncoder = passwordEncoder;
+		this.employeeMapper = employeeMapper;
+		this.fileUploadRepository = fileUploadRepository;
 	}
 
 	@Override
@@ -71,14 +81,15 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 
 	@Override
 	public void sendResetPasswordLink(String code, String email) {
-		Optional<EmployeeEntity> optionalEmployee = employeeRepository.findByCode(code);
 
-		if (optionalEmployee.isEmpty() || !optionalEmployee.get().getEmail().equals(email)) {
-			throw new RuntimeException("사번 또는 이메일이 일치하지 않습니다.");
+		Integer employeeId = employeeMapper.selectIdByCodeAndEmail(code, email);
+		if (employeeId == null || employeeId == 0) {
+			throw new InvalidEmployeeInfoException();
 		}
 
 		String token = UUID.randomUUID().toString();
 
+		// 이메일 변경용 토큰을 Redis에 저장 (5분 유효)
 		redisTemplate.opsForValue().set("reset_token:" + token, email, Duration.ofMinutes(EXPIRATION_MINUTES));
 
 		String resetLink = frontendResetUrl + token;
@@ -89,7 +100,11 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 
 			helper.setTo(email);
 			helper.setSubject("[SALAD] 비밀번호 재설정 링크입니다.");
-			helper.setText("다음 링크를 클릭해 비밀번호를 재설정하세요 (5분 내 만료):\n\n" + resetLink, false);
+
+			String htmlContent = "<p>다음 링크를 클릭해 비밀번호를 재설정하세요 (5분 내 만료):</p>"
+				+ "<p><a href=\"" + resetLink + "\">SALAD 비밀번호 재설정</a></p>";
+
+			helper.setText(htmlContent, true);
 			helper.setFrom("teamflover@naver.com");
 
 			mailSender.send(message);
@@ -145,5 +160,23 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		String newEncodedPassword = passwordEncoder.encode(dto.getNewPassword());
 		employee.setEncPwd(newEncodedPassword);
 		employeeRepository.save(employee);
+	}
+
+	@Override
+	@Transactional
+	public void updateProfilePath(String code, String newPath) {
+		EmployeeEntity employee = employeeRepository.findByCode(code)
+			.orElseThrow(() -> new RuntimeException("해당 사번의 사원을 찾을 수 없습니다."));
+
+		Integer profileId = employee.getProfile();
+		if (profileId == null) {
+			throw new RuntimeException("등록된 프로필이 없습니다.");
+		}
+
+		FileUploadEntity file = fileUploadRepository.findById(profileId)
+			.orElseThrow(() -> new RuntimeException("해당 프로필 파일을 찾을 수 없습니다."));
+
+		file.setPath(newPath);
+		fileUploadRepository.save(file);
 	}
 }

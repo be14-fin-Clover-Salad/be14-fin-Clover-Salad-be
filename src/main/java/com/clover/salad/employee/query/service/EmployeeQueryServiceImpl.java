@@ -19,6 +19,7 @@ import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.aggregate.enums.EmployeeLevel;
 import com.clover.salad.employee.command.domain.repository.DepartmentRepository;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
+import com.clover.salad.employee.query.dto.EmployeeMypageQueryDTO;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.LoginHeaderInfoDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
@@ -54,6 +55,11 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 	@Override
 	public boolean checkIsAdmin(String code) {
 		return employeeMapper.selectIsAdminByCode(code);
+	}
+
+	@Override
+	public EmployeeMypageQueryDTO getMyPageInfo(String code) {
+		return employeeMapper.selectMyPageInfoByCode(code);
 	}
 
 	@Override
@@ -107,4 +113,5 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 
 		return authorities;
 	}
+
 }

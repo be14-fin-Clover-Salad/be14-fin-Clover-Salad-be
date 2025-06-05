@@ -13,4 +13,6 @@ public interface EmployeeCommandService {
 	void updateEmployee(String code, EmployeeUpdateDTO dto);
 
 	void changePassword(String code, RequestChangePasswordDTO dto);
+
+	void updateProfilePath(String code, String newPath);
 }

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.clover.salad.consult.query.mapper.ConsultMapper">
+
+    <resultMap id="ConsultResultMap" type="com.clover.salad.consult.query.dto.ConsultQueryDTO">
+        <id property="id" column="id"/>
+        <result property="consultAt" column="consult_at"/>
+        <result property="content" column="content"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="etc" column="etc"/>
+        <result property="feedbackScore" column="feedback_score"/>
+        <result property="employeeId" column="employee_id"/>
+        <result property="customerId" column="customer_id"/>
+    </resultMap>
+
+    <select id="findById" resultMap="ConsultResultMap">
+        SELECT
+            id,
+            consult_at,
+            content,
+            is_deleted,
+            etc,
+            feedback_score,
+            employee_id,
+            customer_id
+        FROM consultation
+        WHERE id = #{id}
+    </select>
+
+    <select id="findAll" resultMap="ConsultResultMap">
+        SELECT
+            id,
+            consult_at,
+            content,
+            is_deleted,
+            etc,
+            feedback_score,
+            employee_id,
+            customer_id
+        FROM consultation
+        ORDER BY consult_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="findAllActive" resultMap="ConsultResultMap">
+        SELECT
+            id,
+            consult_at,
+            content,
+            is_deleted,
+            etc,
+            feedback_score,
+            employee_id,
+            customer_id
+        FROM consultation
+        WHERE is_deleted = false
+        ORDER BY consult_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+</mapper>

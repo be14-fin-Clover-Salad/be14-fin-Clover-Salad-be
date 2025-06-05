@@ -80,7 +80,8 @@
             AND d.name LIKE CONCAT('%', #{departmentName}, '%')
         </if>
     </select>
-    <select id="findLoginHeaderInfoByCode" resultType="com.clover.salad.employee.query.dto.LoginHeaderInfoDTO">
+    <select id="findLoginHeaderInfoByCode" parameterType="String"
+            resultType="com.clover.salad.employee.query.dto.LoginHeaderInfoDTO">
         SELECT e.name,
                d.name AS departmentName,
                f.path AS profilePath
@@ -89,7 +90,7 @@
           LEFT JOIN file_upload f ON e.profile = f.id
          WHERE e.code = #{code}
     </select>
-    <select id="selectIsAdminByCode" resultType="boolean">
+    <select id="selectIsAdminByCode"  parameterType="String" resultType="boolean">
         SELECT
                e.is_admin
           FROM employee e

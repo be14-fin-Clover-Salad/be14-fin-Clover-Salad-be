@@ -43,7 +43,7 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 
 	@Override
 	public boolean checkIsAdmin(String code) {
-		return employeeMapper.isAdminByCode(code);
+		return employeeMapper.selectIsAdminByCode(code);
 	}
 
 	@Override

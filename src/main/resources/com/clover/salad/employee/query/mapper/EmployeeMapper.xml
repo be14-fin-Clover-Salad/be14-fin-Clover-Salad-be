@@ -90,7 +90,7 @@
                  LEFT JOIN file_upload f ON e.profile = f.id
         WHERE e.code = #{code}
     </select>
-    <select id="isAdminByCode" resultType="boolean">
+    <select id="selectIsAdminByCode" resultType="boolean">
         SELECT CASE
                    WHEN e.is_admin = true THEN true
                    ELSE false

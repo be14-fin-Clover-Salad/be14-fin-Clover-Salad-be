@@ -15,5 +15,5 @@ public interface EmployeeMapper {
 
 	LoginHeaderInfoDTO findLoginHeaderInfoByCode(@Param("code") String code);
 
-	Boolean isAdminByCode(@Param("code") String code);
+	Boolean selectIsAdminByCode(@Param("code") String code);
 }

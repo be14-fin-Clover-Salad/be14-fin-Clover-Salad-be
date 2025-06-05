@@ -27,4 +27,9 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleInvalidSearchTerm(InvalidSearchTermException e) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 	}
+	
+	@ExceptionHandler(UnauthorizedEmployeeException.class)
+	public ResponseEntity<String> handleUnauthorizedEmployee(UnauthorizedEmployeeException e) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+	}
 }

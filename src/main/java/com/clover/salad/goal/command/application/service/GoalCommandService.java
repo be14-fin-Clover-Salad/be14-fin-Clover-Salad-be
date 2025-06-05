@@ -9,5 +9,5 @@ public interface GoalCommandService {
 	
 	void changeGoal(List<GoalDTO> goalList, String employeeCode);
 	
-	void deleteGoal(List<GoalDTO> goalList);
+	void deleteGoal(List<GoalDTO> goalList, String employeeCode);
 }

@@ -67,16 +67,11 @@ public class GoalCommandController {
 		@RequestBody List<GoalDTO> goalList
 	) {
 		String pureToken = token.replace("Bearer ", "");
-		if(!jwtUtil.getAuthentication(pureToken).getAuthorities().toString().equals("ROLE_ADMIN")) {
-			return ResponseEntity.badRequest().body("관리자만 목표를 삭제할 수 있습니다");
-		}
+		String code = jwtUtil.getUsername(pureToken);
 		
-		try {
-			log.info("Deleting goal");
-			goalCommandService.deleteGoal(goalList);
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+		log.info("Deleting goal");
+		goalCommandService.deleteGoal(goalList, code);
+		
 		return ResponseEntity.ok("Goals Deleted");
 	}
 }

@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.clover.salad.common.exception.EmployeeNotFoundException;
 import com.clover.salad.common.exception.InvalidSearchTermException;
+import com.clover.salad.common.exception.UnauthorizedEmployeeException;
+import com.clover.salad.employee.command.domain.aggregate.enums.EmployeeLevel;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
@@ -30,7 +32,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	/* 설명. 실적 목표 등록 */
 	@Override
 	public void registerGoal(List<GoalDTO> goalList, String employeeCode) {
-		int employeeId = getEmployeeIdByCode(employeeCode);
+		int employeeId = getEmployeeByCode(employeeCode).getId();
 		
 		if (validateGoal(goalList, employeeId, employeeCode)) {
 			for (GoalDTO goalDTO : goalList) {
@@ -44,7 +46,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	
 	@Override
 	public void changeGoal(List<GoalDTO> goalList, String employeeCode) {
-		int employeeId = getEmployeeIdByCode(employeeCode);
+		int employeeId = getEmployeeByCode(employeeCode).getId();
 		
 		if (validateGoal(goalList, employeeId, employeeCode)) {
 			for (GoalDTO goalDTO : goalList) {
@@ -57,7 +59,13 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	}
 	
 	@Override
-	public void deleteGoal(List<GoalDTO> goalList) {
+	public void deleteGoal(List<GoalDTO> goalList, String employeeCode) {
+		log.info("employeeCode: {}", employeeCode);
+		log.info("employee: {}", getEmployeeByCode(employeeCode).toString());
+		log.info("Current User Level: {}", getEmployeeByCode(employeeCode).getLevel());
+		if (!getEmployeeByCode(employeeCode).getLevel().equals(EmployeeLevel.ADMIN.getLabel())) {
+			throw new UnauthorizedEmployeeException("관리자만 목표를 삭제할 수 있습니다");
+		}
 		for (GoalDTO goalDTO : goalList) {
 			Goal goal = goalRepository.findByEmployeeIdAndTargetDate(goalDTO.getEmployeeId(), goalDTO.getTargetDate());
 			goalRepository.delete(updateGoal(goal, goalDTO));
@@ -166,12 +174,12 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		return goal;
 	}
 	
-	private int getEmployeeIdByCode(String employeeCode) throws EmployeeNotFoundException {
+	private EmployeeQueryDTO getEmployeeByCode(String employeeCode) throws EmployeeNotFoundException {
 		SearchEmployeeDTO searchEmployeeDTO = new SearchEmployeeDTO();
 		searchEmployeeDTO.setCode(employeeCode);
 		/* 설명. 코드로 검색해 무조건 한 명만 검색된다고 전제 */
 		List<EmployeeQueryDTO> employeeList = employeeQueryService.searchEmployees(searchEmployeeDTO);
 		if (employeeList.isEmpty()) throw new EmployeeNotFoundException();
-		return employeeList.get(0).getId();
+		return employeeList.get(0);
 	}
 }

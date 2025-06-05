@@ -4,7 +4,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.clover.salad.performance.query.mapper.PerformanceMapper">
 
-    <!-- 설명. 실적 ResultMap -->
+    <!-- 설명. 개인 실적 ResultMap -->
     <resultMap id="EmployeePerformanceResultMap" type="com.clover.salad.performance.command.application.dto.EmployeePerformanceDTO">
         <id property="id" column="ID"/>
         <result property="rentalProductCount" column="RENTAL_PRODUCT_COUNT"/>
@@ -18,7 +18,21 @@
         <result property="employeeId" column="EMPLOYEE_ID"/>
     </resultMap>
 
-    <!-- 설명. 실적 조회 -->
+    <!-- 설명. 팀 실적 ResultMap -->
+    <resultMap id="DepartmentPerformanceResultMap" type="com.clover.salad.performance.command.application.dto.DepartmentPerformanceDTO">
+        <id property="id" column="ID"/>
+        <result property="rentalProductCount" column="RENTAL_PRODUCT_COUNT"/>
+        <result property="rentalRetentionCount" column="RENTAL_RETENTION_COUNT"/>
+        <result property="totalRentalCount" column="TOTAL_RENTAL_COUNT"/>
+        <result property="newCustomerCount" column="NEW_CUSTOMER_COUNT"/>
+        <result property="totalRentalAmount" column="TOTAL_RENTAL_AMOUNT"/>
+        <result property="customerFeedbackScore" column="(DP.CUSTOMER_FEEDBACK_SCORE * 10)"/>
+        <result property="customerFeedbackCount" column="CUSTOMER_FEEDBACK_COUNT"/>
+        <result property="targetDate" column="TARGET_DATE"/>
+        <result property="departmentId" column="DEPARTMENT_ID"/>
+    </resultMap>
+
+    <!-- 설명. 개인 실적 조회 -->
     <select id="selectEmployeePerformanceByEmployeeId" resultMap="EmployeePerformanceResultMap" parameterType="map">
         SELECT
                EP.ID
@@ -34,5 +48,25 @@
           FROM EMPLOYEE_PERFORMANCE EP
          WHERE EP.EMPLOYEE_ID = #{employeeId}
            AND EP.TARGET_DATE BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <!-- 설명. 팀 실적 조회 -->
+    <select id="selectDepartmentPerformanceByDepartmentName" resultMap="DepartmentPerformanceResultMap" parameterType="map">
+        SELECT
+               DP.ID
+             , DP.RENTAL_PRODUCT_COUNT
+             , DP.RENTAL_RETENTION_COUNT
+             , DP.TOTAL_RENTAL_COUNT
+             , DP.NEW_CUSTOMER_COUNT
+             , DP.TOTAL_RENTAL_AMOUNT
+             , (DP.CUSTOMER_FEEDBACK_SCORE * 10)
+             , DP.CUSTOMER_FEEDBACK_COUNT
+             , DP.TARGET_DATE
+             , DP.DEPARTMENT_ID
+          FROM DEPARTMENT_PERFORMANCE DP
+         WHERE DP.DEPARTMENT_ID = (SELECT D.ID
+                                     FROM DEPARTMENT D
+                                    WHERE D.NAME = #{deptName})
+           AND DP.TARGET_DATE BETWEEN #{startDate} AND #{endDate}
     </select>
 </mapper>

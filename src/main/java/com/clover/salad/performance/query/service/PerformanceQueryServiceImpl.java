@@ -8,6 +8,7 @@ import com.clover.salad.common.exception.EmployeeNotFoundException;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
+import com.clover.salad.performance.command.application.dto.DepartmentPerformanceDTO;
 import com.clover.salad.performance.command.application.dto.EmployeePerformanceDTO;
 import com.clover.salad.performance.command.application.dto.SearchTermDTO;
 import com.clover.salad.performance.query.mapper.PerformanceMapper;
@@ -29,6 +30,18 @@ public class PerformanceQueryServiceImpl implements PerformanceQueryService {
 	) {
 		return performanceMapper.selectEmployeePerformanceByEmployeeId(
 			getEmployeeByCode(employeeCode).getId(),
+			searchTerm.getStartDate(),
+			searchTerm.getEndDate()
+		);
+	}
+	
+	@Override
+	public List<DepartmentPerformanceDTO> searchDepartmentPerformanceByDepartmentName(
+		String deptName,
+		SearchTermDTO searchTerm
+	) {
+		return performanceMapper.selectDepartmentPerformanceByDepartmentName(
+			deptName,
 			searchTerm.getStartDate(),
 			searchTerm.getEndDate()
 		);

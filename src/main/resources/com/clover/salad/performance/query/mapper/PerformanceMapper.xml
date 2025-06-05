@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clover.salad.performance.query.mapper.PerformanceMapper">
+
+    <!-- 설명. 실적 ResultMap -->
+    <resultMap id="EmployeePerformanceResultMap" type="com.clover.salad.performance.command.application.dto.EmployeePerformanceDTO">
+        <id property="id" column="ID"/>
+        <result property="rentalProductCount" column="RENTAL_PRODUCT_COUNT"/>
+        <result property="rentalRetentionCount" column="RENTAL_RETENTION_COUNT"/>
+        <result property="totalRentalCount" column="TOTAL_RENTAL_COUNT"/>
+        <result property="newCustomerCount" column="NEW_CUSTOMER_COUNT"/>
+        <result property="totalRentalAmount" column="TOTAL_RENTAL_AMOUNT"/>
+        <result property="customerFeedbackScore" column="(EP.CUSTOMER_FEEDBACK_SCORE * 10)"/>
+        <result property="customerFeedbackCount" column="CUSTOMER_FEEDBACK_COUNT"/>
+        <result property="targetDate" column="TARGET_DATE"/>
+        <result property="employeeId" column="EMPLOYEE_ID"/>
+    </resultMap>
+
+    <!-- 설명. 실적 조회 -->
+    <select id="selectEmployeePerformanceByEmployeeId" resultMap="EmployeePerformanceResultMap" parameterType="map">
+        SELECT
+               EP.ID
+             , EP.RENTAL_PRODUCT_COUNT
+             , EP.RENTAL_RETENTION_COUNT
+             , EP.TOTAL_RENTAL_COUNT
+             , EP.NEW_CUSTOMER_COUNT
+             , EP.TOTAL_RENTAL_AMOUNT
+             , (EP.CUSTOMER_FEEDBACK_SCORE * 10)
+             , EP.CUSTOMER_FEEDBACK_COUNT
+             , EP.TARGET_DATE
+             , EP.EMPLOYEE_ID
+          FROM EMPLOYEE_PERFORMANCE EP
+         WHERE EP.EMPLOYEE_ID = #{employeeId}
+           AND EP.TARGET_DATE BETWEEN #{startDate} AND #{endDate}
+    </select>
+</mapper>

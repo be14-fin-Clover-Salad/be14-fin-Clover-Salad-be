@@ -27,7 +27,6 @@ public class GoalQueryController {
 	private final JwtUtil jwtUtil;
 	
 	/* 설명. 사원 한 명의 목표 조회
-	 *  프론트에서
 	 *  쿼리스트링 수동 변경에 의한 조회 제한 필요
 	 * */
 	@GetMapping("/employee")

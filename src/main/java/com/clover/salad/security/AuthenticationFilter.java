@@ -3,6 +3,7 @@ package com.clover.salad.security;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.core.env.Environment;
@@ -10,11 +11,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.clover.salad.employee.command.domain.aggregate.vo.RequestLoginVO;
-import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 import com.clover.salad.employee.query.dto.LoginHeaderInfoDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,17 +59,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		}
 	}
 
-	// @Override
-	// public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-	// 	try {
-	// 		RequestLoginVO creds = new ObjectMapper().readValue(request.getInputStream(), RequestLoginVO.class);
-	// 		return getAuthenticationManager().authenticate(
-	// 			new UsernamePasswordAuthenticationToken(creds.getCode(), creds.getPassword(), new ArrayList<>()));
-	// 	} catch (IOException e) {
-	// 		throw new RuntimeException(e);
-	// 	}
-	// }
-
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 		Authentication authResult) throws IOException {
@@ -93,13 +83,26 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		refreshCookie.setAttribute("SameSite", "Strict");
 		response.addCookie(refreshCookie);
 
-		// ✅ 4. 사용자 정보 조회 및 응답
+		// 4. 사용자 정보 조회 및 응답
 		LoginHeaderInfoDTO headerInfo = employeeQueryService.getLoginHeaderInfo(code);
 
 		response.setContentType("application/json;charset=UTF-8");
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.writeValue(response.getWriter(), headerInfo);
 
-		log.info("🟢 로그인 성공 - 사용자 정보 응답 완료: {}", headerInfo.getName());
+		log.info("로그인 성공 - 사용자 정보 응답 완료: {}", headerInfo.getName());
+	}
+
+	@Override
+	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+		AuthenticationException failed) throws IOException {
+		log.warn("로그인 실패: {}", failed.getMessage());
+
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.setContentType("application/json;charset=UTF-8");
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.writeValue(response.getWriter(),
+			Map.of("message", "아이디 또는 비밀번호가 올바르지 않습니다."));
 	}
 }

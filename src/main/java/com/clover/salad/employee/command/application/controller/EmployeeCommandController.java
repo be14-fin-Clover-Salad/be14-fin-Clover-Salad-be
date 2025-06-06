@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/employee")
 public class EmployeeCommandController {
@@ -48,19 +50,25 @@ public class EmployeeCommandController {
 	@PostMapping("/logout")
 	public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
 		String pureToken = token.replace("Bearer ", "");
+
 		employeeCommandService.logout(pureToken);
+
 		return ResponseEntity.ok("로그아웃 성공 (토큰 블랙리스트 등록 완료)");
 	}
 
 	@PostMapping("/password-reset")
 	public ResponseEntity<String> requestResetPassword(@RequestBody RequestResetPasswordDTO dto) {
+
 		employeeCommandService.sendResetPasswordLink(dto.getCode(), dto.getEmail());
+
 		return ResponseEntity.ok("비밀번호 재설정 링크를 이메일로 전송했습니다.");
 	}
 
 	@PostMapping("/password-resets/confirm")
 	public ResponseEntity<String> confirmResetPassword(@RequestBody RequestConfirmResetPasswordDTO dto) {
+
 		employeeCommandService.confirmResetPassword(dto.getToken(), dto.getNewPassword());
+
 		return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
 	}
 
@@ -71,14 +79,12 @@ public class EmployeeCommandController {
 		// 1. 쿠키에서 refreshToken 추출
 		if (request.getCookies() != null) {
 			for (Cookie cookie : request.getCookies()) {
-				System.out.println("[Cookie] name=" + cookie.getName() + ", value=" + cookie.getValue());
 				if ("refreshToken".equals(cookie.getName())) {
 					refreshToken = cookie.getValue();
-					System.out.println("[추출된 refreshToken] " + refreshToken);
 				}
 			}
 		} else {
-			System.out.println("[쿠키 없음]");
+			log.info("[현재 쿠키가 없습니다.]");
 		}
 
 		if (refreshToken == null) {
@@ -95,6 +101,7 @@ public class EmployeeCommandController {
 
 		// 4. Redis에 저장된 refreshToken과 비교
 		String storedToken = redisTemplate.opsForValue().get("refresh:" + code);
+
 		if (storedToken == null || !storedToken.equals(refreshToken)) {
 			return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body("refreshToken이 유효하지 않거나 만료되었습니다.");
 		}
@@ -118,7 +125,8 @@ public class EmployeeCommandController {
 		String code = jwtUtil.getUsername(pureToken);
 
 		employeeCommandService.updateEmployee(code, dto);
-		return ResponseEntity.ok("직원 정보가 수정되었습니다.");
+
+		return ResponseEntity.ok("회원 정보가 수정되었습니다.");
 	}
 
 	@PostMapping("/password-change")
@@ -130,6 +138,7 @@ public class EmployeeCommandController {
 		String code = jwtUtil.getUsername(pureToken);
 
 		employeeCommandService.changePassword(code, dto);
+
 		return ResponseEntity.ok(new ResponseChangePasswordDTO("비밀번호가 변경되었습니다."));
 	}
 
@@ -142,6 +151,7 @@ public class EmployeeCommandController {
 		String code = jwtUtil.getUsername(pureToken);
 
 		employeeCommandService.updateProfilePath(code, dto.getPath());
+
 		return ResponseEntity.ok("프로필 경로가 성공적으로 수정되었습니다.");
 	}
 }

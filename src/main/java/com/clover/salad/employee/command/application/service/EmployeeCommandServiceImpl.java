@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.clover.salad.common.exception.InvalidCurrentPasswordException;
+import com.clover.salad.common.exception.InvalidEmailFormatException;
 import com.clover.salad.common.exception.InvalidEmployeeInfoException;
 import com.clover.salad.common.file.entity.FileUploadEntity;
 import com.clover.salad.common.file.repository.FileUploadRepository;
@@ -140,10 +142,22 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 			.orElseThrow(() -> new RuntimeException("해당 사번의 사원을 찾을 수 없습니다."));
 
 		if (dto.getName() != null) employee.setName(dto.getName());
-		if (dto.getEmail() != null) employee.setEmail(dto.getEmail());
+
+		if (dto.getEmail() != null) {
+			if (!isValidEmail(dto.getEmail())) {
+				throw new InvalidEmailFormatException();
+			}
+			employee.setEmail(dto.getEmail());
+		}
+
 		if (dto.getPhone() != null) employee.setPhone(dto.getPhone());
 
 		employeeRepository.save(employee);
+	}
+
+	private boolean isValidEmail(String email) {
+		String regex = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
+		return Pattern.matches(regex, email);
 	}
 
 	@Override

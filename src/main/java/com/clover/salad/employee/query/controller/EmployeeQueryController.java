@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.clover.salad.employee.query.dto.EmployeeMypageQueryDTO;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.LoginHeaderInfoDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
@@ -63,11 +64,26 @@ public class EmployeeQueryController {
 		String code = userDetails.getUsername();
 		LoginHeaderInfoDTO dto = employeeQueryService.getLoginHeaderInfo(code);
 
-		System.out.println("[DEBUG] 로그인 사용자 코드: " + code);
-		System.out.println("[DEBUG] 마이페이지 DTO: " + dto);
-
 		return ResponseEntity.ok(dto);
 	}
 
+	@GetMapping("/employee/mypage")
+	public ResponseEntity<EmployeeMypageQueryDTO> getMyPageInfo() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		if (authentication == null || !authentication.isAuthenticated()) {
+			throw new RuntimeException("인증되지 않은 사용자입니다.");
+		}
+
+		Object principal = authentication.getPrincipal();
+		if (!(principal instanceof UserDetails userDetails)) {
+			throw new RuntimeException("인증 정보가 올바르지 않습니다.");
+		}
+
+		String code = userDetails.getUsername();
+		EmployeeMypageQueryDTO dto = employeeQueryService.getMyPageInfo(code);
+
+		return ResponseEntity.ok(dto);
+	}
 
 }

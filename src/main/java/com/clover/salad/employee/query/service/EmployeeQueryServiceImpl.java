@@ -12,9 +12,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.clover.salad.common.file.entity.FileUploadEntity;
+import com.clover.salad.common.file.repository.FileUploadRepository;
+import com.clover.salad.employee.command.domain.aggregate.entity.DepartmentEntity;
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.aggregate.enums.EmployeeLevel;
+import com.clover.salad.employee.command.domain.repository.DepartmentRepository;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
+import com.clover.salad.employee.query.dto.EmployeeMypageQueryDTO;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.LoginHeaderInfoDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
@@ -28,12 +33,18 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 
 	private final EmployeeMapper employeeMapper;
 	private final EmployeeRepository employeeRepository;
+	private final FileUploadRepository fileUploadRepository;
+	private final DepartmentRepository departmentRepository;
 
 	@Autowired
 	public EmployeeQueryServiceImpl(EmployeeMapper employeeMapper,
-		EmployeeRepository employeeRepository) {
+		EmployeeRepository employeeRepository,
+		FileUploadRepository fileUploadRepository,
+		DepartmentRepository departmentRepository) {
 		this.employeeRepository = employeeRepository;
 		this.employeeMapper = employeeMapper;
+		this.fileUploadRepository = fileUploadRepository;
+		this.departmentRepository = departmentRepository;
 	}
 
 	@Override
@@ -44,6 +55,11 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 	@Override
 	public boolean checkIsAdmin(String code) {
 		return employeeMapper.selectIsAdminByCode(code);
+	}
+
+	@Override
+	public EmployeeMypageQueryDTO getMyPageInfo(String code) {
+		return employeeMapper.selectMyPageInfoByCode(code);
 	}
 
 	@Override
@@ -62,7 +78,19 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 
 	@Override
 	public LoginHeaderInfoDTO getLoginHeaderInfo(String code) {
-		return employeeMapper.findLoginHeaderInfoByCode(code);
+		EmployeeEntity employee = employeeRepository.findByCode(code)
+			.orElseThrow(() -> new RuntimeException("사원을 찾을 수 없습니다."));
+
+		String name = employee.getName();
+		String levelLabel = employee.getLevel().getLabel();
+
+		FileUploadEntity file = fileUploadRepository.findById(employee.getProfile()).orElse(null);
+		String profilePath = file != null ? file.getPath() : null;
+
+		DepartmentEntity dept = departmentRepository.findById(employee.getDepartmentId()).orElse(null);
+		String deptName = dept != null ? dept.getName() : null;
+
+		return new LoginHeaderInfoDTO(name, levelLabel, profilePath, deptName);
 	}
 
 	private Collection<? extends GrantedAuthority> getAuthorities(EmployeeEntity employee) {
@@ -85,4 +113,5 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 
 		return authorities;
 	}
+
 }

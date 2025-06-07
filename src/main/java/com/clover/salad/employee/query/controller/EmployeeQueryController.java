@@ -64,9 +64,6 @@ public class EmployeeQueryController {
 		String code = userDetails.getUsername();
 		LoginHeaderInfoDTO dto = employeeQueryService.getLoginHeaderInfo(code);
 
-		System.out.println("[DEBUG] 로그인 사용자 코드: " + code);
-		System.out.println("[DEBUG] 마이페이지 DTO: " + dto);
-
 		return ResponseEntity.ok(dto);
 	}
 

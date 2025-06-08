@@ -17,6 +17,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
+import com.clover.salad.employee.query.service.EmployeeQueryService;
+
 import jakarta.servlet.Filter;
 
 @Configuration
@@ -27,16 +30,19 @@ public class WebSecurity {
 	private final Environment env;
 	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
+	private final EmployeeQueryService employeeQueryService;
 
 	@Autowired
 	public WebSecurity(JwtAuthenticationProvider jwtAuthenticationProvider,
 		Environment env,
 		JwtUtil jwtUtil,
-		RedisTemplate<String, String> redisTemplate) {
+		RedisTemplate<String, String> redisTemplate,
+		EmployeeQueryService employeeQueryService) {
 		this.jwtAuthenticationProvider = jwtAuthenticationProvider;
 		this.env = env;
 		this.jwtUtil = jwtUtil;
 		this.redisTemplate = redisTemplate;
+		this.employeeQueryService = employeeQueryService;
 	}
 
 	@Bean
@@ -55,7 +61,7 @@ public class WebSecurity {
 				authz
 					// 개발용 일시적 허용
 					.requestMatchers("/**").permitAll()
-					.requestMatchers("/login").permitAll()
+					.requestMatchers("/auth/login").permitAll()
 					.requestMatchers("/employee").permitAll()
 					.requestMatchers("/employee/**").permitAll()
 					.anyRequest().authenticated()
@@ -71,8 +77,9 @@ public class WebSecurity {
 	}
 
 	private Filter getAuthenticationFilter(AuthenticationManager authenticationManager) {
-		AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager, env, jwtUtil, redisTemplate);
-		authenticationFilter.setFilterProcessesUrl("/login");
+		AuthenticationFilter authenticationFilter =
+			new AuthenticationFilter(authenticationManager, env, jwtUtil, redisTemplate, employeeQueryService);
+		authenticationFilter.setFilterProcessesUrl("/auth/login");
 		return authenticationFilter;
 	}
 }

@@ -22,7 +22,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class JwtUtil {
 
@@ -55,10 +57,10 @@ public class JwtUtil {
 	public boolean validateToken(String token) {
 		try {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-			System.out.println("[✅ Token 유효] " + token);
+			log.info("[Token 유효] {}", token);
 			return true;
 		} catch (Exception e) {
-			System.out.println("[❌ Token 유효하지 않음] 이유: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+			log.info("[Token 유효하지 않음] 이유: {} - {}", e.getClass().getSimpleName(), e.getMessage());
 			return false;
 		}
 	}
@@ -76,7 +78,7 @@ public class JwtUtil {
 
 	public String getUsername(String token) {
 		String username = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
-		System.out.println("[👤 Username from token] " + username);
+		log.info("[Username from token] {}", username);
 		return username;
 	}
 
@@ -87,7 +89,7 @@ public class JwtUtil {
 	public LocalDateTime getExpiration(String token) {
 		Date expirationDate = parseClaims(token).getExpiration();
 		LocalDateTime expiration = Instant.ofEpochMilli(expirationDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
-		System.out.println("[⏳ Token 만료시간] " + expiration);
+		log.info("[Token 만료시간] {}", expiration);
 		return expiration;
 	}
 }

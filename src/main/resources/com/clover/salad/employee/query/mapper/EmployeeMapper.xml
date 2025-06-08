@@ -22,7 +22,17 @@
             <result property="supDeptId" column="sup_dept_id"/>
         </association>
     </resultMap>
-
+    <resultMap id="MyPageResultMap" type="com.clover.salad.employee.query.dto.EmployeeMypageQueryDTO">
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="level" column="level"/>
+        <result property="hireDate" column="hire_date"/>
+        <result property="workPlace" column="work_place"/>
+        <result property="profilePath" column="profile_path"/>
+        <result property="departmentName" column="department_name"/>
+    </resultMap>
     <select id="searchEmployees"
             parameterType="com.clover.salad.employee.query.dto.SearchEmployeeDTO"
             resultMap="SearchEmployeeResultMap">
@@ -81,9 +91,10 @@
         </if>
     </select>
     <select id="findLoginHeaderInfoByCode" resultType="com.clover.salad.employee.query.dto.LoginHeaderInfoDTO">
-        SELECT e.name,
-               d.name AS departmentName,
-               f.path AS profilePath
+        SELECT
+               e.name
+             , d.name AS departmentName
+             , f.path AS profilePath
           FROM employee e
           JOIN department d ON e.department_id = d.id
           LEFT JOIN file_upload f ON e.profile = f.id
@@ -94,5 +105,32 @@
                e.is_admin
           FROM employee e
          WHERE e.code = #{code}
+    </select>
+    <select id="selectIdByCodeAndEmail" resultType="int">
+        SELECT
+               id
+          FROM employee
+         WHERE code = #{code}
+           AND email = #{email}
+           AND is_deleted = false
+    </select>
+    <select id="selectMyPageInfoByCode"
+            parameterType="string"
+            resultMap="MyPageResultMap">
+        SELECT
+               e.code
+             , e.name
+             , e.phone
+             , e.email
+             , e.level
+             , e.hire_date
+             , e.work_place
+             , d.name AS department_name
+             , f.path AS profile_path
+          FROM employee e
+          JOIN department d ON e.department_id = d.id
+          LEFT JOIN file_upload f ON e.profile = f.id
+         WHERE e.code = #{code}
+           AND e.is_deleted = false
     </select>
 </mapper>

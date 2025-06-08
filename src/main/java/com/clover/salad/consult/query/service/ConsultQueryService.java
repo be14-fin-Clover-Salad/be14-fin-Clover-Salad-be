@@ -5,7 +5,7 @@ import java.util.List;
 import com.clover.salad.consult.query.dto.ConsultQueryDTO;
 
 public interface ConsultQueryService {
-    ConsultQueryDTO findById(int id);
+    List<ConsultQueryDTO> findByRole(String token);
 
-    List<ConsultQueryDTO> findAll(int page, int size);
+    List<ConsultQueryDTO> findAll(String token);
 }

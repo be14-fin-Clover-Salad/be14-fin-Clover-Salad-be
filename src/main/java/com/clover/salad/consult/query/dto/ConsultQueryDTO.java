@@ -10,7 +10,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ConsultQueryDTO {
-
     private int id;
 
     @JsonProperty("consultAt")

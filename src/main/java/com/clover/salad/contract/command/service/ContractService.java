@@ -6,10 +6,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.clover.salad.contract.command.dto.ContractDeleteResponseDTO;
 import com.clover.salad.contract.command.dto.ContractUpdateResponseDTO;
 import com.clover.salad.contract.command.dto.ContractUploadRequestDTO;
+import com.clover.salad.contract.command.dto.ProductDTO;
 import com.clover.salad.contract.command.entity.ContractEntity;
+import com.clover.salad.contract.command.entity.ContractProductEntity;
 import com.clover.salad.contract.command.repository.ContractCustomerRepository;
+import com.clover.salad.contract.command.repository.ContractProductRepository;
 import com.clover.salad.contract.command.repository.ContractRepository;
 import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
+import com.clover.salad.product.command.domain.aggregate.entity.Product;
+import com.clover.salad.product.command.domain.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,12 +24,13 @@ public class ContractService {
 
 	private final ContractRepository contractRepository;
 	private final ContractCustomerRepository contractCustomerRepository;
+	private final ProductRepository productRepository;
+	private final ContractProductRepository contractProductRepository;
 
 	@Transactional
 	public ContractEntity registerContract(ContractUploadRequestDTO dto) {
 		Customer customer = contractCustomerRepository.save(dto.getCustomer().toEntityWithDefaults());
-
-		String generatedCode = generateContractCode(); // 예: "C202505280001"
+		String generatedCode = generateContractCode();
 
 		ContractEntity contract = dto.getContract().toEntityWithDefaults(
 			customer,
@@ -32,8 +38,26 @@ public class ContractService {
 			dto.getDocumentOrigin()
 		);
 
-		return contractRepository.save(contract);
+		ContractEntity savedContract = contractRepository.save(contract);
+
+		for (ProductDTO productDto : dto.getProducts()) {
+			Product product = productRepository.findByNameAndSerialNumber(
+				productDto.getProductName(),
+				productDto.getModelName()
+			).orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+			ContractProductEntity contractProduct = ContractProductEntity.builder()
+				.contract(savedContract)
+				.product(product)
+				.quantity(productDto.getQuantity())
+				.build();
+
+			contractProductRepository.save(contractProduct);
+		}
+
+		return savedContract;
 	}
+
 
 	private String generateContractCode() {
 		String prefix = "C-";

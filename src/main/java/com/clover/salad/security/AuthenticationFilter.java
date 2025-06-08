@@ -3,7 +3,7 @@ package com.clover.salad.security;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.core.env.Environment;
@@ -11,11 +11,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.clover.salad.employee.command.domain.aggregate.vo.RequestLoginVO;
+import com.clover.salad.employee.query.dto.LoginHeaderInfoDTO;
+import com.clover.salad.employee.query.service.EmployeeQueryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;
@@ -28,13 +30,16 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private final RedisTemplate<String, String> redisTemplate;
 	private final JwtUtil jwtUtil;
+	private final EmployeeQueryService employeeQueryService;
 
 	public AuthenticationFilter(AuthenticationManager authenticationManager,
 		Environment env, JwtUtil jwtUtil,
-		RedisTemplate<String, String> redisTemplate) {
+		RedisTemplate<String, String> redisTemplate,
+		EmployeeQueryService employeeQueryService) {
 		super(authenticationManager);
 		this.jwtUtil = jwtUtil;
 		this.redisTemplate = redisTemplate;
+		this.employeeQueryService = employeeQueryService;
 	}
 
 	@Override
@@ -54,45 +59,50 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		}
 	}
 
-	// @Override
-	// public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-	// 	try {
-	// 		RequestLoginVO creds = new ObjectMapper().readValue(request.getInputStream(), RequestLoginVO.class);
-	// 		return getAuthenticationManager().authenticate(
-	// 			new UsernamePasswordAuthenticationToken(creds.getCode(), creds.getPassword(), new ArrayList<>()));
-	// 	} catch (IOException e) {
-	// 		throw new RuntimeException(e);
-	// 	}
-	// }
-
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-		Authentication authResult) {
+		Authentication authResult) throws IOException {
+
 		String code = ((User) authResult.getPrincipal()).getUsername();
-		List<String> roles = authResult.getAuthorities()
-			.stream()
-			.map(GrantedAuthority::getAuthority)
-			.collect(Collectors.toList());
 
 		// 1. AccessToken, RefreshToken 생성
 		String accessToken = jwtUtil.createAccessToken(code, authResult.getAuthorities());
 		String refreshToken = jwtUtil.createRefreshToken(code);
 
-		// 2. RefreshToken Redis 저장 (로그아웃 대비용)
-		redisTemplate.opsForValue().set("refresh:" + code, refreshToken, Duration.ofHours(8));
+		// 2. Redis 저장
+		redisTemplate.opsForValue().set("refresh:" + code, refreshToken, Duration.ofDays(7));
 
-		// 3. AccessToken은 헤더에
-		response.addHeader("Authorization", "Bearer " + accessToken);
+		// 3. Header + 쿠키 세팅
+		response.setHeader("Authorization", "Bearer " + accessToken);
 
-		// 4. RefreshToken은 HttpOnly 쿠키에
 		Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
 		refreshCookie.setHttpOnly(true);
-		refreshCookie.setPath("/");
-		refreshCookie.setMaxAge(60 * 60 * 8); // 8시간
 		refreshCookie.setSecure(true);
-		refreshCookie.setDomain(request.getServerName());
+		refreshCookie.setPath("/");
+		refreshCookie.setMaxAge(60 * 60 * 24 * 7);
 		refreshCookie.setAttribute("SameSite", "Strict");
-
 		response.addCookie(refreshCookie);
+
+		// 4. 사용자 정보 조회 및 응답
+		LoginHeaderInfoDTO headerInfo = employeeQueryService.getLoginHeaderInfo(code);
+
+		response.setContentType("application/json;charset=UTF-8");
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.writeValue(response.getWriter(), headerInfo);
+
+		log.info("로그인 성공 - 사용자 정보 응답 완료: {}", headerInfo.getName());
+	}
+
+	@Override
+	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+		AuthenticationException failed) throws IOException {
+		log.warn("로그인 실패: {}", failed.getMessage());
+
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.setContentType("application/json;charset=UTF-8");
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.writeValue(response.getWriter(),
+			Map.of("message", "사번 또는 비밀번호가 올바르지 않습니다."));
 	}
 }

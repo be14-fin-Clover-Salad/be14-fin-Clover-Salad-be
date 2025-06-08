@@ -24,7 +24,7 @@ public class PdfContractParserService {
 			stripper.setSortByPosition(true); // 좌표 기준 줄 정렬
 
 			String fullText = stripper.getText(document);
-			log.info("📄 전체 텍스트 추출 결과:\n{}", fullText);
+			log.info("전체 텍스트 추출 결과:\n{}", fullText);
 
 			int templateId = origin.getDocumentTemplate().getId();
 			PdfContractParsingStrategy strategy = router.getStrategy(templateId);
@@ -33,7 +33,7 @@ public class PdfContractParserService {
 			return strategy.parseAll(fullText, "", "", origin);
 
 		} catch (IOException e) {
-			log.error("❌ PDF 분석 실패", e);
+			log.error(" PDF 분석 실패", e);
 			throw new RuntimeException("PDF 분석 실패", e);
 		}
 	}

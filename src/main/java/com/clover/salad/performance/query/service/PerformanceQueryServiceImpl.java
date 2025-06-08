@@ -1,5 +1,7 @@
 package com.clover.salad.performance.query.service;
 
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
 import com.clover.salad.performance.command.application.dto.DepartmentPerformanceDTO;
 import com.clover.salad.performance.command.application.dto.EmployeePerformanceDTO;
+import com.clover.salad.performance.command.application.dto.ProductPerformancePerMonthDTO;
 import com.clover.salad.performance.command.application.dto.SearchTermDTO;
 import com.clover.salad.performance.query.mapper.PerformanceMapper;
 
@@ -45,6 +48,35 @@ public class PerformanceQueryServiceImpl implements PerformanceQueryService {
 			searchTerm.getStartDate(),
 			searchTerm.getEndDate()
 		);
+	}
+	
+	@Override
+	public List<ProductPerformancePerMonthDTO> searchProductPerformanceByProductCode(String productCode,
+		SearchTermDTO searchTerm) {
+		return performanceMapper.selectProductPerformanceByProductCode(
+			productCode,
+			getDayOfMonth(searchTerm.getStartDate(), true),
+			getDayOfMonth(searchTerm.getEndDate(), false)
+		);
+	}
+	
+	public static String getDayOfMonth(int yyyyMM, boolean isFirst) {
+		
+		int year = yyyyMM / 100;
+		int month = yyyyMM % 100;
+		
+		YearMonth yearMonth = YearMonth.of(year, month);
+		
+		int day;
+		
+		if (isFirst) {
+			day = 1;
+		} else {
+			day = yearMonth.lengthOfMonth();
+		}
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		return yearMonth.atDay(day).format(formatter);
 	}
 	
 	private EmployeeQueryDTO getEmployeeByCode(String employeeCode)

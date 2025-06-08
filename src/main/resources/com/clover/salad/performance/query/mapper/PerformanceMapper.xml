@@ -32,6 +32,13 @@
         <result property="departmentId" column="DEPARTMENT_ID"/>
     </resultMap>
 
+    <!-- 설명. 월별 상품 실적 ResultMap -->
+    <resultMap id="ProductPerformanceResultMap" type="com.clover.salad.performance.command.application.dto.ProductPerformancePerMonthDTO">
+        <id property="id" column="PRODUCT_ID"/>
+        <result property="productCode" column="PRODUCT_CODE"/>
+        <result property="sales" column="SALES"/>
+    </resultMap>
+
     <!-- 설명. 개인 실적 조회 -->
     <select id="selectEmployeePerformanceByEmployeeId" resultMap="EmployeePerformanceResultMap" parameterType="map">
         SELECT
@@ -68,5 +75,21 @@
                                      FROM DEPARTMENT D
                                     WHERE D.NAME = #{deptName})
            AND DP.TARGET_DATE BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <!-- 설명. 계약 시작 기간에 따른 상품 판매 수량 조회 -->
+    <select id="selectProductPerformanceByProductCode" resultMap="ProductPerformanceResultMap">
+        SELECT
+               CP.PRODUCT_ID AS PRODUCT_ID
+             , P.PRODUCT_CODE AS PRODUCT_CODE
+             , SUM(CP.QUANTITY) AS SALES
+          FROM CONTRACT_PRODUCT CP
+          JOIN PRODUCT P
+            ON CP.product_id = P.id
+          JOIN CONTRACT C
+            ON CP.contract_id = C.id
+         WHERE P.PRODUCT_CODE = #{productCode}
+           AND C.START_DATE BETWEEN #{startDate} AND #{endDate}
+         GROUP BY CP.PRODUCT_ID
     </select>
 </mapper>

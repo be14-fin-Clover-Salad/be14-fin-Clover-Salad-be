@@ -1,18 +1,26 @@
 package com.clover.salad.consult.query.mapper;
 
-import java.util.List;
-
+import com.clover.salad.consult.query.dto.ConsultQueryDTO;
 import org.apache.ibatis.annotations.Mapper;
 
-import com.clover.salad.consult.query.dto.ConsultQueryDTO;
+import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ConsultMapper {
-    List<ConsultQueryDTO> findAllActive();
+        List<ConsultQueryDTO> findAll();
 
-    List<ConsultQueryDTO> findByDepartmentName(String departmentName);
+        ConsultQueryDTO findById(int id);
 
-    List<ConsultQueryDTO> findByEmployeeName(String employeeName);
+        List<ConsultQueryDTO> findAllActive();
 
-    List<ConsultQueryDTO> findAll();
+        ConsultQueryDTO findActiveById(int id);
+
+        List<ConsultQueryDTO> findByDepartmentName(String departmentName);
+
+        ConsultQueryDTO findByDepartmentNameAndId(Map<String, Object> param);
+
+        List<ConsultQueryDTO> findByEmployeeCode(String employeeCode);
+
+        ConsultQueryDTO findByEmployeeCodeAndId(Map<String, Object> param);
 }

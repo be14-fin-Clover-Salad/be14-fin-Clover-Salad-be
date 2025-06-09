@@ -56,8 +56,8 @@ public class JwtUtil {
 		log.info("발급 전 권한 목록: {}", authorities);
 
 		return Jwts.builder()
-			.setSubject("ERP_ACCESS")
-			.claim("employeeId", employeeId)
+			.setSubject("ERP_ACCESS")	// subject는 엑세스 토큰임을 구분하기 위해서만 사용
+			.claim("employeeId", employeeId)	// 식별자
 			.claim("auth", auth)
 			.setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
 			.signWith(key, SignatureAlgorithm.HS512)

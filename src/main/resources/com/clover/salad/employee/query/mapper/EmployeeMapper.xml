@@ -4,8 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.clover.salad.employee.query.mapper.EmployeeMapper">
-
-    <!-- 사원 검색 결과 -->
     <resultMap id="SearchEmployeeResultMap" type="com.clover.salad.employee.query.dto.EmployeeQueryDTO">
         <id property="id" column="id"/>
         <result property="code" column="code"/>
@@ -22,8 +20,6 @@
             <result property="supDeptId" column="sup_dept_id"/>
         </association>
     </resultMap>
-
-    <!-- 마이페이지 조회 결과 -->
     <resultMap id="MyPageResultMap" type="com.clover.salad.employee.query.dto.EmployeeMypageQueryDTO">
         <result property="code" column="code"/>
         <result property="name" column="name"/>
@@ -36,7 +32,7 @@
         <result property="departmentName" column="department_name"/>
     </resultMap>
 
-    <!-- 🔍 사원 조건 검색 -->
+    <!-- 사원 조건 검색 -->
     <select id="searchEmployees"
             parameterType="com.clover.salad.employee.query.dto.SearchEmployeeDTO"
             resultMap="SearchEmployeeResultMap">
@@ -86,8 +82,13 @@
             AND d.name LIKE CONCAT('%', #{departmentName}, '%')
         </if>
     </select>
-
-    <!-- 로그인 헤더 정보 (id 기준) -->
+    <select id="selectIdByCodeAndEmail" resultType="int">
+        SELECT id
+          FROM employee
+         WHERE code = #{code}
+           AND email = #{email}
+           AND is_deleted = false
+    </select>
     <select id="findLoginHeaderInfoById" resultType="com.clover.salad.employee.query.dto.LoginHeaderInfoDTO">
         SELECT
                e.name
@@ -98,15 +99,11 @@
           LEFT JOIN file_upload f ON e.profile = f.id
          WHERE e.id = #{id}
     </select>
-
-    <!-- 관리자 여부 (id 기준) -->
     <select id="selectIsAdminById" resultType="boolean">
-        SELECT e.is_admin
-          FROM employee e
-         WHERE e.id = #{id}
+        SELECT is_admin
+          FROM employee
+         WHERE id = #{id}
     </select>
-
-    <!-- ✅ 마이페이지 정보 조회 (id 기준) -->
     <select id="selectMyPageInfoById"
             parameterType="int"
             resultMap="MyPageResultMap">
@@ -126,5 +123,4 @@
          WHERE e.id = #{id}
            AND e.is_deleted = false
     </select>
-
 </mapper>

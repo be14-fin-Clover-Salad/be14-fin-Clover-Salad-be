@@ -76,7 +76,6 @@ public class EmployeeCommandController {
 	@PostMapping("/refresh-token")
 	public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
 
-		// 1. 쿠키에서 refreshToken 꺼내기
 		Cookie[] cookies = request.getCookies();
 		if (cookies == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("RefreshToken 없음");
@@ -94,12 +93,10 @@ public class EmployeeCommandController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("RefreshToken 누락");
 		}
 
-		// 2. 토큰 유효성 검사
 		if (!jwtUtil.validateToken(refreshToken)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰 유효하지 않음");
 		}
 
-		// 3. Redis에 저장된 리프레시 토큰과 일치하는지 확인
 		int employeeId = jwtUtil.getEmployeeId(refreshToken);
 		String redisKey = "refresh:" + employeeId;
 		String savedToken = redisTemplate.opsForValue().get(redisKey);
@@ -108,13 +105,24 @@ public class EmployeeCommandController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("만료되었거나 위조된 토큰");
 		}
 
-		// 4. 권한 정보 조회 및 accessToken 재발급
 		UserDetails userDetails = authService.loadUserById(employeeId);
 		String newAccessToken = jwtUtil.createAccessToken(employeeId, userDetails.getAuthorities());
-
-		// 5. 응답에 accessToken 포함
 		response.setHeader("Authorization", "Bearer " + newAccessToken);
 
 		return ResponseEntity.ok("AccessToken 재발급 완료");
+	}
+
+	@PostMapping("/password-reset")
+	public ResponseEntity<String> requestResetPassword(@RequestBody RequestResetPasswordDTO dto) {
+
+		employeeCommandService.sendResetPasswordLink(dto.getCode(), dto.getEmail());
+		return ResponseEntity.ok("비밀번호 재설정 링크를 이메일로 전송했습니다.");
+	}
+
+	@PostMapping("/password-resets/confirm")
+	public ResponseEntity<String> confirmResetPassword(@RequestBody RequestConfirmResetPasswordDTO dto) {
+
+		employeeCommandService.confirmResetPassword(dto.getToken(), dto.getNewPassword());
+		return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
 	}
 }

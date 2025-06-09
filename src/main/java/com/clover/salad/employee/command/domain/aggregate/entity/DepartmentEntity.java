@@ -33,5 +33,5 @@ public class DepartmentEntity {
 	private Boolean isDeleted;
 
 	@Column(name = "sup_dept_id")
-	private int supDeptId;
+	private Integer supDeptId;
 }

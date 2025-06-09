@@ -24,9 +24,6 @@
              , contract_id
           FROM sales
          WHERE is_deleted = false
-        <if test="id != null and id != ''">
-            AND CAST(id AS CHAR) LIKE CONCAT('%', #{id}, '%')
-        </if>
         <if test="startDate != null and startDate != ''">
             AND sales_date &gt;= #{startDate}
         </if>

@@ -7,7 +7,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,9 +41,7 @@ public class EmployeeQueryController {
 	@PostMapping("/employee/search")
 	public ResponseEntity<List<EmployeeQueryDTO>> searchEmployees(@RequestBody SearchEmployeeDTO searchEmployeeDTO) {
 		log.info("사원 조건 검색 요청: {}", searchEmployeeDTO);
-
 		List<EmployeeQueryDTO> employees = employeeQueryService.searchEmployees(searchEmployeeDTO);
-
 		return ResponseEntity.ok(employees);
 	}
 
@@ -61,8 +58,8 @@ public class EmployeeQueryController {
 			throw new RuntimeException("인증 정보가 올바르지 않습니다.");
 		}
 
-		String code = userDetails.getUsername();
-		LoginHeaderInfoDTO dto = employeeQueryService.getLoginHeaderInfo(code);
+		int id = Integer.parseInt(userDetails.getUsername()); // 이제는 id 기반
+		LoginHeaderInfoDTO dto = employeeQueryService.getLoginHeaderInfoById(id);
 
 		return ResponseEntity.ok(dto);
 	}
@@ -80,10 +77,9 @@ public class EmployeeQueryController {
 			throw new RuntimeException("인증 정보가 올바르지 않습니다.");
 		}
 
-		String code = userDetails.getUsername();
-		EmployeeMypageQueryDTO dto = employeeQueryService.getMyPageInfo(code);
+		int id = Integer.parseInt(userDetails.getUsername());
+		EmployeeMypageQueryDTO dto = employeeQueryService.getMyPageInfoById(id);
 
 		return ResponseEntity.ok(dto);
 	}
-
 }

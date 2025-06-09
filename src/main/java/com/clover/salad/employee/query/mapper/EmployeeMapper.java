@@ -12,13 +12,19 @@ import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 
 @Mapper
 public interface EmployeeMapper {
+
+	// 사원 검색
 	List<EmployeeQueryDTO> searchEmployees(SearchEmployeeDTO searchEmployeeDTO);
 
-	LoginHeaderInfoDTO findLoginHeaderInfoByCode(@Param("code") String code);
-
-	Boolean selectIsAdminByCode(@Param("code") String code);
-
+	// 비밀번호 재설정 로직 중
 	Integer selectIdByCodeAndEmail(@Param("code") String code, @Param("email") String email);
 
-	EmployeeMypageQueryDTO selectMyPageInfoByCode(@Param("code") String code);
+	// 로그인 시 헤더 정보 조회
+	LoginHeaderInfoDTO findLoginHeaderInfoById(@Param("id") int id);
+
+	// 관리자 여부 확인
+	Boolean selectIsAdminById(@Param("id") int id);
+
+	// 마이페이지 정보 조회
+	EmployeeMypageQueryDTO selectMyPageInfoById(@Param("id") int id);
 }

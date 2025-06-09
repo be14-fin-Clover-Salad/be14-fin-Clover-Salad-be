@@ -33,7 +33,6 @@ public class EmployeeCommandController {
 	private final RedisTemplate<String, String> redisTemplate;
 	private final AuthService authService;
 
-
 	@Autowired
 	public EmployeeCommandController(ModelMapper modelMapper,
 		EmployeeCommandService employeeCommandService,
@@ -50,67 +49,41 @@ public class EmployeeCommandController {
 	@PostMapping("/logout")
 	public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
 		String pureToken = token.replace("Bearer ", "");
-
 		employeeCommandService.logout(pureToken);
-
 		return ResponseEntity.ok("로그아웃 성공 (토큰 블랙리스트 등록 완료)");
-	}
-
-	@PostMapping("/password-reset")
-	public ResponseEntity<String> requestResetPassword(@RequestBody RequestResetPasswordDTO dto) {
-
-		employeeCommandService.sendResetPasswordLink(dto.getCode(), dto.getEmail());
-
-		return ResponseEntity.ok("비밀번호 재설정 링크를 이메일로 전송했습니다.");
-	}
-
-	@PostMapping("/password-resets/confirm")
-	public ResponseEntity<String> confirmResetPassword(@RequestBody RequestConfirmResetPasswordDTO dto) {
-
-		employeeCommandService.confirmResetPassword(dto.getToken(), dto.getNewPassword());
-
-		return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
 	}
 
 	@PostMapping("/refresh-token")
 	public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = null;
 
-		// 1. 쿠키에서 refreshToken 추출
 		if (request.getCookies() != null) {
 			for (Cookie cookie : request.getCookies()) {
 				if ("refreshToken".equals(cookie.getName())) {
 					refreshToken = cookie.getValue();
 				}
 			}
-		} else {
-			log.info("[현재 쿠키가 없습니다.]");
 		}
 
 		if (refreshToken == null) {
 			return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body("Refresh token이 없습니다.");
 		}
 
-		// 2. 유효성 검증
 		if (!jwtUtil.validateToken(refreshToken)) {
 			return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body("Refresh token이 유효하지 않습니다.");
 		}
 
-		// 3. 사용자 코드 가져오기
-		String code = jwtUtil.getUsername(refreshToken);
+		String userIdStr = jwtUtil.getUserId(refreshToken);
+		int userId = Integer.parseInt(userIdStr);
 
-		// 4. Redis에 저장된 refreshToken과 비교
-		String storedToken = redisTemplate.opsForValue().get("refresh:" + code);
-
+		String storedToken = redisTemplate.opsForValue().get("refresh:" + userId);
 		if (storedToken == null || !storedToken.equals(refreshToken)) {
 			return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body("refreshToken이 유효하지 않거나 만료되었습니다.");
 		}
 
-		// 5. 새로운 accessToken 발급
-		UserDetails userDetails = authService.loadUserDetails(code);
-		String newAccessToken = jwtUtil.createAccessToken(code, userDetails.getAuthorities());
+		UserDetails userDetails = authService.loadUserDetailsById(userIdStr);
+		String newAccessToken = jwtUtil.createAccessToken(userId, userDetails.getAuthorities());
 
-		// 6. Authorization 헤더로 반환
 		response.addHeader("Authorization", "Bearer " + newAccessToken);
 
 		return ResponseEntity.ok().build();
@@ -121,10 +94,8 @@ public class EmployeeCommandController {
 		@RequestHeader("Authorization") String token,
 		@RequestBody EmployeeUpdateDTO dto) {
 
-		String pureToken = token.replace("Bearer ", "");
-		String code = jwtUtil.getUsername(pureToken);
-
-		employeeCommandService.updateEmployee(code, dto);
+		int userId = Integer.parseInt(jwtUtil.getUserId(token.replace("Bearer ", "")));
+		employeeCommandService.updateEmployee(userId, dto);
 
 		return ResponseEntity.ok("회원 정보가 수정되었습니다.");
 	}
@@ -134,10 +105,8 @@ public class EmployeeCommandController {
 		@RequestHeader("Authorization") String token,
 		@RequestBody RequestChangePasswordDTO dto) {
 
-		String pureToken = token.replace("Bearer ", "");
-		String code = jwtUtil.getUsername(pureToken);
-
-		employeeCommandService.changePassword(code, dto);
+		int userId = Integer.parseInt(jwtUtil.getUserId(token.replace("Bearer ", "")));
+		employeeCommandService.changePassword(userId, dto);
 
 		return ResponseEntity.ok(new ResponseChangePasswordDTO("비밀번호가 변경되었습니다."));
 	}
@@ -147,10 +116,8 @@ public class EmployeeCommandController {
 		@RequestHeader("Authorization") String token,
 		@RequestBody UpdateProfilePathDTO dto) {
 
-		String pureToken = token.replace("Bearer ", "");
-		String code = jwtUtil.getUsername(pureToken);
-
-		employeeCommandService.updateProfilePath(code, dto.getPath());
+		int userId = Integer.parseInt(jwtUtil.getUserId(token.replace("Bearer ", "")));
+		employeeCommandService.updateProfilePath(userId, dto.getPath());
 
 		return ResponseEntity.ok("프로필 경로가 성공적으로 수정되었습니다.");
 	}

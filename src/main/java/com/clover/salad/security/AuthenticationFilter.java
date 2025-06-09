@@ -63,16 +63,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 		Authentication authResult) throws IOException {
 
-		String code = ((User) authResult.getPrincipal()).getUsername();
+		User user = (User) authResult.getPrincipal();
+		int id = Integer.parseInt(user.getUsername()); // ✅ 바로 id로 사용
 
-		// 1. AccessToken, RefreshToken 생성
-		String accessToken = jwtUtil.createAccessToken(code, authResult.getAuthorities());
-		String refreshToken = jwtUtil.createRefreshToken(code);
+		String accessToken = jwtUtil.createAccessToken(id, authResult.getAuthorities());
+		String refreshToken = jwtUtil.createRefreshToken(id);
 
-		// 2. Redis 저장
-		redisTemplate.opsForValue().set("refresh:" + code, refreshToken, Duration.ofDays(7));
-
-		// 3. Header + 쿠키 세팅
+		redisTemplate.opsForValue().set("refresh:" + id, refreshToken, Duration.ofDays(7));
 		response.setHeader("Authorization", "Bearer " + accessToken);
 
 		Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
@@ -83,8 +80,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		refreshCookie.setAttribute("SameSite", "Strict");
 		response.addCookie(refreshCookie);
 
-		// 4. 사용자 정보 조회 및 응답
-		LoginHeaderInfoDTO headerInfo = employeeQueryService.getLoginHeaderInfo(code);
+		LoginHeaderInfoDTO headerInfo = employeeQueryService.getLoginHeaderInfoById(id); // ✅ code → id
 
 		response.setContentType("application/json;charset=UTF-8");
 		ObjectMapper mapper = new ObjectMapper();

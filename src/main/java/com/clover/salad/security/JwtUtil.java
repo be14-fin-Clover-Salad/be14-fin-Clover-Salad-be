@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -37,18 +38,18 @@ public class JwtUtil {
 		this.employeeQueryService = employeeQueryService;
 	}
 
-	public String createAccessToken(String subject, Collection<? extends GrantedAuthority> roles) {
+	public String createAccessToken(int id, Collection<? extends GrantedAuthority> roles) {
 		return Jwts.builder()
-			.setSubject(subject)
+			.setSubject(String.valueOf(id))
 			.claim("auth", roles.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
 			.setExpiration(Date.from(Instant.now().plus(Duration.ofMinutes(30))))
 			.signWith(key)
 			.compact();
 	}
 
-	public String createRefreshToken(String subject) {
+	public String createRefreshToken(int id) {
 		return Jwts.builder()
-			.setSubject(subject)
+			.setSubject(String.valueOf(id))
 			.setExpiration(Date.from(Instant.now().plus(Duration.ofHours(8))))
 			.signWith(key)
 			.compact();
@@ -67,27 +68,23 @@ public class JwtUtil {
 
 	public Authentication getAuthentication(String token) {
 		Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-		UserDetails userDetails = employeeQueryService.loadUserByUsername(claims.getSubject());
+		String subject = claims.getSubject(); // id로 저장됨
+		UserDetails userDetails = employeeQueryService.loadUserByUsername(subject);
 
 		Collection<GrantedAuthority> authorities = ((Collection<?>) claims.get("auth"))
 			.stream().map(Object::toString).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
-		return new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
-			userDetails, "", authorities);
+		return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
 	}
 
-	public String getUsername(String token) {
-		String username = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
-		log.info("[Username from token] {}", username);
-		return username;
-	}
-
-	private Claims parseClaims(String token) {
-		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+	public String getUserId(String token) {
+		String id = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+		log.info("[ID from token] {}", id);
+		return id;
 	}
 
 	public LocalDateTime getExpiration(String token) {
-		Date expirationDate = parseClaims(token).getExpiration();
+		Date expirationDate = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration();
 		LocalDateTime expiration = Instant.ofEpochMilli(expirationDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
 		log.info("[Token 만료시간] {}", expiration);
 		return expiration;

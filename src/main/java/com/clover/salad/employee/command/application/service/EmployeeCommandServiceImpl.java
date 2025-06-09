@@ -137,55 +137,44 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 
 	@Override
 	@Transactional
-	public void updateEmployee(String code, EmployeeUpdateDTO dto) {
-		EmployeeEntity employee = employeeRepository.findByCode(code)
-			.orElseThrow(() -> new RuntimeException("해당 사번의 사원을 찾을 수 없습니다."));
+	public void updateEmployee(int id, EmployeeUpdateDTO dto) {
+		EmployeeEntity employee = employeeRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("해당 ID의 사원을 찾을 수 없습니다."));
 
 		if (dto.getName() != null) employee.setName(dto.getName());
-
 		if (dto.getEmail() != null) {
-			if (!isValidEmail(dto.getEmail())) {
-				throw new InvalidEmailFormatException();
-			}
+			if (!isValidEmail(dto.getEmail())) throw new InvalidEmailFormatException();
 			employee.setEmail(dto.getEmail());
 		}
-
 		if (dto.getPhone() != null) employee.setPhone(dto.getPhone());
 
 		employeeRepository.save(employee);
 	}
-
 	private boolean isValidEmail(String email) {
 		String regex = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
 		return Pattern.matches(regex, email);
 	}
 
 	@Override
-	public void changePassword(String code, RequestChangePasswordDTO dto) {
-		EmployeeEntity employee = employeeRepository.findByCode(code)
-			.orElseThrow(() -> new RuntimeException("해당 사번을 가진 사용자가 존재하지 않습니다."));
+	public void changePassword(int id, RequestChangePasswordDTO dto) {
+		EmployeeEntity employee = employeeRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("해당 ID를 가진 사용자가 존재하지 않습니다."));
 
 		boolean matches = passwordEncoder.matches(dto.getCurrentPassword(), employee.getEncPwd());
+		if (!matches) throw new InvalidCurrentPasswordException();
 
-		if (!matches) {
-			throw new InvalidCurrentPasswordException();
-		}
-
-		String newEncodedPassword = passwordEncoder.encode(dto.getNewPassword());
-		employee.setEncPwd(newEncodedPassword);
+		employee.setEncPwd(passwordEncoder.encode(dto.getNewPassword()));
 		employeeRepository.save(employee);
 	}
 
 	@Override
 	@Transactional
-	public void updateProfilePath(String code, String newPath) {
-		EmployeeEntity employee = employeeRepository.findByCode(code)
-			.orElseThrow(() -> new RuntimeException("해당 사번의 사원을 찾을 수 없습니다."));
+	public void updateProfilePath(int id, String newPath) {
+		EmployeeEntity employee = employeeRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("해당 ID의 사원을 찾을 수 없습니다."));
 
 		Integer profileId = employee.getProfile();
-		if (profileId == null) {
-			throw new RuntimeException("등록된 프로필이 없습니다.");
-		}
+		if (profileId == null) throw new RuntimeException("등록된 프로필이 없습니다.");
 
 		FileUploadEntity file = fileUploadRepository.findById(profileId)
 			.orElseThrow(() -> new RuntimeException("해당 프로필 파일을 찾을 수 없습니다."));

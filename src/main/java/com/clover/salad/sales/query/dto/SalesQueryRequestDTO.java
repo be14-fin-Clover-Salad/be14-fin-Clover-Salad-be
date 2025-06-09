@@ -13,5 +13,5 @@ public class SalesQueryRequestDTO {
 	private Integer minAmount;
 	private Integer maxAmount;
 	private String employeeName;
-	private String contractId;
+	private Integer contractId;
 }

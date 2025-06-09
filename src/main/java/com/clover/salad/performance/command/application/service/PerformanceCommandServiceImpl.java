@@ -9,6 +9,8 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.clover.salad.common.exception.EmployeeNotFoundException;
+import com.clover.salad.contract.command.entity.ContractProductEntity;
+import com.clover.salad.contract.command.repository.ContractProductRepository;
 import com.clover.salad.contract.query.dto.ContractDTO;
 import com.clover.salad.contract.query.dto.ContractSearchDTO;
 import com.clover.salad.contract.query.service.ContractService;
@@ -44,6 +46,7 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 	private final DepartmentPerformanceRepository departmentPerformanceRepository;
 	private final PerformanceQueryServiceImpl performanceQueryService;
 	private final EmployeeRepository employeeRepository;
+	private final ContractProductRepository contractProductRepository;
 	
 	@Override
 	public void refreshEmployeeContractPerformance(String employeeCode, int targetDate) {
@@ -75,10 +78,10 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 		
 		for (ContractDTO contractDTO : contractDTOList) {
 			/* 설명. rentalProductCount 렌탈 상품 수 */
-			// List<ContractProductEntity> cpEntityList = contractProductRepository.findByContractId(contractDTO.getId());
-			// for (ContractProductEntity cpEntity : cpEntityList) {
-			// 	rentalProductCount += cpEntity.getQuantity();
-			// }
+			List<ContractProductEntity> cpEntityList = contractProductRepository.findByContractId(contractDTO.getId());
+			for (ContractProductEntity cpEntity : cpEntityList) {
+				rentalProductCount += cpEntity.getQuantity();
+			}
 			/* 설명. rentalRetentionCount 계약 유지 건수 = 이번 달 총 계약 수 - 이번 달에 시작된 계약 수 */
 			if (contractDTO.getStartDate().isAfter(startDateStart)
 			 || contractDTO.getStartDate().isEqual(startDateStart)) {

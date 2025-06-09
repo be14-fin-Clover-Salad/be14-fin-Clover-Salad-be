@@ -9,10 +9,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SalesQueryResponseDTO {
-	private Integer id;
+	private int id;
 	private LocalDate salesDate;
 	private String department;
 	private String employeeName;
-	private Integer amount;
-	private Integer contractId;
+	private int amount;
+	private int contractId;
 }

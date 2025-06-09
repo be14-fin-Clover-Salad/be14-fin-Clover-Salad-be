@@ -7,12 +7,11 @@ import lombok.*;
 @Getter
 @Setter
 public class SalesQueryRequestDTO {
-	private String id;
 	private String startDate;
 	private String endDate;
 	private String department;
 	private Integer minAmount;
 	private Integer maxAmount;
 	private String employeeName;
-	private String contractId;
+	private Integer contractId;
 }

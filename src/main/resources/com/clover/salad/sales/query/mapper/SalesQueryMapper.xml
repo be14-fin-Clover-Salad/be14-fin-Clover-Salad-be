@@ -2,15 +2,14 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
 <mapper namespace="com.clover.salad.sales.query.mapper.SalesQueryMapper">
     <resultMap id="SalesQueryResultMap" type="com.clover.salad.sales.query.dto.SalesQueryResponseDTO">
-        <result property="id" column="id"/>
-        <result property="salesDate" column="sales_date"/>
-        <result property="department" column="department"/>
-        <result property="employeeName" column="employee_name"/>
-        <result property="amount" column="amount"/>
-        <result property="contractId" column="contract_id"/>
+        <id property="id" column="id" />
+        <result property="salesDate" column="sales_date" />
+        <result property="department" column="department" />
+        <result property="employeeName" column="employee_name" />
+        <result property="amount" column="amount" />
+        <result property="contractId" column="contract_id" />
     </resultMap>
     <select id="selectSalesByCondition"
             parameterType="com.clover.salad.sales.query.dto.SalesQueryRequestDTO"
@@ -24,29 +23,29 @@
              , contract_id
           FROM sales
          WHERE is_deleted = false
-        <if test="id != null and id != ''">
-            AND CAST(id AS CHAR) LIKE CONCAT('%', #{id}, '%')
-        </if>
+
         <if test="startDate != null and startDate != ''">
             AND sales_date &gt;= #{startDate}
         </if>
         <if test="endDate != null and endDate != ''">
             AND sales_date &lt;= #{endDate}
         </if>
-        <if test="department != null and department != ''">
-            AND department LIKE CONCAT('%', #{department}, '%')
-        </if>
-        <if test="minAmount != null and minAmount &gt;= 0">
+
+        <if test="minAmount != null">
             AND amount &gt;= #{minAmount}
         </if>
-        <if test="maxAmount != null and maxAmount &gt;= 0">
+        <if test="maxAmount != null">
             AND amount &lt;= #{maxAmount}
+        </if>
+
+        <if test="department != null and department != ''">
+            AND department LIKE CONCAT('%', #{department}, '%')
         </if>
         <if test="employeeName != null and employeeName != ''">
             AND employee_name LIKE CONCAT('%', #{employeeName}, '%')
         </if>
-        <if test="contractId != null and contractId != ''">
-            AND CAST(contract_id AS CHAR) LIKE CONCAT('%', #{contractId}, '%')
+        <if test="contractId != null">
+            AND contract_id = #{contractId}
         </if>
          ORDER BY sales_date DESC
     </select>

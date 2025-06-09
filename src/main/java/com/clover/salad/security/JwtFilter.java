@@ -1,25 +1,21 @@
 package com.clover.salad.security;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.stream.Collectors;
-
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -30,36 +26,30 @@ public class JwtFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 		throws ServletException, IOException {
 
-		String authorizationHeader = request.getHeader("Authorization");
+		String header = request.getHeader("Authorization");
 
-		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-			String token = authorizationHeader.replace("Bearer ", "");
+		if (header != null && header.startsWith("Bearer ")) {
+			String token = header.replace("Bearer ", "");
 
-			try {
-				if (jwtUtil.validateToken(token)
-					&& redisTemplate.opsForValue().get("blacklist:" + token) == null) {
+			if (jwtUtil.validateToken(token)) {
+				String redisKey = "blacklist:" + token;
 
-					Claims claims = jwtUtil.getClaims(token);
-					int id = Integer.parseInt(claims.getSubject());
-
-					@SuppressWarnings("unchecked")
-					Collection<GrantedAuthority> authorities = ((Collection<?>) claims.get("auth"))
-						.stream()
-						.map(Object::toString)
-						.map(SimpleGrantedAuthority::new)
-						.collect(Collectors.toList());
-
-					EmployeeDetails employeeDetails = new EmployeeDetails(id, "", authorities);
-
-					UsernamePasswordAuthenticationToken authentication =
-						new UsernamePasswordAuthenticationToken(employeeDetails, null, authorities);
-
-					SecurityContextHolder.getContext().setAuthentication(authentication);
-
-					log.info("[인증 성공] 사용자 ID: {}", id);
+				if (redisTemplate.opsForValue().get(redisKey) == null) {
+					String subject = jwtUtil.getClaims(token).getSubject();
+					if ("ERP_ACCESS".equals(subject)) {
+						Authentication authentication = jwtUtil.getAuthentication(token);
+						if (authentication != null) {
+							SecurityContextHolder.getContext().setAuthentication(authentication);
+							log.info("[JWT FILTER] 인증 정보 등록 완료 - employeeId: {}", jwtUtil.getEmployeeId(token));
+						}
+					} else {
+						log.info("[JWT FILTER] Refresh 토큰 등 인증 대상 아님 - subject: {}", subject);
+					}
+				} else {
+					log.warn("[JWT FILTER] 블랙리스트에 등록된 토큰입니다: {}", token);
 				}
-			} catch (Exception e) {
-				log.info("[Token 유효하지 않음] 이유: {} - {}", e.getClass().getSimpleName(), e.getMessage());
+			} else {
+				log.warn("[JWT FILTER] 유효하지 않은 토큰입니다: {}", token);
 			}
 		}
 

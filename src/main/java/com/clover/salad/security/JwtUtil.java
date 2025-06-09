@@ -1,10 +1,10 @@
 package com.clover.salad.security;
 
 import java.security.Key;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -21,6 +21,7 @@ import com.clover.salad.employee.query.service.EmployeeQueryService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -30,28 +31,45 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtUtil {
 
 	private final Key key;
+	private final long accessTokenExpiration;
+	private final long refreshTokenExpiration;
 	private final EmployeeQueryService employeeQueryService;
 
-	public JwtUtil(@Value("${token.secret}") String secretKey, EmployeeQueryService employeeQueryService) {
+	public JwtUtil(
+		@Value("${token.secret}") String secretKey,
+		@Value("${token.access-token-expiration}") long accessTokenExpiration,
+		@Value("${token.refresh-token-expiration}") long refreshTokenExpiration,
+		EmployeeQueryService employeeQueryService
+	) {
 		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
 		this.key = Keys.hmacShaKeyFor(keyBytes);
+		this.accessTokenExpiration = accessTokenExpiration;
+		this.refreshTokenExpiration = refreshTokenExpiration;
 		this.employeeQueryService = employeeQueryService;
 	}
 
-	public String createAccessToken(int id, Collection<? extends GrantedAuthority> roles) {
+	public String createAccessToken(int employeeId, Collection<? extends GrantedAuthority> authorities) {
+		String auth = authorities.stream()
+			.map(GrantedAuthority::getAuthority)
+			.collect(Collectors.joining(","));
+
+		log.info("발급 전 권한 목록: {}", authorities);
+
 		return Jwts.builder()
-			.setSubject(String.valueOf(id))
-			.claim("auth", roles.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-			.setExpiration(Date.from(Instant.now().plus(Duration.ofMinutes(30))))
-			.signWith(key)
+			.setSubject("ERP_ACCESS")
+			.claim("employeeId", employeeId)
+			.claim("auth", auth)
+			.setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+			.signWith(key, SignatureAlgorithm.HS512)
 			.compact();
 	}
 
-	public String createRefreshToken(int id) {
+	public String createRefreshToken(int employeeId) {
 		return Jwts.builder()
-			.setSubject(String.valueOf(id))
-			.setExpiration(Date.from(Instant.now().plus(Duration.ofHours(8))))
-			.signWith(key)
+			.setSubject("ERP_REFRESH")
+			.claim("employeeId", employeeId)
+			.setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
+			.signWith(key, SignatureAlgorithm.HS512)
 			.compact();
 	}
 
@@ -66,27 +84,50 @@ public class JwtUtil {
 		}
 	}
 
-	public Authentication getAuthentication(String token) {
-		Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-		String subject = claims.getSubject(); // id로 저장됨
-		UserDetails userDetails = employeeQueryService.loadUserByUsername(subject);
-
-		Collection<GrantedAuthority> authorities = ((Collection<?>) claims.get("auth"))
-			.stream().map(Object::toString).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-
-		return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
+	public int getEmployeeId(String token) {
+		Claims claims = getClaims(token);
+		return claims.get("employeeId", Integer.class);
 	}
 
-	public String getUserId(String token) {
-		String id = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
-		log.info("[ID from token] {}", id);
-		return id;
+	public Collection<? extends GrantedAuthority> getAuthorities(String token) {
+		Claims claims = getClaims(token);
+		String auth = claims.get("auth", String.class);
+		return Arrays.stream(auth.split(","))
+			.map(SimpleGrantedAuthority::new)
+			.collect(Collectors.toList());
+	}
+
+	public Claims getClaims(String token) {
+		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
 	}
 
 	public LocalDateTime getExpiration(String token) {
-		Date expirationDate = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration();
-		LocalDateTime expiration = Instant.ofEpochMilli(expirationDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
-		log.info("[Token 만료시간] {}", expiration);
-		return expiration;
+		Date expirationDate = getClaims(token).getExpiration();
+		return Instant.ofEpochMilli(expirationDate.getTime())
+			.atZone(ZoneId.systemDefault())
+			.toLocalDateTime();
+	}
+
+	public Authentication getAuthentication(String token) {
+		Claims claims = getClaims(token);
+
+		if (!"ERP_ACCESS".equals(claims.getSubject())) {
+			log.warn("[JwtUtil] Access 토큰 아님 → 인증 객체 생성 안 함");
+			return null;  // or throw new RuntimeException("Access 토큰 아님");
+		}
+
+		int employeeId = claims.get("employeeId", Integer.class);
+		String auth = claims.get("auth", String.class);
+
+		if (auth == null) {
+			throw new RuntimeException("권한 정보(auth)가 누락된 토큰입니다.");
+		}
+
+		Collection<? extends GrantedAuthority> authorities = Arrays.stream(auth.split(","))
+			.map(SimpleGrantedAuthority::new)
+			.collect(Collectors.toList());
+
+		UserDetails userDetails = employeeQueryService.loadUserById(employeeId);
+		return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 	}
 }

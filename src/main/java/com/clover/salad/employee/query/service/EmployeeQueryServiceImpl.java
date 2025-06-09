@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +25,13 @@ import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.LoginHeaderInfoDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.mapper.EmployeeMapper;
+import com.clover.salad.security.EmployeeDetails;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class EmployeeQueryServiceImpl implements EmployeeQueryService {
+public class EmployeeQueryServiceImpl implements EmployeeQueryService, UserDetailsService {
 
 	private final EmployeeMapper employeeMapper;
 	private final EmployeeRepository employeeRepository;
@@ -52,10 +54,6 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 		return employeeMapper.searchEmployees(searchEmployeeDTO);
 	}
 
-	// @Override
-	// public boolean checkIsAdmin(String code) {
-	// 	return employeeMapper.selectIsAdminByCode(code);
-	// }
 	@Override
 	public boolean checkIsAdminById(int id) {
 		EmployeeEntity employee = employeeRepository.findById(id)
@@ -65,17 +63,13 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(String subject) throws UsernameNotFoundException {
-		int id = Integer.parseInt(subject);
-
+	public UserDetails loadUserById(int id) {
 		EmployeeEntity employee = employeeRepository.findById(id)
-			.orElseThrow(() -> new UsernameNotFoundException("해당 ID를 가진 사용자를 찾을 수 없습니다: " + id));
+			.orElseThrow(() -> new UsernameNotFoundException("사용자 없음"));
 
-		log.info("로그인 사용자 로드됨: id={}, isAdmin={}", employee.getId(), employee.isAdmin());
-
-		return new User(
-			String.valueOf(employee.getId()),
-			employee.getEncPwd(),
+		return new EmployeeDetails(
+			employee.getId(),
+			employee.getPassword(),
 			getAuthorities(employee)
 		);
 	}
@@ -135,5 +129,17 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 		}
 
 		return authorities;
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String code) throws UsernameNotFoundException {
+		EmployeeEntity employee = employeeRepository.findByCode(code)
+			.orElseThrow(() -> new UsernameNotFoundException("사번에 해당하는 사용자를 찾을 수 없습니다."));
+
+		return new EmployeeDetails(
+			employee.getId(),
+			employee.getPassword(),
+			getAuthorities(employee)
+		);
 	}
 }

@@ -32,7 +32,9 @@ import com.clover.salad.security.JwtUtil;
 
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 
@@ -79,6 +81,11 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		if (!remaining.isNegative() && !remaining.isZero()) {
 			redisTemplate.opsForValue().set("blacklist:" + token, "logout", remaining);
 		}
+
+		// ✅ refresh token 제거
+		int userId = jwtUtil.getEmployeeId(token);
+		redisTemplate.delete("refresh:" + userId);
+		log.info("로그아웃 완료 - access 블랙리스트 등록 & refresh 삭제 (userId: {})", userId);
 	}
 
 	@Override
@@ -129,7 +136,7 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		}
 		EmployeeEntity employee = optionalEmployee.get();
 
-		employee.setEncPwd(bCryptPasswordEncoder.encode(newPassword));
+		employee.setPassword(bCryptPasswordEncoder.encode(newPassword));
 		employeeRepository.save(employee);
 
 		redisTemplate.delete(redisKey);
@@ -160,10 +167,10 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		EmployeeEntity employee = employeeRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("해당 ID를 가진 사용자가 존재하지 않습니다."));
 
-		boolean matches = passwordEncoder.matches(dto.getCurrentPassword(), employee.getEncPwd());
+		boolean matches = passwordEncoder.matches(dto.getCurrentPassword(), employee.getPassword());
 		if (!matches) throw new InvalidCurrentPasswordException();
 
-		employee.setEncPwd(passwordEncoder.encode(dto.getNewPassword()));
+		employee.setPassword(passwordEncoder.encode(dto.getNewPassword()));
 		employeeRepository.save(employee);
 	}
 

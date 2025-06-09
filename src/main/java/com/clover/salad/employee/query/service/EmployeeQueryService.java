@@ -15,7 +15,7 @@ public interface EmployeeQueryService {
 
 	List<EmployeeQueryDTO> searchEmployees(SearchEmployeeDTO searchDto);
 
-	UserDetails loadUserByUsername(String subject); // subject = employee id (String 타입)
+	UserDetails loadUserById(int id);
 
 	LoginHeaderInfoDTO getLoginHeaderInfoById(int id);
 

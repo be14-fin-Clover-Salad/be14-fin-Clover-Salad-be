@@ -63,10 +63,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 		Authentication authResult) throws IOException {
 
-		User user = (User) authResult.getPrincipal();
-		int id = Integer.parseInt(user.getUsername()); // ✅ 바로 id로 사용
+		EmployeeDetails user = (EmployeeDetails) authResult.getPrincipal();
+		int id = user.getId();
 
-		String accessToken = jwtUtil.createAccessToken(id, authResult.getAuthorities());
+		String accessToken = jwtUtil.createAccessToken(id, user.getAuthorities());
 		String refreshToken = jwtUtil.createRefreshToken(id);
 
 		redisTemplate.opsForValue().set("refresh:" + id, refreshToken, Duration.ofDays(7));
@@ -80,7 +80,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		refreshCookie.setAttribute("SameSite", "Strict");
 		response.addCookie(refreshCookie);
 
-		LoginHeaderInfoDTO headerInfo = employeeQueryService.getLoginHeaderInfoById(id); // ✅ code → id
+		LoginHeaderInfoDTO headerInfo = employeeQueryService.getLoginHeaderInfoById(id);
 
 		response.setContentType("application/json;charset=UTF-8");
 		ObjectMapper mapper = new ObjectMapper();
@@ -101,4 +101,5 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		mapper.writeValue(response.getWriter(),
 			Map.of("message", "사번 또는 비밀번호가 올바르지 않습니다."));
 	}
+
 }

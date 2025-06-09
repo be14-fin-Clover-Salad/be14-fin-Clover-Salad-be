@@ -35,7 +35,7 @@ public class EmployeeEntity {
 	private String code;
 
 	@Column(name = "password", nullable = false)
-	private String encPwd;
+	private String password;
 
 	@Column(nullable = false)
 	private String name;

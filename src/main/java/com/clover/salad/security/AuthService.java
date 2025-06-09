@@ -16,7 +16,7 @@ public class AuthService {
 		this.employeeQueryService = employeeQueryService;
 	}
 
-	public UserDetails loadUserDetailsById(String id) {
-		return employeeQueryService.loadUserByUsername(id); // id는 String으로 들어가지만 내부에서 int로 파싱됨
+	public UserDetails loadUserById(int id) {
+		return employeeQueryService.loadUserById(id);
 	}
 }

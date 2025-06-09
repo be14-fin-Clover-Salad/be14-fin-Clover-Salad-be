@@ -1,19 +1,15 @@
 package com.clover.salad.employee.command.application.service;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,7 +24,6 @@ import com.clover.salad.employee.command.application.dto.RequestChangePasswordDT
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 import com.clover.salad.employee.query.mapper.EmployeeMapper;
-import com.clover.salad.security.JwtUtil;
 
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;

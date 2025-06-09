@@ -23,4 +23,6 @@ public interface EmployeeQueryService {
 
 	// boolean checkIsAdmin(String code);
 	boolean checkIsAdminById(int id);
+
+	String findCodeById(int id);
 }

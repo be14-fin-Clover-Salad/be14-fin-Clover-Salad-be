@@ -82,7 +82,6 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 			redisTemplate.opsForValue().set("blacklist:" + token, "logout", remaining);
 		}
 
-		// ✅ refresh token 제거
 		int userId = jwtUtil.getEmployeeId(token);
 		redisTemplate.delete("refresh:" + userId);
 		log.info("로그아웃 완료 - access 블랙리스트 등록 & refresh 삭제 (userId: {})", userId);

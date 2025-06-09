@@ -1,8 +1,11 @@
 package com.clover.salad.employee.command.application.controller;
 
+import java.util.Arrays;
+
 import com.clover.salad.employee.command.application.dto.*;
 import com.clover.salad.employee.command.application.service.EmployeeCommandService;
-import com.clover.salad.security.AuthService;
+import com.clover.salad.security.EmployeeDetails;
+import com.clover.salad.security.auth.AuthService;
 import com.clover.salad.security.JwtUtil;
 import com.clover.salad.security.SecurityUtil;
 
@@ -75,19 +78,16 @@ public class EmployeeCommandController {
 
 	@PostMapping("/refresh-token")
 	public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
-
 		Cookie[] cookies = request.getCookies();
 		if (cookies == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("RefreshToken 없음");
 		}
 
-		String refreshToken = null;
-		for (Cookie cookie : cookies) {
-			if ("refreshToken".equals(cookie.getName())) {
-				refreshToken = cookie.getValue();
-				break;
-			}
-		}
+		String refreshToken = Arrays.stream(cookies)
+			.filter(cookie -> "refreshToken".equals(cookie.getName()))
+			.map(Cookie::getValue)
+			.findFirst()
+			.orElse(null);
 
 		if (refreshToken == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("RefreshToken 누락");
@@ -105,10 +105,14 @@ public class EmployeeCommandController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("만료되었거나 위조된 토큰");
 		}
 
-		UserDetails userDetails = authService.loadUserById(employeeId);
-		String newAccessToken = jwtUtil.createAccessToken(employeeId, userDetails.getAuthorities());
-		response.setHeader("Authorization", "Bearer " + newAccessToken);
+		EmployeeDetails userDetails = (EmployeeDetails) authService.loadUserById(employeeId);
+		String newAccessToken = jwtUtil.createAccessToken(
+			employeeId,
+			userDetails.getCode(),
+			userDetails.getAuthorities()
+		);
 
+		response.setHeader("Authorization", "Bearer " + newAccessToken);
 		return ResponseEntity.ok("AccessToken 재발급 완료");
 	}
 

@@ -65,9 +65,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 		EmployeeDetails user = (EmployeeDetails) authResult.getPrincipal();
 		int id = user.getId();
+		String code = user.getCode();
 
-		String accessToken = jwtUtil.createAccessToken(id, user.getAuthorities());
-		String refreshToken = jwtUtil.createRefreshToken(id);
+		log.info("로그인 성공 - ID: {}, CODE: {}", id, code);
+
+		String accessToken = jwtUtil.createAccessToken(id, code, user.getAuthorities());
+		String refreshToken = jwtUtil.createRefreshToken(id, code);
 
 		redisTemplate.opsForValue().set("refresh:" + id, refreshToken, Duration.ofDays(7));
 		response.setHeader("Authorization", "Bearer " + accessToken);

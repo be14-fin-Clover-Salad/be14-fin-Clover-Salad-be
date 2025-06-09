@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.clover.salad.employee.query.service.EmployeeQueryService;
+import com.clover.salad.security.token.TokenPrincipal;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -48,26 +50,29 @@ public class JwtUtil {
 		this.employeeQueryService = employeeQueryService;
 	}
 
-	public String createAccessToken(int employeeId, Collection<? extends GrantedAuthority> authorities) {
+	public String createAccessToken(int employeeId, String code, Collection<? extends GrantedAuthority> authorities) {
 		String auth = authorities.stream()
 			.map(GrantedAuthority::getAuthority)
 			.collect(Collectors.joining(","));
 
 		log.info("발급 전 권한 목록: {}", authorities);
+		log.info("[AccessToken 발급] ID: {}, CODE: {}, AUTH(문자열): {}", employeeId, code, auth);
 
 		return Jwts.builder()
-			.setSubject("ERP_ACCESS")	// subject는 엑세스 토큰임을 구분하기 위해서만 사용
-			.claim("employeeId", employeeId)	// 식별자
-			.claim("auth", auth)
+			.setSubject("ERP_ACCESS") 				// access 토큰임을 구분하기 위한 subject
+			.claim("employeeId", employeeId) 	// 내부 식별자
+			.claim("code", code)             	// 사번 (도메인 식별자)
+			.claim("auth", auth)             	// 권한
 			.setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
 			.signWith(key, SignatureAlgorithm.HS512)
 			.compact();
 	}
 
-	public String createRefreshToken(int employeeId) {
+	public String createRefreshToken(int employeeId, String code) {
 		return Jwts.builder()
 			.setSubject("ERP_REFRESH")
 			.claim("employeeId", employeeId)
+			.claim("code", code)
 			.setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
 			.signWith(key, SignatureAlgorithm.HS512)
 			.compact();
@@ -111,23 +116,30 @@ public class JwtUtil {
 	public Authentication getAuthentication(String token) {
 		Claims claims = getClaims(token);
 
+		log.info("[토큰 클레임 파싱] employeeId={}, code={}, auth={}, subject={}",
+			claims.get("employeeId", Object.class),
+			claims.get("code", Object.class),
+			claims.get("auth", Object.class),
+			claims.getSubject()
+		);
+
 		if (!"ERP_ACCESS".equals(claims.getSubject())) {
-			log.warn("[JwtUtil] Access 토큰 아님 → 인증 객체 생성 안 함");
-			return null;  // or throw new RuntimeException("Access 토큰 아님");
+			return null;
 		}
 
-		int employeeId = claims.get("employeeId", Integer.class);
+		Integer employeeId = claims.get("employeeId", Integer.class);
+		String code = claims.get("code", String.class);
 		String auth = claims.get("auth", String.class);
 
-		if (auth == null) {
-			throw new RuntimeException("권한 정보(auth)가 누락된 토큰입니다.");
+		if (employeeId == null || code == null || auth == null) {
+			throw new RuntimeException("JWT 클레임의 정보가 누락되었습니다. (employeeId/code/auth)");
 		}
 
 		Collection<? extends GrantedAuthority> authorities = Arrays.stream(auth.split(","))
 			.map(SimpleGrantedAuthority::new)
 			.collect(Collectors.toList());
 
-		UserDetails userDetails = employeeQueryService.loadUserById(employeeId);
-		return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+		TokenPrincipal principal = new TokenPrincipal(employeeId, code, authorities);
+		return new UsernamePasswordAuthenticationToken(principal, null, authorities);
 	}
 }

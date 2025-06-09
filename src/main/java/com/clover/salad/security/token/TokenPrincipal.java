@@ -1,32 +1,26 @@
-package com.clover.salad.security;
+package com.clover.salad.security.token;
 
-import java.util.Collection;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import lombok.Getter;
+
+import java.util.Collection;
 
 @Getter
-public class EmployeeDetails implements UserDetails {
-
-	private final int id;
-	private final String code; // 사번
-	private final String password;
+public class TokenPrincipal implements UserDetails {
+	private final int employeeId;
+	private final String code;
 	private final Collection<? extends GrantedAuthority> authorities;
 
-	public EmployeeDetails(int id, String code, String password, Collection<? extends GrantedAuthority> authorities) {
-		this.id = id;
+	public TokenPrincipal(int employeeId, String code, Collection<? extends GrantedAuthority> authorities) {
+		this.employeeId = employeeId;
 		this.code = code;
-		this.password = password;
 		this.authorities = authorities;
 	}
 
-	@Override
-	public String getUsername() {
-		return code; // 스프링 시큐리티의 username은 사번으로 설정
-	}
-
-	@Override public String getPassword() { return password; }
 	@Override public Collection<? extends GrantedAuthority> getAuthorities() { return authorities; }
+	@Override public String getPassword() { return null; }
+	@Override public String getUsername() { return code; } // 유저가 입력하는 식별자 = 사번
 	@Override public boolean isAccountNonExpired() { return true; }
 	@Override public boolean isAccountNonLocked() { return true; }
 	@Override public boolean isCredentialsNonExpired() { return true; }

@@ -63,12 +63,22 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService, UserDetai
 	}
 
 	@Override
+	public String findCodeById(int id) {
+		return employeeRepository.findById(id)
+			.map(EmployeeEntity::getCode)
+			.orElseThrow(() -> new RuntimeException("사번 조회 실패: " + id));
+	}
+
+	@Override
 	public UserDetails loadUserById(int id) {
 		EmployeeEntity employee = employeeRepository.findById(id)
 			.orElseThrow(() -> new UsernameNotFoundException("사용자 없음"));
 
+		log.info("[EmployeeDetails 생성] ID: {}, CODE: {}, AUTH: {}", employee.getId(), employee.getCode(), getAuthorities(employee));
+		log.info("[loadUserById] code={}", employee.getCode());
 		return new EmployeeDetails(
 			employee.getId(),
+			employee.getCode(),
 			employee.getPassword(),
 			getAuthorities(employee)
 		);
@@ -138,6 +148,7 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService, UserDetai
 
 		return new EmployeeDetails(
 			employee.getId(),
+			employee.getCode(),
 			employee.getPassword(),
 			getAuthorities(employee)
 		);

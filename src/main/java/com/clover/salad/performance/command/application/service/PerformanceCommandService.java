@@ -1,5 +1,9 @@
 package com.clover.salad.performance.command.application.service;
 
 public interface PerformanceCommandService {
-	void refreshContractPerformance(String employeeCode);
+	void refreshEmployeeContractPerformance(String employeeCode);
+	
+	void refreshEmployeeCustomerPerformance(String employeeCode);
+	
+	void refreshDepartmentPerformance(String deptName);
 }

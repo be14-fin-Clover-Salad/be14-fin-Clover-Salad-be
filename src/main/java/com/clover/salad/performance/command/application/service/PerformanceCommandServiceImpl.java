@@ -37,7 +37,7 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 	private final CustomerQueryService customerQueryService;
 	
 	@Override
-	public void refreshContractPerformance(String employeeCode) {
+	public void refreshEmployeeContractPerformance(String employeeCode) {
 		int employeeId = getEmployeeByCode(employeeCode).getId();
 		
 		/* 설명. 현재 시간을 targetDate 형식으로 */
@@ -46,6 +46,7 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 		int targetDate = Integer.parseInt(yearMonth.format(now));
 		
 		EmployeePerformance currentEP = employeePerformanceRepository.findByEmployeeIdAndTargetDate(employeeId, targetDate);
+		EmployeePerformanceDTO epDTO = new EmployeePerformanceDTO();
 		
 		/* 설명. 계약 조회를 위한 검색 조건 생성 */
 		ContractSearchDTO contractSearchDTO = new ContractSearchDTO();
@@ -58,7 +59,6 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 		contractSearchDTO.setStartDateEnd(startDateEnd);
 		
 		List<ContractDTO> contractDTOList = contractService.searchContracts(contractSearchDTO);
-		EmployeePerformanceDTO epDTO = new EmployeePerformanceDTO();
 		
 		int rentalProductCount = 0;
 		int totalRentalCount = contractDTOList.size();
@@ -104,6 +104,39 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 			setEPDTOToEP(epDTO,currentEP);
 			employeePerformanceRepository.save(currentEP);
 		}
+	}
+	
+	@Override
+	public void refreshEmployeeCustomerPerformance(String employeeCode) {
+		int employeeId = getEmployeeByCode(employeeCode).getId();
+		
+		/* 설명. 현재 시간을 targetDate 형식으로 */
+		SimpleDateFormat yearMonth = new SimpleDateFormat("yyyyMM");
+		Date now = new Date();
+		int targetDate = Integer.parseInt(yearMonth.format(now));
+		
+		EmployeePerformance currentEP = employeePerformanceRepository.findByEmployeeIdAndTargetDate(employeeId, targetDate);
+		EmployeePerformanceDTO epDTO = new EmployeePerformanceDTO();
+		
+		/* 설명. customerFeedbackScore */
+		
+		/* 설명. customerFeedbackCount */
+		
+		
+		/* 설명. 조회 시 없으면 새로 만들기, 있으면 업데이트하기 */
+		if (currentEP == null) {
+			EmployeePerformance newEP = new EmployeePerformance();
+			setEPDTOToEP(epDTO, newEP);
+			employeePerformanceRepository.save(newEP);
+		} else {
+			setEPDTOToEP(epDTO,currentEP);
+			employeePerformanceRepository.save(currentEP);
+		}
+	}
+	
+	@Override
+	public void refreshDepartmentPerformance(String deptName) {
+	
 	}
 	
 	private void setEPDTOToEP(EmployeePerformanceDTO dto, EmployeePerformance entity) {

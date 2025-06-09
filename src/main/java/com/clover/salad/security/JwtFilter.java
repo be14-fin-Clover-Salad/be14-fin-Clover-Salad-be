@@ -25,61 +25,53 @@ public class JwtFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 		throws ServletException, IOException {
-
 		String header = request.getHeader("Authorization");
-		log.info("[JWT FILTER] 요청 헤더 Authorization: {}", header);
 
+		/* 설명. 예외처리 */
+		// 1. Authorization 헤더가 없거나 형식이 Bearer로 시작하지 않으면 다음 필터로 넘김 (인증 생략)
 		if (header == null || !header.startsWith("Bearer ")) {
-			log.info("[JWT FILTER] Authorization 헤더 없음 또는 Bearer 시작 아님 - 익명 요청 처리");
 			filterChain.doFilter(request, response);
 			return;
 		}
 
 		String token = header.replace("Bearer ", "");
-		log.info("[JWT FILTER] 추출한 토큰: {}", token);
 
+		// 2. 토큰이 유효하지 않은 경우 → 인증 실패 (만료, 위조 등 포함)
 		if (!jwtUtil.validateToken(token)) {
-			log.warn("[JWT FILTER] 유효하지 않은 토큰");
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 토큰입니다.");
 			return;
 		}
 
+		// 3. Redis에 블랙리스트로 등록된 토큰이면 접근 거부 (로그아웃된 토큰 등)
 		String redisKey = "blacklist:" + token;
 		if (redisTemplate.opsForValue().get(redisKey) != null) {
-			log.warn("[JWT FILTER] 블랙리스트 토큰 접근 시도: {}", token);
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "블랙리스트 토큰입니다.");
 			return;
 		}
 
+		// 4. 토큰이 access 용도가 아닌 경우 필터링 건너뜀 (예: refresh 토큰)
 		String subject = jwtUtil.getClaims(token).getSubject();
-		log.info("[JWT FILTER] 토큰 subject: {}", subject);
-
 		if (!"ERP_ACCESS".equals(subject)) {
-			log.info("[JWT FILTER] 인증 대상 아님 (subject != ERP_ACCESS) → 통과");
 			filterChain.doFilter(request, response);
 			return;
 		}
 
 		try {
+			// 5. 인증 객체 생성 및 SecurityContext에 저장
 			Authentication authentication = jwtUtil.getAuthentication(token);
 			if (authentication == null) {
-				log.error("[JWT FILTER] 인증 객체 생성 실패 (authentication == null)");
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증 실패");
 				return;
 			}
-
-			log.info("[JWT FILTER] 인증 객체 생성 성공: {}", authentication.getName());
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-			log.info("[JWT FILTER] SecurityContext에 인증 객체 저장 완료");
 
 		} catch (Exception e) {
-			log.error("[JWT FILTER] 인증 처리 중 예외 발생", e);
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토큰 파싱 또는 인증 처리 실패");
 			return;
 		}
 
+		// 7. 인증 성공 후 다음 필터로 요청 전달
 		filterChain.doFilter(request, response);
-		log.info("[JWT FILTER] 필터 체인 다음으로 전달 완료");
 	}
 
 	/* 설명. 토큰 유효성 검사에서 /auth/login은 제외 */

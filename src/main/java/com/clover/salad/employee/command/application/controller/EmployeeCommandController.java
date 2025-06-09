@@ -1,25 +1,12 @@
 package com.clover.salad.employee.command.application.controller;
 
-import java.util.Arrays;
-
 import com.clover.salad.employee.command.application.dto.*;
 import com.clover.salad.employee.command.application.service.EmployeeCommandService;
-import com.clover.salad.security.EmployeeDetails;
-import com.clover.salad.security.auth.AuthService;
-import com.clover.salad.security.JwtUtil;
 import com.clover.salad.security.SecurityUtil;
-
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -27,32 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/employee")
 public class EmployeeCommandController {
 
-	private final ModelMapper modelMapper;
 	private final EmployeeCommandService employeeCommandService;
-	private final JwtUtil jwtUtil;
-	private final RedisTemplate<String, String> redisTemplate;
-	private final AuthService authService;
 
 	@Autowired
 	public EmployeeCommandController(
-		ModelMapper modelMapper,
-		EmployeeCommandService employeeCommandService,
-		JwtUtil jwtUtil,
-		RedisTemplate<String, String> redisTemplate,
-		AuthService authService
+		EmployeeCommandService employeeCommandService
 	) {
-		this.modelMapper = modelMapper;
 		this.employeeCommandService = employeeCommandService;
-		this.jwtUtil = jwtUtil;
-		this.redisTemplate = redisTemplate;
-		this.authService = authService;
-	}
-
-	@PostMapping("/logout")
-	public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
-		String pureToken = token.replace("Bearer ", "");
-		employeeCommandService.logout(pureToken);
-		return ResponseEntity.ok("로그아웃 성공 (토큰 블랙리스트 등록 완료)");
 	}
 
 	@PatchMapping("/mypage")
@@ -76,49 +44,8 @@ public class EmployeeCommandController {
 		return ResponseEntity.ok("프로필 경로가 성공적으로 수정되었습니다.");
 	}
 
-	@PostMapping("/refresh-token")
-	public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
-		Cookie[] cookies = request.getCookies();
-		if (cookies == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("RefreshToken 없음");
-		}
-
-		String refreshToken = Arrays.stream(cookies)
-			.filter(cookie -> "refreshToken".equals(cookie.getName()))
-			.map(Cookie::getValue)
-			.findFirst()
-			.orElse(null);
-
-		if (refreshToken == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("RefreshToken 누락");
-		}
-
-		if (!jwtUtil.validateToken(refreshToken)) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰 유효하지 않음");
-		}
-
-		int employeeId = jwtUtil.getEmployeeId(refreshToken);
-		String redisKey = "refresh:" + employeeId;
-		String savedToken = redisTemplate.opsForValue().get(redisKey);
-
-		if (!refreshToken.equals(savedToken)) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("만료되었거나 위조된 토큰");
-		}
-
-		EmployeeDetails userDetails = (EmployeeDetails) authService.loadUserById(employeeId);
-		String newAccessToken = jwtUtil.createAccessToken(
-			employeeId,
-			userDetails.getCode(),
-			userDetails.getAuthorities()
-		);
-
-		response.setHeader("Authorization", "Bearer " + newAccessToken);
-		return ResponseEntity.ok("AccessToken 재발급 완료");
-	}
-
 	@PostMapping("/password-reset")
 	public ResponseEntity<String> requestResetPassword(@RequestBody RequestResetPasswordDTO dto) {
-
 		employeeCommandService.sendResetPasswordLink(dto.getCode(), dto.getEmail());
 		return ResponseEntity.ok("비밀번호 재설정 링크를 이메일로 전송했습니다.");
 	}

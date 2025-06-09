@@ -39,9 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 
 	private final EmployeeRepository employeeRepository;
-	private final ModelMapper modelMapper;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
-	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final JavaMailSender mailSender;
 	private final PasswordEncoder passwordEncoder;
@@ -55,36 +53,19 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 
 	@Autowired
 	public EmployeeCommandServiceImpl(EmployeeRepository employeeRepository,
-		ModelMapper modelMapper,
 		BCryptPasswordEncoder bCryptPasswordEncoder,
-		JwtUtil jwtUtil,
 		RedisTemplate<String, String> redisTemplate,
 		JavaMailSender mailSender,
 		PasswordEncoder passwordEncoder,
 		EmployeeMapper employeeMapper,
 		FileUploadRepository fileUploadRepository) {
 		this.employeeRepository = employeeRepository;
-		this.modelMapper = modelMapper;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-		this.jwtUtil = jwtUtil;
 		this.redisTemplate = redisTemplate;
 		this.mailSender = mailSender;
 		this.passwordEncoder = passwordEncoder;
 		this.employeeMapper = employeeMapper;
 		this.fileUploadRepository = fileUploadRepository;
-	}
-
-	@Override
-	public void logout(String token) {
-		LocalDateTime expiration = jwtUtil.getExpiration(token);
-		Duration remaining = Duration.between(LocalDateTime.now(), expiration);
-		if (!remaining.isNegative() && !remaining.isZero()) {
-			redisTemplate.opsForValue().set("blacklist:" + token, "logout", remaining);
-		}
-
-		int userId = jwtUtil.getEmployeeId(token);
-		redisTemplate.delete("refresh:" + userId);
-		log.info("로그아웃 완료 - access 블랙리스트 등록 & refresh 삭제 (userId: {})", userId);
 	}
 
 	@Override

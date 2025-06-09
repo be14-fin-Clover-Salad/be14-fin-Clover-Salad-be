@@ -4,7 +4,6 @@ import com.clover.salad.employee.command.application.dto.EmployeeUpdateDTO;
 import com.clover.salad.employee.command.application.dto.RequestChangePasswordDTO;
 
 public interface EmployeeCommandService {
-	void logout(String token);
 
 	void sendResetPasswordLink(String code, String email);
 

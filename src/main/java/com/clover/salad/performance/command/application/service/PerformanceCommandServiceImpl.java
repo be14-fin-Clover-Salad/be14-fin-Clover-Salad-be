@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +15,6 @@ import com.clover.salad.common.exception.EmployeeNotFoundException;
 import com.clover.salad.contract.query.dto.ContractDTO;
 import com.clover.salad.contract.query.dto.ContractSearchDTO;
 import com.clover.salad.contract.query.service.ContractService;
-import com.clover.salad.customer.command.domain.repository.CustomerRepository;
 import com.clover.salad.customer.query.service.CustomerQueryService;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
@@ -36,7 +34,6 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 	private final EmployeePerformanceRepository employeePerformanceRepository;
 	private final EmployeeQueryService employeeQueryService;
 	private final ContractService contractService;
-	private final CustomerRepository customerRepository;
 	private final CustomerQueryService customerQueryService;
 	
 	@Override

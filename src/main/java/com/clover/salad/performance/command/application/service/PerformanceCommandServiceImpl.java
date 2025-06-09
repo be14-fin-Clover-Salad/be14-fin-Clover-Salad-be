@@ -1,10 +1,7 @@
 package com.clover.salad.performance.command.application.service;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.temporal.TemporalAdjusters;
-import java.util.Date;
+import java.time.YearMonth;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,12 +13,20 @@ import com.clover.salad.contract.query.dto.ContractDTO;
 import com.clover.salad.contract.query.dto.ContractSearchDTO;
 import com.clover.salad.contract.query.service.ContractService;
 import com.clover.salad.customer.query.service.CustomerQueryService;
+import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
+import com.clover.salad.employee.command.domain.repository.DepartmentRepository;
+import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
+import com.clover.salad.performance.command.application.dto.DepartmentPerformanceDTO;
 import com.clover.salad.performance.command.application.dto.EmployeePerformanceDTO;
+import com.clover.salad.performance.command.application.dto.SearchTermDTO;
+import com.clover.salad.performance.command.domain.aggregate.entity.DepartmentPerformance;
 import com.clover.salad.performance.command.domain.aggregate.entity.EmployeePerformance;
+import com.clover.salad.performance.command.domain.repository.DepartmentPerformanceRepository;
 import com.clover.salad.performance.command.domain.repository.EmployeePerformanceRepository;
+import com.clover.salad.performance.query.service.PerformanceQueryServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,15 +40,18 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 	private final EmployeeQueryService employeeQueryService;
 	private final ContractService contractService;
 	private final CustomerQueryService customerQueryService;
+	private final DepartmentRepository departmentRepository;
+	private final DepartmentPerformanceRepository departmentPerformanceRepository;
+	private final PerformanceQueryServiceImpl performanceQueryService;
+	private final EmployeeRepository employeeRepository;
 	
 	@Override
-	public void refreshEmployeeContractPerformance(String employeeCode) {
+	public void refreshEmployeeContractPerformance(String employeeCode, int targetDate) {
 		int employeeId = getEmployeeByCode(employeeCode).getId();
 		
-		/* 설명. 현재 시간을 targetDate 형식으로 */
-		SimpleDateFormat yearMonth = new SimpleDateFormat("yyyyMM");
-		Date now = new Date();
-		int targetDate = Integer.parseInt(yearMonth.format(now));
+		YearMonth yearMonth = YearMonth.of(targetDate / 100, targetDate % 100);
+		LocalDate startDateStart = yearMonth.atDay(1);
+		LocalDate startDateEnd = yearMonth.atEndOfMonth();
 		
 		EmployeePerformance currentEP = employeePerformanceRepository.findByEmployeeIdAndTargetDate(employeeId, targetDate);
 		EmployeePerformanceDTO epDTO = new EmployeePerformanceDTO();
@@ -52,9 +60,6 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 		ContractSearchDTO contractSearchDTO = new ContractSearchDTO();
 		contractSearchDTO.setEmployeeId(employeeId);
 		/* 설명. 검색 조건 중 시간 설정 */
-		LocalDate nowLD = now.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalDate startDateStart = nowLD.with(TemporalAdjusters.firstDayOfMonth());
-		LocalDate startDateEnd = nowLD.with(TemporalAdjusters.lastDayOfMonth());
 		contractSearchDTO.setStartDateStart(startDateStart);
 		contractSearchDTO.setStartDateEnd(startDateEnd);
 		
@@ -94,6 +99,8 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 		epDTO.setRentalRetentionCount(rentalRetentionCount);
 		epDTO.setNewCustomerCount(newCustomerIdSet.size());
 		epDTO.setTotalRentalAmount(totalRentalAmount);
+		epDTO.setTargetDate(targetDate);
+		epDTO.setEmployeeId(employeeId);
 		
 		/* 설명. 조회 시 없으면 새로 만들기, 있으면 업데이트하기 */
 		if (currentEP == null) {
@@ -107,22 +114,24 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 	}
 	
 	@Override
-	public void refreshEmployeeCustomerPerformance(String employeeCode) {
+	public void refreshEmployeeCustomerPerformance(String employeeCode, int targetDate) {
 		int employeeId = getEmployeeByCode(employeeCode).getId();
 		
-		/* 설명. 현재 시간을 targetDate 형식으로 */
-		SimpleDateFormat yearMonth = new SimpleDateFormat("yyyyMM");
-		Date now = new Date();
-		int targetDate = Integer.parseInt(yearMonth.format(now));
+		YearMonth yearMonth = YearMonth.of(targetDate / 100, targetDate % 100);
+		LocalDate startDateStart = yearMonth.atDay(1);
+		LocalDate startDateEnd = yearMonth.atEndOfMonth();
 		
 		EmployeePerformance currentEP = employeePerformanceRepository.findByEmployeeIdAndTargetDate(employeeId, targetDate);
 		EmployeePerformanceDTO epDTO = new EmployeePerformanceDTO();
 		
-		/* 설명. customerFeedbackScore */
-		
-		/* 설명. customerFeedbackCount */
+		/* 설명. customerFeedbackScore 피드백 점수 총합 */
 		
 		
+		/* 설명. customerFeedbackCount 피드백 한 사람 수 */
+		
+		
+		epDTO.setTargetDate(targetDate);
+		epDTO.setEmployeeId(employeeId);
 		/* 설명. 조회 시 없으면 새로 만들기, 있으면 업데이트하기 */
 		if (currentEP == null) {
 			EmployeePerformance newEP = new EmployeePerformance();
@@ -135,8 +144,65 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 	}
 	
 	@Override
-	public void refreshDepartmentPerformance(String deptName) {
+	public void refreshDepartmentPerformance(String deptName, int targetDate) {
+		int deptId = departmentRepository.findByName(deptName).getId();
+		
+		DepartmentPerformance currentDP = departmentPerformanceRepository.findByDepartmentIdAndTargetDate(deptId, targetDate);
+		DepartmentPerformanceDTO dpDTO = new DepartmentPerformanceDTO();
+		int dpRentalProductCount = 0;
+		int dpRentalRetentionCount = 0;
+		int dpTotalRentalCount = 0;
+		int dpNewCustomerCount = 0;
+		long dpTotalRentalAmount = 0L;
+		int dpCustomerFeedbackScore = 0;
+		int dpCustomerFeedbackCount = 0;
+		
+		SearchTermDTO searchTermDTO = new SearchTermDTO(targetDate, targetDate);
+		List<EmployeeEntity> employeeList = employeeRepository.findByDepartmentId(deptId);
+		for (EmployeeEntity employee : employeeList) {
+			String employeeCode = employee.getCode();
+			List<EmployeePerformanceDTO> epDTOList = performanceQueryService.searchEmployeePerformanceByEmployeeCode(employeeCode, searchTermDTO);
+			if (epDTOList != null && !epDTOList.isEmpty()) {
+				EmployeePerformanceDTO epDTO = epDTOList.get(0);
+				dpRentalProductCount += epDTO.getRentalProductCount();
+				dpRentalRetentionCount += epDTO.getRentalRetentionCount();
+				dpTotalRentalCount += epDTO.getTotalRentalCount();
+				dpNewCustomerCount += epDTO.getNewCustomerCount();
+				dpTotalRentalAmount += epDTO.getTotalRentalAmount();
+				dpCustomerFeedbackScore += epDTO.getCustomerFeedbackScore();
+				dpCustomerFeedbackCount += epDTO.getCustomerFeedbackCount();
+			}
+		}
+		
+		dpDTO.setRentalProductCount(dpRentalProductCount);
+		dpDTO.setRentalRetentionCount(dpRentalRetentionCount);
+		dpDTO.setTotalRentalCount(dpTotalRentalCount);
+		dpDTO.setNewCustomerCount(dpNewCustomerCount);
+		dpDTO.setTotalRentalAmount(dpTotalRentalAmount);
+		dpDTO.setCustomerFeedbackScore(dpCustomerFeedbackScore);
+		dpDTO.setCustomerFeedbackCount(dpCustomerFeedbackCount);
+		
+		/* 설명. 조회 시 없으면 새로 만들기, 있으면 업데이트하기 */
+		if (currentDP == null) {
+			DepartmentPerformance newDP = new DepartmentPerformance();
+			setDPDTOToDP(dpDTO, newDP);
+			departmentPerformanceRepository.save(newDP);
+		} else {
+			setDPDTOToDP(dpDTO,currentDP);
+			departmentPerformanceRepository.save(currentDP);
+		}
+	}
 	
+	private void setDPDTOToDP(DepartmentPerformanceDTO dto, DepartmentPerformance entity) {
+		entity.setDepartmentId(dto.getDepartmentId());
+		entity.setTargetDate(dto.getTargetDate());
+		entity.setRentalProductCount(dto.getRentalProductCount());
+		entity.setRentalRetentionCount(dto.getRentalRetentionCount());
+		entity.setTotalRentalCount(dto.getTotalRentalCount());
+		entity.setNewCustomerCount(dto.getNewCustomerCount());
+		entity.setTotalRentalAmount(dto.getTotalRentalAmount());
+		entity.setCustomerFeedbackScore(dto.getCustomerFeedbackScore().doubleValue() / 10);
+		entity.setCustomerFeedbackCount(dto.getCustomerFeedbackCount());
 	}
 	
 	private void setEPDTOToEP(EmployeePerformanceDTO dto, EmployeePerformance entity) {

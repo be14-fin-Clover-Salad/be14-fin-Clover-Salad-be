@@ -20,17 +20,23 @@ public class PerformanceCommandController {
 	
 	/* 설명. 기본적으로 자동 갱신되지만 수동으로도 갱신할 수 있도록 함 */
 	/* 설명. 개인 실적 추가/갱신 */
-	@PutMapping("/refresh/employee/{employeeCode}")
-	public ResponseEntity<String> refreshEmployeePerformance(@PathVariable String employeeCode) {
-		performanceCommandService.refreshEmployeeContractPerformance(employeeCode);
-		performanceCommandService.refreshEmployeeCustomerPerformance(employeeCode);
+	@PutMapping("/refresh/employee/{employeeCode}/{targetDate}")
+	public ResponseEntity<String> refreshEmployeePerformance(
+		@PathVariable("employeeCode") String employeeCode,
+		@PathVariable("targetDate") int targetDate /* yyyyMM */
+	) {
+		performanceCommandService.refreshEmployeeContractPerformance(employeeCode, targetDate);
+		performanceCommandService.refreshEmployeeCustomerPerformance(employeeCode, targetDate);
 		return ResponseEntity.ok("개인 실적 항목 갱신 완료");
 	}
 	
-	/* 설명. 팀 실적 추가/갱신(계약) */
-	@PutMapping("/refresh/department/{deptName}/contract")
-	public ResponseEntity<String> refreshDepartmentPerformance(@PathVariable String deptName) {
-		performanceCommandService.refreshDepartmentPerformance(deptName);
+	/* 설명. 팀 실적 추가/갱신 */
+	@PutMapping("/refresh/department/{deptName}/{targetDate}")
+	public ResponseEntity<String> refreshDepartmentPerformance(
+		@PathVariable("deptName") String deptName,
+		@PathVariable("targetDate") int targetDate
+	) {
+		performanceCommandService.refreshDepartmentPerformance(deptName, targetDate);
 		return ResponseEntity.ok("팀 실적 항목 갱신 완료");
 	}
 }

@@ -9,44 +9,45 @@
         <result property="department" column="department" />
         <result property="employeeName" column="employee_name" />
         <result property="amount" column="amount" />
-        <result property="contractId" column="contract_id" />
+        <result property="contractCode" column="contract_code" />
     </resultMap>
     <select id="selectSalesByCondition"
             parameterType="com.clover.salad.sales.query.dto.SalesQueryRequestDTO"
             resultMap="SalesQueryResultMap">
         SELECT
-               id
-             , sales_date
-             , department
-             , amount
-             , employee_name
-             , contract_id
-          FROM sales
-         WHERE is_deleted = false
+               s.id
+             , s.sales_date
+             , s.department
+             , s.amount
+             , s.employee_name
+             , c.code AS contract_code
+          FROM sales s
+          JOIN contract c ON s.contract_id = c.id
+         WHERE s.is_deleted = false
 
         <if test="startDate != null and startDate != ''">
-            AND sales_date &gt;= #{startDate}
+            AND s.sales_date &gt;= #{startDate}
         </if>
         <if test="endDate != null and endDate != ''">
-            AND sales_date &lt;= #{endDate}
+            AND s.sales_date &lt;= #{endDate}
         </if>
 
         <if test="minAmount != null">
-            AND amount &gt;= #{minAmount}
+            AND s.amount &gt;= #{minAmount}
         </if>
         <if test="maxAmount != null">
-            AND amount &lt;= #{maxAmount}
+            AND s.amount &lt;= #{maxAmount}
         </if>
 
         <if test="department != null and department != ''">
-            AND department LIKE CONCAT('%', #{department}, '%')
+            AND s.department LIKE CONCAT('%', #{department}, '%')
         </if>
         <if test="employeeName != null and employeeName != ''">
-            AND employee_name LIKE CONCAT('%', #{employeeName}, '%')
+            AND s.employee_name LIKE CONCAT('%', #{employeeName}, '%')
         </if>
-        <if test="contractId != null">
-            AND contract_id = #{contractId}
+        <if test="contractCode != null and contractCode != ''">
+            AND c.code LIKE CONCAT('%', #{contractCode}, '%')
         </if>
-         ORDER BY sales_date DESC
+         ORDER BY s.sales_date DESC
     </select>
 </mapper>

@@ -13,7 +13,7 @@ import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 @Service
 public interface EmployeeQueryService {
 
-	List<EmployeeQueryDTO> searchEmployees(SearchEmployeeDTO searchDto);
+	List<EmployeeQueryDTO> searchEmployees(SearchEmployeeDTO searchDTO);
 
 	UserDetails loadUserById(int id);
 

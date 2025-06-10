@@ -9,12 +9,16 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class NoticeDTO {
+public class NoticeQueryDTO {
 	private int id;
 	private String title;
 	private String content;
 	private LocalDateTime createdAt;
 	@JsonProperty("isDeleted")
 	private boolean isDeleted;
-	private int employeeId;
+	private int writerId;
+	private String writerName;
+	private String writerLevel;
+	private String departmentName;
+	private boolean isChecked;
 }

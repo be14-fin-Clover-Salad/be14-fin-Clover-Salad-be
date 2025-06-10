@@ -4,11 +4,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.clover.salad.notice.query.dto.NoticeDTO;
+import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
+import com.clover.salad.notice.query.dto.NoticeQueryDTO;
 
 @Service
 public interface NoticeQueryService {
-	List<NoticeDTO> findNoticeList();
+	List<NoticeQueryDTO> findNoticeList(int employeeId);
 
-	NoticeDTO findNoticeDeatil(int noticeId);
+	NoticeQueryDTO findNoticeDeatil(int noticeId);
 }

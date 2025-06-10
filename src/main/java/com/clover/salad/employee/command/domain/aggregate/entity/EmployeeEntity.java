@@ -31,23 +31,23 @@ public class EmployeeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@Column(name = "code", nullable = false, unique = true)
+	@Column(name = "code")
 	private String code;
 
-	@Column(name = "password", nullable = false)
+	@Column(name = "password")
 	private String password;
 
-	@Column(nullable = false)
+	@Column(name = "name")
 	private String name;
 
-	@Column(nullable = false)
+	@Column(name = "phone")
 	private String phone;
 
-	@Column(nullable = false)
+	@Column(name = "email")
 	private String email;
 
 	@Convert(converter = EmployeeLevelConverter.class)
-	@Column(nullable = false)
+	@Column(name="level")
 	private EmployeeLevel level;
 
 	@Column(name = "hire_date")
@@ -56,18 +56,18 @@ public class EmployeeEntity {
 	@Column(name = "resign_date")
 	private LocalDate resignDate;
 
-	@Column(name = "is_admin", nullable = false)
+	@Column(name = "is_admin")
 	private boolean isAdmin;
 
-	@Column(name = "is_deleted", nullable = false)
+	@Column(name = "is_deleted")
 	private boolean isDeleted;
 
 	@Column(name = "work_place")
 	private String workPlace;
 
-	@Column(name = "department_id", nullable = false)
+	@Column(name = "department_id")
 	private int departmentId;
 
-	@Column(nullable = false)
+	@Column(name="profile")
 	private int profile;
 }

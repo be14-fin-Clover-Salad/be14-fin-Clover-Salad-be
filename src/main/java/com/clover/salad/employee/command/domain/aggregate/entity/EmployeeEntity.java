@@ -18,12 +18,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
+@Entity
 @Table(name = "employee")
 public class EmployeeEntity {
 
@@ -35,7 +35,7 @@ public class EmployeeEntity {
 	private String code;
 
 	@Column(name = "password", nullable = false)
-	private String encPwd;
+	private String password;
 
 	@Column(nullable = false)
 	private String name;

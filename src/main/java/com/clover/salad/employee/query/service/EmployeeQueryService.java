@@ -12,13 +12,17 @@ import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 
 @Service
 public interface EmployeeQueryService {
+
 	List<EmployeeQueryDTO> searchEmployees(SearchEmployeeDTO searchDto);
 
-	UserDetails loadUserByUsername(String subject);
+	UserDetails loadUserById(int id);
 
-	LoginHeaderInfoDTO getLoginHeaderInfo(String code);
+	LoginHeaderInfoDTO getLoginHeaderInfoById(int id);
 
-	boolean checkIsAdmin(String code);
+	EmployeeMypageQueryDTO getMyPageInfoById(int id);
 
-	EmployeeMypageQueryDTO getMyPageInfo(String code);
+	// boolean checkIsAdmin(String code);
+	boolean checkIsAdminById(int id);
+
+	String findCodeById(int id);
 }

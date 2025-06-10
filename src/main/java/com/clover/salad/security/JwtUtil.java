@@ -1,15 +1,17 @@
 package com.clover.salad.security;
 
 import java.security.Key;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,9 +19,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.clover.salad.employee.query.service.EmployeeQueryService;
+import com.clover.salad.security.token.TokenPrincipal;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -29,28 +33,48 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtUtil {
 
 	private final Key key;
+	private final long accessTokenExpiration;
+	private final long refreshTokenExpiration;
 	private final EmployeeQueryService employeeQueryService;
 
-	public JwtUtil(@Value("${token.secret}") String secretKey, EmployeeQueryService employeeQueryService) {
+	public JwtUtil(
+		@Value("${token.secret}") String secretKey,
+		@Value("${token.access-token-expiration}") long accessTokenExpiration,
+		@Value("${token.refresh-token-expiration}") long refreshTokenExpiration,
+		EmployeeQueryService employeeQueryService
+	) {
 		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
 		this.key = Keys.hmacShaKeyFor(keyBytes);
+		this.accessTokenExpiration = accessTokenExpiration;
+		this.refreshTokenExpiration = refreshTokenExpiration;
 		this.employeeQueryService = employeeQueryService;
 	}
 
-	public String createAccessToken(String subject, Collection<? extends GrantedAuthority> roles) {
+	public String createAccessToken(int employeeId, String code, Collection<? extends GrantedAuthority> authorities) {
+		String auth = authorities.stream()
+			.map(GrantedAuthority::getAuthority)
+			.collect(Collectors.joining(","));
+
+		log.info("발급 전 권한 목록: {}", authorities);
+		log.info("[AccessToken 발급] ID: {}, CODE: {}, AUTH(문자열): {}", employeeId, code, auth);
+
 		return Jwts.builder()
-			.setSubject(subject)
-			.claim("auth", roles.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-			.setExpiration(Date.from(Instant.now().plus(Duration.ofMinutes(30))))
-			.signWith(key)
+			.setSubject("ERP_ACCESS") 				// access 토큰임을 구분하기 위한 subject
+			.claim("employeeId", employeeId) 	// 내부 식별자
+			.claim("code", code)             	// 사번 (도메인 식별자)
+			.claim("auth", auth)             	// 권한
+			.setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+			.signWith(key, SignatureAlgorithm.HS512)
 			.compact();
 	}
 
-	public String createRefreshToken(String subject) {
+	public String createRefreshToken(int employeeId, String code) {
 		return Jwts.builder()
-			.setSubject(subject)
-			.setExpiration(Date.from(Instant.now().plus(Duration.ofHours(8))))
-			.signWith(key)
+			.setSubject("ERP_REFRESH")
+			.claim("employeeId", employeeId)
+			.claim("code", code)
+			.setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
+			.signWith(key, SignatureAlgorithm.HS512)
 			.compact();
 	}
 
@@ -65,31 +89,57 @@ public class JwtUtil {
 		}
 	}
 
-	public Authentication getAuthentication(String token) {
-		Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-		UserDetails userDetails = employeeQueryService.loadUserByUsername(claims.getSubject());
-
-		Collection<GrantedAuthority> authorities = ((Collection<?>) claims.get("auth"))
-			.stream().map(Object::toString).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-
-		return new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
-			userDetails, "", authorities);
+	public int getEmployeeId(String token) {
+		Claims claims = getClaims(token);
+		return claims.get("employeeId", Integer.class);
 	}
 
-	public String getUsername(String token) {
-		String username = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
-		log.info("[Username from token] {}", username);
-		return username;
+	public Collection<? extends GrantedAuthority> getAuthorities(String token) {
+		Claims claims = getClaims(token);
+		String auth = claims.get("auth", String.class);
+		return Arrays.stream(auth.split(","))
+			.map(SimpleGrantedAuthority::new)
+			.collect(Collectors.toList());
 	}
 
-	private Claims parseClaims(String token) {
+	public Claims getClaims(String token) {
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
 	}
 
 	public LocalDateTime getExpiration(String token) {
-		Date expirationDate = parseClaims(token).getExpiration();
-		LocalDateTime expiration = Instant.ofEpochMilli(expirationDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
-		log.info("[Token 만료시간] {}", expiration);
-		return expiration;
+		Date expirationDate = getClaims(token).getExpiration();
+		return Instant.ofEpochMilli(expirationDate.getTime())
+			.atZone(ZoneId.systemDefault())
+			.toLocalDateTime();
+	}
+
+	public Authentication getAuthentication(String token) {
+		Claims claims = getClaims(token);
+
+		log.info("[토큰 클레임 파싱] employeeId={}, code={}, auth={}, subject={}",
+			claims.get("employeeId", Object.class),
+			claims.get("code", Object.class),
+			claims.get("auth", Object.class),
+			claims.getSubject()
+		);
+
+		if (!"ERP_ACCESS".equals(claims.getSubject())) {
+			return null;
+		}
+
+		Integer employeeId = claims.get("employeeId", Integer.class);
+		String code = claims.get("code", String.class);
+		String auth = claims.get("auth", String.class);
+
+		if (employeeId == null || code == null || auth == null) {
+			throw new RuntimeException("JWT 클레임의 정보가 누락되었습니다. (employeeId/code/auth)");
+		}
+
+		Collection<? extends GrantedAuthority> authorities = Arrays.stream(auth.split(","))
+			.map(SimpleGrantedAuthority::new)
+			.collect(Collectors.toList());
+
+		TokenPrincipal principal = new TokenPrincipal(employeeId, code, authorities);
+		return new UsernamePasswordAuthenticationToken(principal, null, authorities);
 	}
 }

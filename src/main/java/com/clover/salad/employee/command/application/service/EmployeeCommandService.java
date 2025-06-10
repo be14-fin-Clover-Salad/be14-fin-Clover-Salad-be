@@ -4,15 +4,14 @@ import com.clover.salad.employee.command.application.dto.EmployeeUpdateDTO;
 import com.clover.salad.employee.command.application.dto.RequestChangePasswordDTO;
 
 public interface EmployeeCommandService {
-	void logout(String pureToken);
 
 	void sendResetPasswordLink(String code, String email);
 
 	void confirmResetPassword(String token, String newPassword);
 
-	void updateEmployee(String code, EmployeeUpdateDTO dto);
+	void updateEmployee(int id, EmployeeUpdateDTO dto);
 
-	void changePassword(String code, RequestChangePasswordDTO dto);
+	void changePassword(int id, RequestChangePasswordDTO dto);
 
-	void updateProfilePath(String code, String newPath);
+	void updateProfilePath(int id, String newPath);
 }

@@ -4,7 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.clover.salad.employee.query.mapper.EmployeeMapper">
-
     <resultMap id="SearchEmployeeResultMap" type="com.clover.salad.employee.query.dto.EmployeeQueryDTO">
         <id property="id" column="id"/>
         <result property="code" column="code"/>
@@ -15,7 +14,6 @@
         <result property="hireDate" column="hire_date"/>
         <result property="workPlace" column="work_place"/>
         <result property="profileId" column="profile"/>
-
         <association property="department" javaType="com.clover.salad.employee.query.dto.DepartmentQueryDTO">
             <id property="id" column="dept_id"/>
             <result property="name" column="dept_name"/>
@@ -33,6 +31,8 @@
         <result property="profilePath" column="profile_path"/>
         <result property="departmentName" column="department_name"/>
     </resultMap>
+
+    <!-- 사원 조건 검색 -->
     <select id="searchEmployees"
             parameterType="com.clover.salad.employee.query.dto.SearchEmployeeDTO"
             resultMap="SearchEmployeeResultMap">
@@ -57,40 +57,39 @@
         <if test="code != null">
             AND e.code LIKE CONCAT('%', #{code}, '%')
         </if>
-
         <if test="name != null and name != ''">
             AND e.name LIKE CONCAT('%', #{name}, '%')
         </if>
-
         <if test="phone != null and phone != ''">
             AND e.phone LIKE CONCAT('%', #{phone}, '%')
         </if>
-
         <if test="email != null and email != ''">
             AND e.email LIKE CONCAT('%', #{email}, '%')
         </if>
-
         <if test="level != null and level != ''">
             AND e.level = #{level}
         </if>
-
         <if test="hireDateFrom != null">
             AND e.hire_date &gt;= #{hireDateFrom}
         </if>
-
         <if test="hireDateTo != null">
             AND e.hire_date &lt;= #{hireDateTo}
         </if>
-
         <if test="workPlace != null and workPlace != ''">
             AND e.work_place LIKE CONCAT('%', #{workPlace}, '%')
         </if>
-
         <if test="departmentName != null and departmentName != ''">
             AND d.name LIKE CONCAT('%', #{departmentName}, '%')
         </if>
     </select>
-    <select id="findLoginHeaderInfoByCode" resultType="com.clover.salad.employee.query.dto.LoginHeaderInfoDTO">
+    <select id="selectIdByCodeAndEmail" resultType="int">
+        SELECT id
+          FROM employee
+         WHERE code = #{code}
+           AND email = #{email}
+           AND is_deleted = false
+    </select>
+    <select id="findLoginHeaderInfoById" resultType="com.clover.salad.employee.query.dto.LoginHeaderInfoDTO">
         SELECT
                e.name
              , d.name AS departmentName
@@ -98,24 +97,15 @@
           FROM employee e
           JOIN department d ON e.department_id = d.id
           LEFT JOIN file_upload f ON e.profile = f.id
-         WHERE e.code = #{code}
+         WHERE e.id = #{id}
     </select>
-    <select id="selectIsAdminByCode" resultType="boolean">
-        SELECT
-               e.is_admin
-          FROM employee e
-         WHERE e.code = #{code}
-    </select>
-    <select id="selectIdByCodeAndEmail" resultType="int">
-        SELECT
-               id
+    <select id="selectIsAdminById" resultType="boolean">
+        SELECT is_admin
           FROM employee
-         WHERE code = #{code}
-           AND email = #{email}
-           AND is_deleted = false
+         WHERE id = #{id}
     </select>
-    <select id="selectMyPageInfoByCode"
-            parameterType="string"
+    <select id="selectMyPageInfoById"
+            parameterType="int"
             resultMap="MyPageResultMap">
         SELECT
                e.code
@@ -130,7 +120,7 @@
           FROM employee e
           JOIN department d ON e.department_id = d.id
           LEFT JOIN file_upload f ON e.profile = f.id
-         WHERE e.code = #{code}
+         WHERE e.id = #{id}
            AND e.is_deleted = false
     </select>
 </mapper>

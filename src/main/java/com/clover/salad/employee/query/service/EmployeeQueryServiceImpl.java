@@ -7,8 +7,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +24,13 @@ import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.LoginHeaderInfoDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.mapper.EmployeeMapper;
+import com.clover.salad.security.EmployeeDetails;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class EmployeeQueryServiceImpl implements EmployeeQueryService {
+public class EmployeeQueryServiceImpl implements EmployeeQueryService, UserDetailsService {
 
 	private final EmployeeMapper employeeMapper;
 	private final EmployeeRepository employeeRepository;
@@ -41,8 +42,8 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 		EmployeeRepository employeeRepository,
 		FileUploadRepository fileUploadRepository,
 		DepartmentRepository departmentRepository) {
-		this.employeeRepository = employeeRepository;
 		this.employeeMapper = employeeMapper;
+		this.employeeRepository = employeeRepository;
 		this.fileUploadRepository = fileUploadRepository;
 		this.departmentRepository = departmentRepository;
 	}
@@ -53,32 +54,38 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 	}
 
 	@Override
-	public boolean checkIsAdmin(String code) {
-		return employeeMapper.selectIsAdminByCode(code);
+	public boolean checkIsAdminById(int id) {
+		EmployeeEntity employee = employeeRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("해당 ID를 가진 사용자를 찾을 수 없습니다."));
+
+		return employee.isAdmin();
 	}
 
 	@Override
-	public EmployeeMypageQueryDTO getMyPageInfo(String code) {
-		return employeeMapper.selectMyPageInfoByCode(code);
+	public String findCodeById(int id) {
+		return employeeRepository.findById(id)
+			.map(EmployeeEntity::getCode)
+			.orElseThrow(() -> new RuntimeException("사번 조회 실패: " + id));
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		EmployeeEntity employee = employeeRepository.findByCode(username)
-			.orElseThrow(() -> new UsernameNotFoundException("해당 사번을 가진 사용자를 찾을 수 없습니다: " + username));
+	public UserDetails loadUserById(int id) {
+		EmployeeEntity employee = employeeRepository.findById(id)
+			.orElseThrow(() -> new UsernameNotFoundException("사용자 없음"));
 
-		log.info("로그인 사용자 로드됨: {}, isAdmin: {}", employee.getCode(), employee.isAdmin());
-
-		return new User(
+		log.info("[EmployeeDetails 생성] ID: {}, CODE: {}, AUTH: {}", employee.getId(), employee.getCode(), getAuthorities(employee));
+		log.info("[loadUserById] code={}", employee.getCode());
+		return new EmployeeDetails(
+			employee.getId(),
 			employee.getCode(),
-			employee.getEncPwd(),
+			employee.getPassword(),
 			getAuthorities(employee)
 		);
 	}
 
 	@Override
-	public LoginHeaderInfoDTO getLoginHeaderInfo(String code) {
-		EmployeeEntity employee = employeeRepository.findByCode(code)
+	public LoginHeaderInfoDTO getLoginHeaderInfoById(int id) {
+		EmployeeEntity employee = employeeRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("사원을 찾을 수 없습니다."));
 
 		String name = employee.getName();
@@ -93,19 +100,38 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 		return new LoginHeaderInfoDTO(name, levelLabel, profilePath, deptName);
 	}
 
+	@Override
+	public EmployeeMypageQueryDTO getMyPageInfoById(int id) {
+		EmployeeEntity employee = employeeRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("사원을 찾을 수 없습니다."));
+
+		FileUploadEntity file = fileUploadRepository.findById(employee.getProfile()).orElse(null);
+		DepartmentEntity dept = departmentRepository.findById(employee.getDepartmentId()).orElse(null);
+
+		EmployeeMypageQueryDTO dto = new EmployeeMypageQueryDTO();
+		dto.setCode(employee.getCode()); // 여전히 프론트 표시용으로 code 유지
+		dto.setName(employee.getName());
+		dto.setPhone(employee.getPhone());
+		dto.setEmail(employee.getEmail());
+		dto.setLevel(employee.getLevel().getLabel());
+		dto.setHireDate(employee.getHireDate());
+		dto.setWorkPlace(employee.getWorkPlace());
+		dto.setProfilePath(file != null ? file.getPath() : null);
+		dto.setDepartmentName(dept != null ? dept.getName() : null);
+
+		return dto;
+	}
+
 	private Collection<? extends GrantedAuthority> getAuthorities(EmployeeEntity employee) {
 		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
-		// 관리자 여부
 		if (employee.isAdmin()) {
 			log.info("권한 부여: ROLE_ADMIN");
 			authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 		} else {
-			log.info("권한 부여: ROLE_MEMBER");
 			authorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
 		}
 
-		// 팀장 여부
 		if (employee.getLevel() == EmployeeLevel.L5) {
 			log.info("직급이 팀장 → ROLE_MANAGER 권한 추가 부여");
 			authorities.add(new SimpleGrantedAuthority("ROLE_MANAGER"));
@@ -114,4 +140,16 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 		return authorities;
 	}
 
+	@Override
+	public UserDetails loadUserByUsername(String code) throws UsernameNotFoundException {
+		EmployeeEntity employee = employeeRepository.findByCode(code)
+			.orElseThrow(() -> new UsernameNotFoundException("사번에 해당하는 사용자를 찾을 수 없습니다."));
+
+		return new EmployeeDetails(
+			employee.getId(),
+			employee.getCode(),
+			employee.getPassword(),
+			getAuthorities(employee)
+		);
+	}
 }

@@ -1,19 +1,15 @@
 package com.clover.salad.employee.command.application.service;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,18 +24,17 @@ import com.clover.salad.employee.command.application.dto.RequestChangePasswordDT
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 import com.clover.salad.employee.query.mapper.EmployeeMapper;
-import com.clover.salad.security.JwtUtil;
 
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 
 	private final EmployeeRepository employeeRepository;
-	private final ModelMapper modelMapper;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
-	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final JavaMailSender mailSender;
 	private final PasswordEncoder passwordEncoder;
@@ -53,32 +48,19 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 
 	@Autowired
 	public EmployeeCommandServiceImpl(EmployeeRepository employeeRepository,
-		ModelMapper modelMapper,
 		BCryptPasswordEncoder bCryptPasswordEncoder,
-		JwtUtil jwtUtil,
 		RedisTemplate<String, String> redisTemplate,
 		JavaMailSender mailSender,
 		PasswordEncoder passwordEncoder,
 		EmployeeMapper employeeMapper,
 		FileUploadRepository fileUploadRepository) {
 		this.employeeRepository = employeeRepository;
-		this.modelMapper = modelMapper;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-		this.jwtUtil = jwtUtil;
 		this.redisTemplate = redisTemplate;
 		this.mailSender = mailSender;
 		this.passwordEncoder = passwordEncoder;
 		this.employeeMapper = employeeMapper;
 		this.fileUploadRepository = fileUploadRepository;
-	}
-
-	@Override
-	public void logout(String token) {
-		LocalDateTime expiration = jwtUtil.getExpiration(token);
-		Duration remaining = Duration.between(LocalDateTime.now(), expiration);
-		if (!remaining.isNegative() && !remaining.isZero()) {
-			redisTemplate.opsForValue().set("blacklist:" + token, "logout", remaining);
-		}
 	}
 
 	@Override
@@ -129,7 +111,7 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		}
 		EmployeeEntity employee = optionalEmployee.get();
 
-		employee.setEncPwd(bCryptPasswordEncoder.encode(newPassword));
+		employee.setPassword(bCryptPasswordEncoder.encode(newPassword));
 		employeeRepository.save(employee);
 
 		redisTemplate.delete(redisKey);
@@ -137,55 +119,44 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 
 	@Override
 	@Transactional
-	public void updateEmployee(String code, EmployeeUpdateDTO dto) {
-		EmployeeEntity employee = employeeRepository.findByCode(code)
-			.orElseThrow(() -> new RuntimeException("해당 사번의 사원을 찾을 수 없습니다."));
+	public void updateEmployee(int id, EmployeeUpdateDTO dto) {
+		EmployeeEntity employee = employeeRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("해당 ID의 사원을 찾을 수 없습니다."));
 
 		if (dto.getName() != null) employee.setName(dto.getName());
-
 		if (dto.getEmail() != null) {
-			if (!isValidEmail(dto.getEmail())) {
-				throw new InvalidEmailFormatException();
-			}
+			if (!isValidEmail(dto.getEmail())) throw new InvalidEmailFormatException();
 			employee.setEmail(dto.getEmail());
 		}
-
 		if (dto.getPhone() != null) employee.setPhone(dto.getPhone());
 
 		employeeRepository.save(employee);
 	}
-
 	private boolean isValidEmail(String email) {
 		String regex = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
 		return Pattern.matches(regex, email);
 	}
 
 	@Override
-	public void changePassword(String code, RequestChangePasswordDTO dto) {
-		EmployeeEntity employee = employeeRepository.findByCode(code)
-			.orElseThrow(() -> new RuntimeException("해당 사번을 가진 사용자가 존재하지 않습니다."));
+	public void changePassword(int id, RequestChangePasswordDTO dto) {
+		EmployeeEntity employee = employeeRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("해당 ID를 가진 사용자가 존재하지 않습니다."));
 
-		boolean matches = passwordEncoder.matches(dto.getCurrentPassword(), employee.getEncPwd());
+		boolean matches = passwordEncoder.matches(dto.getCurrentPassword(), employee.getPassword());
+		if (!matches) throw new InvalidCurrentPasswordException();
 
-		if (!matches) {
-			throw new InvalidCurrentPasswordException();
-		}
-
-		String newEncodedPassword = passwordEncoder.encode(dto.getNewPassword());
-		employee.setEncPwd(newEncodedPassword);
+		employee.setPassword(passwordEncoder.encode(dto.getNewPassword()));
 		employeeRepository.save(employee);
 	}
 
 	@Override
 	@Transactional
-	public void updateProfilePath(String code, String newPath) {
-		EmployeeEntity employee = employeeRepository.findByCode(code)
-			.orElseThrow(() -> new RuntimeException("해당 사번의 사원을 찾을 수 없습니다."));
+	public void updateProfilePath(int id, String newPath) {
+		EmployeeEntity employee = employeeRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("해당 ID의 사원을 찾을 수 없습니다."));
 
 		Integer profileId = employee.getProfile();
-		if (profileId == null) {
-			throw new RuntimeException("등록된 프로필이 없습니다.");
-		}
+		if (profileId == null) throw new RuntimeException("등록된 프로필이 없습니다.");
 
 		FileUploadEntity file = fileUploadRepository.findById(profileId)
 			.orElseThrow(() -> new RuntimeException("해당 프로필 파일을 찾을 수 없습니다."));

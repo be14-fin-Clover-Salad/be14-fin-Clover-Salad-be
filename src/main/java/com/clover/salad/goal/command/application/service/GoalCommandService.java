@@ -5,9 +5,9 @@ import java.util.List;
 import com.clover.salad.goal.command.application.dto.GoalDTO;
 
 public interface GoalCommandService {
-	void registerGoal(List<GoalDTO> goalList, String employeeCode);
+	void registerGoal(List<GoalDTO> goalList, int employeeId);
 	
-	void changeGoal(List<GoalDTO> goalList, String employeeCode);
+	void changeGoal(List<GoalDTO> goalList, int employeeId);
 	
-	void deleteGoal(List<GoalDTO> goalList, String employeeCode);
+	void deleteGoal(List<GoalDTO> goalList);
 }

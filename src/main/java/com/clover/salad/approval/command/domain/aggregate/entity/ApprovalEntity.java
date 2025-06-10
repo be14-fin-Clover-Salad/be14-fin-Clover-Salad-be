@@ -3,7 +3,11 @@ package com.clover.salad.approval.command.domain.aggregate.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.clover.salad.approval.command.domain.aggregate.converter.ApprovalStateConverter;
+import com.clover.salad.approval.command.domain.aggregate.enums.ApprovalState;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -42,7 +46,8 @@ public class ApprovalEntity {
 	private LocalDateTime aprvDate;
 
 	@Column(name = "state")
-	private String state;
+	@Convert(converter = ApprovalStateConverter.class)
+	private ApprovalState state;
 
 	@Column(name = "comment")
 	private String comment;

@@ -14,5 +14,5 @@ public class SalesQueryResponseDTO {
 	private String department;
 	private String employeeName;
 	private int amount;
-	private int contractId;
+	private String contractCode;
 }

@@ -55,9 +55,6 @@ public class JwtUtil {
 			.map(GrantedAuthority::getAuthority)
 			.collect(Collectors.joining(","));
 
-		log.info("발급 전 권한 목록: {}", authorities);
-		log.info("[AccessToken 발급] ID: {}, CODE: {}, AUTH(문자열): {}", employeeId, code, auth);
-
 		return Jwts.builder()
 			.setSubject("ERP_ACCESS") 				// access 토큰임을 구분하기 위한 subject
 			.claim("employeeId", employeeId) 	// 내부 식별자

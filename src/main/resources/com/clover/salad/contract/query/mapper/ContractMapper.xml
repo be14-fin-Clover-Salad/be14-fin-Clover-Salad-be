@@ -21,6 +21,7 @@
         <result property="isDeleted" column="is_deleted"/>
         <result property="etc" column="etc"/>
         <result property="employeeName" column="employee_name"/>
+        <result property="customerId" column="customer_id"/>
         <result property="customerName" column="customer_name"/>
         <result property="productNames" column="product_names"/>
     </resultMap>
@@ -76,6 +77,7 @@
             c.etc,
 
             e.name AS employee_name,
+            cu.id AS customer_id,
             cu.name AS customer_name,
 
             GROUP_CONCAT(p.name SEPARATOR ', ') AS product_names

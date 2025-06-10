@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Setter
+@Builder
 @Entity
 @Table(name = "sales")
 public class SalesEntity {
@@ -20,7 +20,7 @@ public class SalesEntity {
 	@Column(name = "sales_date")
 	private LocalDate salesDate;
 
-	/* 설명. 3단 조인이 일어아냐하는 비효율을 해소하고자 관계 연결하지 않음 */
+	/* 설명. 3단 조인이 일어아야하는 비효율을 해소하고자 관계 연결하지 않음 */
 	@Column(name = "department")
 	private String department;
 
@@ -35,4 +35,8 @@ public class SalesEntity {
 
 	@Column(name = "contract_id")
 	private int contractId;
+
+	public void delete() {
+		this.isDeleted = true;
+	}
 }

@@ -59,6 +59,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		try {
 			// 5. 인증 객체 생성 및 SecurityContext에 저장
 			Authentication authentication = jwtUtil.getAuthentication(token);
+
 			if (authentication == null) {
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증 실패");
 				return;

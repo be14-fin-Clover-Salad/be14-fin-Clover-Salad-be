@@ -190,9 +190,7 @@
              , EG.TARGET_DATE
              , EG.EMPLOYEE_ID
           FROM EMPLOYEE_GOAL EG
-         WHERE EG.EMPLOYEE_ID = (SELECT E.ID
-                                   FROM EMPLOYEE E
-                                  WHERE E.CODE = #{employeeCode})
+         WHERE EG.EMPLOYEE_ID =  #{employeeId}
            AND EG.TARGET_DATE LIKE CONCAT(#{targetYear}, '%')
          ORDER BY TARGET_DATE
     </select>

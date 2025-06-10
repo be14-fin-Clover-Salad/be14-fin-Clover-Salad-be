@@ -46,7 +46,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			String body = request.getReader().lines().collect(Collectors.joining());
-			log.info("[AUTH FILTER] Raw request body: {}", body);
 
 			ObjectMapper mapper = new ObjectMapper();
 			RequestLoginVO creds = mapper.readValue(body, RequestLoginVO.class);
@@ -54,7 +53,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 			return getAuthenticationManager().authenticate(
 				new UsernamePasswordAuthenticationToken(creds.getCode(), creds.getPassword(), new ArrayList<>()));
 		} catch (IOException e) {
-			log.error("[AUTH FILTER] 바디 파싱 실패", e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -66,8 +64,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		EmployeeDetails user = (EmployeeDetails) authResult.getPrincipal();
 		int id = user.getId();
 		String code = user.getCode();
-
-		log.info("로그인 성공 - ID: {}, CODE: {}", id, code);
 
 		String accessToken = jwtUtil.createAccessToken(id, code, user.getAuthorities());
 		String refreshToken = jwtUtil.createRefreshToken(id, code);
@@ -88,8 +84,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		response.setContentType("application/json;charset=UTF-8");
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.writeValue(response.getWriter(), headerInfo);
-
-		log.info("로그인 성공 - 사용자 정보 응답 완료: {}", headerInfo.getName());
 	}
 
 	@Override

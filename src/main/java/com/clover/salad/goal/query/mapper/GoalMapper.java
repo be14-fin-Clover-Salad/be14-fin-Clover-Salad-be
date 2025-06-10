@@ -22,7 +22,7 @@ public interface GoalMapper {
 	);
 	
 	List<GoalDTO> selectYearGoalByCurrentGoalTargetDate(
-		@Param("employeeCode") String employeeCode,
+		@Param("employeeId") int employeeId,
 		@Param("targetYear") int targetYear
 	);
 }

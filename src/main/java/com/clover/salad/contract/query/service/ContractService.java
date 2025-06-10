@@ -9,7 +9,7 @@ import com.clover.salad.contract.query.dto.ContractSearchDTO;
 public interface ContractService {
 	List<ContractDTO> findContractInfo(int employeeId);
 
-	List<ContractDTO> searchContracts(ContractSearchDTO contractSearchDTO);
+	List<ContractDTO> searchContracts(int employeeId, ContractSearchDTO contractSearchDTO);
 
 	ContractResponseDTO findDetailInfo(int contractId);
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import com.clover.salad.contract.query.dto.ContractDTO;
 import com.clover.salad.contract.query.dto.ContractResponseDTO;
 import com.clover.salad.contract.query.dto.ContractSearchDTO;
 import com.clover.salad.contract.query.service.ContractService;
+import com.clover.salad.security.SecurityUtil;
 
 @RestController
 @RequestMapping("/api/query/contract")
@@ -31,10 +33,10 @@ public class ContractController {
 		return ResponseEntity.ok(contractService.findContractInfo(employeeId));
 	}
 
-	@GetMapping("/search")
-	// public ResponseEntity<List<ContractDTO>> search(@ModelAttribute ContractSearchDTO contractSearchDTO) {
+	@PostMapping("/search")
 	public ResponseEntity<List<ContractDTO>> search(@RequestBody ContractSearchDTO contractSearchDTO) {
-		return ResponseEntity.ok(contractService.searchContracts(contractSearchDTO));
+		int employeeId = SecurityUtil.getEmployeeId();
+		return ResponseEntity.ok(contractService.searchContracts(employeeId, contractSearchDTO));
 	}
 
 	@GetMapping("/{contractId}/info")

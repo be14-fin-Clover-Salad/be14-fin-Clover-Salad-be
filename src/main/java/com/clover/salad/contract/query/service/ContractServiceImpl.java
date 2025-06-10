@@ -26,8 +26,8 @@ public class ContractServiceImpl implements ContractService {
 	}
 
 	@Override
-	public List<ContractDTO> searchContracts(ContractSearchDTO contractSearchDTO) {
-		return contractMapper.searchContracts(contractSearchDTO);
+	public List<ContractDTO> searchContracts(int employeeId, ContractSearchDTO contractSearchDTO) {
+		return contractMapper.searchContracts(employeeId, contractSearchDTO);
 	}
 
 	@Override

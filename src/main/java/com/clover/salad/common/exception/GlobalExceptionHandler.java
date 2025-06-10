@@ -32,4 +32,9 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleUnauthorizedEmployee(UnauthorizedEmployeeException e) {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 	}
+
+	@ExceptionHandler(AuthException.class)
+	public ResponseEntity<String> handleAuthException(AuthException e) {
+		return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+	}
 }

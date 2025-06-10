@@ -112,6 +112,7 @@
         c.is_deleted,
         c.etc,
         e.name AS employee_name,
+        cu.id AS customer_id,
         cu.name AS customer_name,
         GROUP_CONCAT(p.name SEPARATOR ', ') AS product_names
         FROM contract c
@@ -121,22 +122,41 @@
         LEFT JOIN product p ON cp.product_id = p.id
         <where>
             NOT c.is_deleted
-            <if test="employeeId != null">AND c.employee_id = #{employeeId}</if>
+
+            <if test="minAmount != null">
+                AND c.amount &gt;= #{minAmount}
+            </if>
+            <if test="maxAmount != null">
+                AND c.amount &lt;= #{maxAmount}
+            </if>
+
+            <if test="employeeId != null">
+                AND c.employee_id = #{employeeId}
+            </if>
 
             <if test="code != null and code != ''">
                 AND c.code LIKE CONCAT('%', #{code}, '%')
             </if>
 
-            <if test="createdAtStart != null and createdAtEnd != null">
-                AND c.created_at BETWEEN #{createdAtStart} AND #{createdAtEnd}
+            <if test="createdAtStart != null">
+                AND c.created_at &gt;= #{createdAtStart}
+            </if>
+            <if test="createdAtEnd != null">
+                AND c.created_at &lt;= #{createdAtEnd}
             </if>
 
-            <if test="startDateStart != null and startDateEnd != null">
-                AND c.start_date BETWEEN #{startDateStart} AND #{startDateEnd}
+            <if test="startDateStart != null">
+                AND c.start_date &gt;= #{startDateStart}
+            </if>
+            <if test="startDateEnd != null">
+                AND c.start_date &lt;= #{startDateEnd}
             </if>
 
-            <if test="endDateStart != null and endDateEnd != null">
-                AND c.end_date BETWEEN #{endDateStart} AND #{endDateEnd}
+            <if test="endDateStart != null">
+                AND c.end_date &gt;= #{endDateStart}
+            </if>
+            <if test="endDateEnd != null">
+                AND c.end_date &lt;= #{endDateEnd}
             </if>
 
             <if test="status != null and status != ''">
@@ -147,8 +167,11 @@
                 AND c.bank_name LIKE CONCAT('%', #{bankName}, '%')
             </if>
 
-            <if test="paymentDayStart != null and paymentDayEnd != null">
-                AND c.payment_day BETWEEN #{paymentDayStart} AND #{paymentDayEnd}
+            <if test="paymentDayStart != null">
+                AND c.payment_day &gt;= #{paymentDayStart}
+            </if>
+            <if test="paymentDayEnd != null">
+                AND c.payment_day &lt;= #{paymentDayEnd}
             </if>
 
             <if test="depositOwner != null and depositOwner != ''">
@@ -178,6 +201,7 @@
         </where>
         GROUP BY c.id
     </select>
+
 
     <select id="selectDetailContractInfo" parameterType="int" resultMap="ContractWithProductsMap">
         SELECT

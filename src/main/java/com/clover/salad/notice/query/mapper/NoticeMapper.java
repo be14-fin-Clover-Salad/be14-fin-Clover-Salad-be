@@ -5,15 +5,16 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.clover.salad.notice.query.dto.NoticeQueryDTO;
+import com.clover.salad.notice.query.dto.NoticeDetailDTO;
+import com.clover.salad.notice.query.dto.NoticeListDTO;
 
 @Mapper
 public interface NoticeMapper {
-	List<NoticeQueryDTO> findNoticeList(
+	List<NoticeListDTO> findNoticeList(
 		@Param("employeeId") int employeeId,
 		@Param("level") String label,
 		@Param("departmentId") int departmentId);
 
-	NoticeQueryDTO findNoticeDetail(int noticeId);
-
+	// NoticeDetailDTO getNoticeDetail(
+	// 	Map<String, Object> params;
 }

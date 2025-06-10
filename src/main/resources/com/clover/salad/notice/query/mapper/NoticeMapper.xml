@@ -4,7 +4,25 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.clover.salad.notice.query.mapper.NoticeMapper">
 
-    <resultMap id="NoticeResultMap" type="com.clover.salad.notice.query.dto.NoticeQueryDTO">
+    <resultMap id="NoticeResultMap" type="com.clover.salad.notice.query.dto.NoticeListDTO">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="writerId" column="writerId"/>
+        <result property="writerName" column="writerName"/>
+        <result property="writerLevel" column="writerLevel"/>
+        <result property="departmentName" column="departmentName"/>
+        <result property="isChecked" column="is_checked"/>
+    </resultMap>
+
+    <resultMap id="CheckInfoResultMap" type="com.clover.salad.notice.query.dto.CheckInfoDTO">
+        <result property="employeeId" column="employee_id"/>
+        <result property="employeeName" column="employeeName"/>
+        <result property="isChecked" column="is_checked"/>
+    </resultMap>
+
+    <resultMap id="NoticeDetailResultMap" type="com.clover.salad.notice.query.dto.NoticeDetailDTO">
         <id property="id" column="id"/>
         <result property="title" column="title"/>
         <result property="content" column="content"/>
@@ -14,9 +32,8 @@
         <result property="writerName" column="writerName"/>
         <result property="writerLevel" column="writerLevel"/>
         <result property="departmentName" column="departmentName"/>
-        <result property="isChecked" column="is_checked"/>
     </resultMap>
-    
+
     <select id="findNoticeList" resultMap="NoticeResultMap">
         SELECT
                n.id AS id,
@@ -49,15 +66,32 @@
          ORDER BY n.created_at DESC
     </select>
 
-    <select id="findNoticeDetail" parameterType="int" resultMap="NoticeResultMap">
+    <select id="findTargetEmployeesOfNotice" resultMap="CheckInfoResultMap">
         SELECT
-               id,
-               title,
-               content,
-               created_at,
-               is_deleted,
-               employee_id
-          FROM notice
-         WHERE id = #{id}
+               en.employee_id,
+               e.name AS employeeName,
+               en.is_checked
+          FROM employee_notice en
+          JOIN employee e ON en.employee_id = e.id
+         WHERE en.notice_id = #{noticeId}
+    </select>
+
+    <select id="findNoticeDetail" parameterType="map" resultMap="NoticeDetailResultMap">
+        SELECT
+               n.id,
+               n.title,
+               n.content,
+               n.created_at,
+               n.is_deleted,
+               n.employee_id AS writerId,
+               e.name AS writerName,
+               e.level AS writerLevel,
+               d.name AS departmentName
+          FROM notice n
+          JOIN employee_notice en ON en.notice_id = n.id
+          JOIN employee e ON n.employee_id = e.id
+          JOIN department d ON e.department_id = d.id
+         WHERE n.id = #{noticeId}
+           AND en.employee_id = #{employeeId}
     </select>
 </mapper>

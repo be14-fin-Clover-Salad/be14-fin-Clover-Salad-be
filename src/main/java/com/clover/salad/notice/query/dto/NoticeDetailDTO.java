@@ -1,6 +1,7 @@
 package com.clover.salad.notice.query.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -9,7 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class NoticeQueryDTO {
+public class NoticeDetailDTO {
 	private int id;
 	private String title;
 	private String content;
@@ -20,5 +21,5 @@ public class NoticeQueryDTO {
 	private String writerName;
 	private String writerLevel;
 	private String departmentName;
-	private boolean isChecked;
+	private List<CheckInfoDTO> checkList;
 }

@@ -94,7 +94,9 @@
     </select>
 
 
-    <select id="searchContracts" parameterType="com.clover.salad.contract.query.dto.ContractSearchDTO" resultMap="ContractResultMap">
+    <select id="searchContracts"
+            resultMap="ContractResultMap"
+            parameterType="map">
         SELECT
         c.id,
         c.code,
@@ -122,85 +124,72 @@
         LEFT JOIN product p ON cp.product_id = p.id
         <where>
             NOT c.is_deleted
+            AND c.employee_id = #{employeeId}
 
-            <if test="minAmount != null">
-                AND c.amount &gt;= #{minAmount}
+            <if test="search.minAmount != null">
+                AND c.amount &gt;= #{search.minAmount}
             </if>
-            <if test="maxAmount != null">
-                AND c.amount &lt;= #{maxAmount}
-            </if>
-
-            <if test="employeeId != null">
-                AND c.employee_id = #{employeeId}
+            <if test="search.maxAmount != null">
+                AND c.amount &lt;= #{search.maxAmount}
             </if>
 
-            <if test="code != null and code != ''">
-                AND c.code LIKE CONCAT('%', #{code}, '%')
+            <if test="search.code != null and search.code != ''">
+                AND c.code LIKE CONCAT('%', #{search.code}, '%')
             </if>
-
-            <if test="createdAtStart != null">
-                AND c.created_at &gt;= #{createdAtStart}
+            <if test="search.createdAtStart != null">
+                AND c.created_at &gt;= #{search.createdAtStart}
             </if>
-            <if test="createdAtEnd != null">
-                AND c.created_at &lt;= #{createdAtEnd}
+            <if test="search.createdAtEnd != null">
+                AND c.created_at &lt;= #{search.createdAtEnd}
             </if>
-
-            <if test="startDateStart != null">
-                AND c.start_date &gt;= #{startDateStart}
+            <if test="search.startDateStart != null">
+                AND c.start_date &gt;= #{search.startDateStart}
             </if>
-            <if test="startDateEnd != null">
-                AND c.start_date &lt;= #{startDateEnd}
+            <if test="search.startDateEnd != null">
+                AND c.start_date &lt;= #{search.startDateEnd}
             </if>
-
-            <if test="endDateStart != null">
-                AND c.end_date &gt;= #{endDateStart}
+            <if test="search.endDateStart != null">
+                AND c.end_date &gt;= #{search.endDateStart}
             </if>
-            <if test="endDateEnd != null">
-                AND c.end_date &lt;= #{endDateEnd}
+            <if test="search.endDateEnd != null">
+                AND c.end_date &lt;= #{search.endDateEnd}
             </if>
-
-            <if test="status != null and status != ''">
-                AND c.status = #{status}
+            <if test="search.status != null and search.status != ''">
+                AND c.status = #{search.status}
             </if>
-
-            <if test="bankName != null and bankName != ''">
-                AND c.bank_name LIKE CONCAT('%', #{bankName}, '%')
+            <if test="search.bankName != null and search.bankName != ''">
+                AND c.bank_name LIKE CONCAT('%', #{search.bankName}, '%')
             </if>
-
-            <if test="paymentDayStart != null">
-                AND c.payment_day &gt;= #{paymentDayStart}
+            <if test="search.paymentDayStart != null">
+                AND c.payment_day &gt;= #{search.paymentDayStart}
             </if>
-            <if test="paymentDayEnd != null">
-                AND c.payment_day &lt;= #{paymentDayEnd}
+            <if test="search.paymentDayEnd != null">
+                AND c.payment_day &lt;= #{search.paymentDayEnd}
             </if>
-
-            <if test="depositOwner != null and depositOwner != ''">
-                AND c.deposit_owner LIKE CONCAT('%', #{depositOwner}, '%')
+            <if test="search.depositOwner != null and search.depositOwner != ''">
+                AND c.deposit_owner LIKE CONCAT('%', #{search.depositOwner}, '%')
             </if>
-
-            <if test="relationship != null and relationship != ''">
-                AND c.relationship = #{relationship}
+            <if test="search.relationship != null and search.relationship != ''">
+                AND c.relationship = #{search.relationship}
             </if>
-
-            <if test="employeeName != null and employeeName != ''">
-                AND e.name LIKE CONCAT('%', #{employeeName}, '%')
+            <if test="search.employeeName != null and search.employeeName != ''">
+                AND e.name LIKE CONCAT('%', #{search.employeeName}, '%')
             </if>
-
-            <if test="customerName != null and customerName != ''">
-                AND cu.name LIKE CONCAT('%', #{customerName}, '%')
+            <if test="search.customerName != null and search.customerName != ''">
+                AND cu.name LIKE CONCAT('%', #{search.customerName}, '%')
             </if>
-
-            <if test="productName != null and productName != ''">
+            <if test="search.productName != null and search.productName != ''">
                 AND EXISTS (
                 SELECT 1 FROM contract_product cp2
                 JOIN product p2 ON cp2.product_id = p2.id
                 WHERE cp2.contract_id = c.id
-                AND p2.name LIKE CONCAT('%', #{productName}, '%')
+                AND p2.name LIKE CONCAT('%', #{search.productName}, '%')
                 )
             </if>
         </where>
         GROUP BY c.id
     </select>
+
 
 
     <select id="selectDetailContractInfo" parameterType="int" resultMap="ContractWithProductsMap">

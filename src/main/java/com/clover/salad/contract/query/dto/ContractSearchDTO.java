@@ -21,6 +21,8 @@ public class ContractSearchDTO {
 	private LocalDate startDateEnd;
 	private LocalDate endDateStart;
 	private LocalDate endDateEnd;
+	private Integer minAmount;
+	private Integer maxAmount;
 	private String status;
 	private String bankName;
 	private Integer paymentDayStart;

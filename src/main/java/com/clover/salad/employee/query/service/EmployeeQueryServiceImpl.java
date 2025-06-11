@@ -3,6 +3,7 @@ package com.clover.salad.employee.query.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -66,6 +67,16 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService, UserDetai
 		return employeeRepository.findById(id)
 			.map(EmployeeEntity::getCode)
 			.orElseThrow(() -> new RuntimeException("사번 조회 실패: " + id));
+	}
+
+	@Override
+	public String findNameById(int id) {
+		String name = employeeMapper.findNameById(id);
+		if (name == null) {
+			throw new IllegalArgumentException("해당 ID의 사원을 찾을 수 없습니다: " + id);
+		}
+		return name;
+
 	}
 
 	@Override

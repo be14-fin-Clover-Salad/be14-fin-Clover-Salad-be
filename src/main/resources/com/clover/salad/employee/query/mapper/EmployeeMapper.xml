@@ -123,4 +123,10 @@
          WHERE e.id = #{id}
            AND e.is_deleted = false
     </select>
+    <select id="findNameById" parameterType="int" resultType="string">
+        SELECT name
+          FROM employee
+         WHERE id = #{id}
+           AND is_deleted = false
+    </select>
 </mapper>

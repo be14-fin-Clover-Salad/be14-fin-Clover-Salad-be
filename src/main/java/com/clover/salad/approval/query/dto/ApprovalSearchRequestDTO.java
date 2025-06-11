@@ -3,8 +3,6 @@ package com.clover.salad.approval.query.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 public class ApprovalSearchRequestDTO {
@@ -15,7 +13,6 @@ public class ApprovalSearchRequestDTO {
 
 	private String reqDateFrom;
 	private String reqDateTo;
-
 	private String aprvDateFrom;
 	private String aprvDateTo;
 
@@ -24,5 +21,10 @@ public class ApprovalSearchRequestDTO {
 
 	private String reqName;
 	private String aprvName;
+
 	private String contractCode;
+
+	// 내부에서 권한 기반으로 설정 (사용자 입력 금지)
+	private Integer reqId;
+	private Integer aprvId;
 }

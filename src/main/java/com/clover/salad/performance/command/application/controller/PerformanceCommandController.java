@@ -25,8 +25,7 @@ public class PerformanceCommandController {
 		@PathVariable("employeeCode") String employeeCode,
 		@PathVariable("targetDate") int targetDate /* yyyyMM */
 	) {
-		performanceCommandService.refreshEmployeeContractPerformance(employeeCode, targetDate);
-		performanceCommandService.refreshEmployeeCustomerPerformance(employeeCode, targetDate);
+		performanceCommandService.refreshEmployeePerformance(employeeCode, targetDate);
 		return ResponseEntity.ok("개인 실적 항목 갱신 완료");
 	}
 	

@@ -16,9 +16,11 @@
         <result property="aprvName" column="aprvName" />
         <result property="contractCode" column="contractCode" />
     </resultMap>
+
+    <!-- 관리자 검색 -->
     <select id="searchApprovals"
             parameterType="com.clover.salad.approval.query.dto.ApprovalSearchRequestDTO"
-            resultType="com.clover.salad.approval.query.dto.ApprovalSearchResponseDTO">
+            resultMap="ApprovalSearchResultMap">
         SELECT
                a.id
              , a.code
@@ -51,7 +53,6 @@
             <if test="reqDateTo != null and reqDateTo != ''">
                 AND a.req_date &lt;= STR_TO_DATE(#{reqDateTo}, '%Y-%m-%d')
             </if>
-
             <if test="aprvDateFrom != null and aprvDateFrom != ''">
                 AND a.aprv_date &gt;= STR_TO_DATE(#{aprvDateFrom}, '%Y-%m-%d')
             </if>
@@ -69,6 +70,128 @@
             </if>
             <if test="aprvName != null and aprvName != ''">
                 AND aprv.name LIKE CONCAT('%', #{aprvName}, '%')
+            </if>
+            <if test="contractCode != null and contractCode != ''">
+                AND c.code LIKE CONCAT('%', #{contractCode}, '%')
+            </if>
+        </where>
+         ORDER BY a.code DESC
+    </select>
+
+    <!-- 2. 사원: 본인이 요청한 결재만, aprvName 검색 가능 -->
+    <select id="searchByRequester"
+            parameterType="com.clover.salad.approval.query.dto.ApprovalSearchRequestDTO"
+            resultMap="ApprovalSearchResultMap">
+        SELECT
+               a.id
+             , a.code
+             , a.title
+             , a.content
+             , a.req_date AS reqDate
+             , a.aprv_date AS aprvDate
+             , a.state
+             , a.comment
+             , req.name AS reqName
+             , aprv.name AS aprvName
+             , c.code AS contractCode
+          FROM approval a
+          LEFT JOIN employee req ON a.req_id = req.id
+          LEFT JOIN employee aprv ON a.aprv_id = aprv.id
+          LEFT JOIN contract c ON a.contract_id = c.id
+        <where>
+            <if test="reqId != null">
+                AND req.id = #{reqId}
+            </if>
+            <if test="code != null and code != ''">
+                AND a.code LIKE CONCAT('%', #{code}, '%')
+            </if>
+            <if test="title != null and title != ''">
+                AND a.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="content != null and content != ''">
+                AND a.content LIKE CONCAT('%', #{content}, '%')
+            </if>
+            <if test="reqDateFrom != null and reqDateFrom != ''">
+                AND a.req_date &gt;= STR_TO_DATE(#{reqDateFrom}, '%Y-%m-%d')
+            </if>
+            <if test="reqDateTo != null and reqDateTo != ''">
+                AND a.req_date &lt;= STR_TO_DATE(#{reqDateTo}, '%Y-%m-%d')
+            </if>
+            <if test="aprvDateFrom != null and aprvDateFrom != ''">
+                AND a.aprv_date &gt;= STR_TO_DATE(#{aprvDateFrom}, '%Y-%m-%d')
+            </if>
+            <if test="aprvDateTo != null and aprvDateTo != ''">
+                AND a.aprv_date &lt;= STR_TO_DATE(#{aprvDateTo}, '%Y-%m-%d')
+            </if>
+            <if test="state != null and state != ''">
+                AND a.state = #{state}
+            </if>
+            <if test="comment != null and comment != ''">
+                AND a.comment LIKE CONCAT('%', #{comment}, '%')
+            </if>
+            <if test="aprvName != null and aprvName != ''">
+                AND aprv.name LIKE CONCAT('%', #{aprvName}, '%')
+            </if>
+            <if test="contractCode != null and contractCode != ''">
+                AND c.code LIKE CONCAT('%', #{contractCode}, '%')
+            </if>
+        </where>
+         ORDER BY a.code DESC
+    </select>
+
+    <!-- 3. 팀장: 본인이 승인한 결재만, reqName 검색 가능 -->
+    <select id="searchByApprover"
+            parameterType="com.clover.salad.approval.query.dto.ApprovalSearchRequestDTO"
+            resultMap="ApprovalSearchResultMap">
+        SELECT
+               a.id
+             , a.code
+             , a.title
+             , a.content
+             , a.req_date AS reqDate
+             , a.aprv_date AS aprvDate
+             , a.state
+             , a.comment
+             , req.name AS reqName
+             , aprv.name AS aprvName
+             , c.code AS contractCode
+          FROM approval a
+          LEFT JOIN employee req ON a.req_id = req.id
+          LEFT JOIN employee aprv ON a.aprv_id = aprv.id
+          LEFT JOIN contract c ON a.contract_id = c.id
+        <where>
+            <if test="aprvId != null">
+                AND aprv.id = #{aprvId}
+            </if>
+            <if test="code != null and code != ''">
+                AND a.code LIKE CONCAT('%', #{code}, '%')
+            </if>
+            <if test="title != null and title != ''">
+                AND a.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="content != null and content != ''">
+                AND a.content LIKE CONCAT('%', #{content}, '%')
+            </if>
+            <if test="reqDateFrom != null and reqDateFrom != ''">
+                AND a.req_date &gt;= STR_TO_DATE(#{reqDateFrom}, '%Y-%m-%d')
+            </if>
+            <if test="reqDateTo != null and reqDateTo != ''">
+                AND a.req_date &lt;= STR_TO_DATE(#{reqDateTo}, '%Y-%m-%d')
+            </if>
+            <if test="aprvDateFrom != null and aprvDateFrom != ''">
+                AND a.aprv_date &gt;= STR_TO_DATE(#{aprvDateFrom}, '%Y-%m-%d')
+            </if>
+            <if test="aprvDateTo != null and aprvDateTo != ''">
+                AND a.aprv_date &lt;= STR_TO_DATE(#{aprvDateTo}, '%Y-%m-%d')
+            </if>
+            <if test="state != null and state != ''">
+                AND a.state = #{state}
+            </if>
+            <if test="comment != null and comment != ''">
+                AND a.comment LIKE CONCAT('%', #{comment}, '%')
+            </if>
+            <if test="reqName != null and reqName != ''">
+                AND req.name LIKE CONCAT('%', #{reqName}, '%')
             </if>
             <if test="contractCode != null and contractCode != ''">
                 AND c.code LIKE CONCAT('%', #{contractCode}, '%')

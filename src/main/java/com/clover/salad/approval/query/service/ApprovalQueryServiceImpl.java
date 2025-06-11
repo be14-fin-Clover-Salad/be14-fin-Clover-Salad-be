@@ -31,11 +31,12 @@ public class ApprovalQueryServiceImpl implements ApprovalQueryService {
 	@Override
 	public List<ApprovalSearchResponseDTO> searchApprovals(ApprovalSearchRequestDTO request) {
 		int employeeId = SecurityUtil.getEmployeeId();
-		String employeeName = employeeQueryService.findNameById(employeeId);
 
 		if (SecurityUtil.hasRole("ROLE_ADMIN")) {
 			return approvalMapper.searchApprovals(request);
 		}
+
+		String employeeName = employeeQueryService.findNameById(employeeId);
 
 		if (SecurityUtil.hasRole("ROLE_MANAGER")) {
 			request.setAprvId(employeeId);
@@ -48,7 +49,6 @@ public class ApprovalQueryServiceImpl implements ApprovalQueryService {
 			request.setReqName(employeeName);
 			return approvalMapper.searchByRequester(request);
 		}
-
 		throw new AccessDeniedException("유효한 권한이 없습니다.");
 	}
 }

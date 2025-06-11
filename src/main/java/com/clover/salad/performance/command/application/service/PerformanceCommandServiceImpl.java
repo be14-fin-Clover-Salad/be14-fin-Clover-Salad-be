@@ -4,9 +4,12 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
+import org.modelmapper.Converter;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.spi.DestinationSetter;
+import org.modelmapper.spi.SourceGetter;
 import org.springframework.stereotype.Service;
 
 import com.clover.salad.common.exception.EmployeeNotFoundException;
@@ -48,6 +51,7 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 	private final PerformanceQueryService performanceQueryService;
 	private final EmployeeRepository employeeRepository;
 	private final ContractProductRepository contractProductRepository;
+	private final ModelMapper modelMapper;
 	
 	@Override
 	public void refreshEmployeePerformance(String employeeCode, int targetDate) {
@@ -58,67 +62,83 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 		LocalDate startDateEnd = yearMonth.atEndOfMonth();
 		
 		EmployeePerformance currentEP = employeePerformanceRepository.findByEmployeeIdAndTargetDate(employeeId, targetDate);
-		EmployeePerformanceDTO epDTO = new EmployeePerformanceDTO();
 		
-		/* 설명. 계약 조회를 위한 검색 조건 생성 */
-		ContractSearchDTO contractSearchDTO = new ContractSearchDTO();
-		contractSearchDTO.setEmployeeId(employeeId);
-		/* 설명. 검색 조건 중 시간 설정 */
-		contractSearchDTO.setStartDateStart(startDateStart);
-		contractSearchDTO.setStartDateEnd(startDateEnd);
+		/* 계약 조회를 위한 검색 조건 생성 */
+		ContractSearchDTO contractSearchDTO = ContractSearchDTO.builder()
+			.employeeId(employeeId)
+			.status("완료")
+			.startDateStart(startDateStart)
+			.startDateEnd(startDateEnd)
+			.build();
 		
 		List<ContractDTO> contractDTOList = contractService.searchContracts(employeeId, contractSearchDTO);
 		
 		int rentalProductCount = 0;
+		
+		/* totalRentalCount 이번 달의 총 계약 수 */
 		int totalRentalCount = contractDTOList.size();
-		/* 설명. totalRentalCount 이번 달의 총 계약 수 */
-		epDTO.setTotalRentalCount(totalRentalCount);
+		
+		/* 현재 유지되는 계약을 확인하기 위해 이전 달 계약 수로 초기화 */
 		int rentalRetentionCount = totalRentalCount;
+		
+		/* 총 계약 금액을 저장할 변수 */
 		long totalRentalAmount = 0L;
+		
+		/* 새로운 고객을 중복없이 저장하기 위한 Set */
 		Set<Integer> newCustomerIdSet = new HashSet<>();
 		
 		for (ContractDTO contractDTO : contractDTOList) {
-			/* 설명. rentalProductCount 렌탈 상품 수 */
+			/* rentalProductCount 렌탈 상품 수 */
 			List<ContractProductEntity> cpEntityList = contractProductRepository.findByContractId(contractDTO.getId());
 			for (ContractProductEntity cpEntity : cpEntityList) {
 				rentalProductCount += cpEntity.getQuantity();
 			}
-			/* 설명. rentalRetentionCount 계약 유지 건수 = 이번 달 총 계약 수 - 이번 달에 시작된 계약 수 */
+			/* rentalRetentionCount 계약 유지 건수 = 이번 달 총 계약 수 - 이번 달에 시작된 계약 수 */
 			if (contractDTO.getStartDate().isAfter(startDateStart)
 			 || contractDTO.getStartDate().isEqual(startDateStart)) {
 				rentalRetentionCount--;
 			}
-			/* 설명. newCustomerCount 신규 고객 수: 리스트로 만들고 id 개수를 세는 로직 */
+			/* newCustomerCount 신규 고객 수: 리스트로 만들고 id 개수를 세는 로직 */
 			int currentCustomerId = contractDTO.getCustomerId();
-			LocalDate currentCustomerRegisterDate = LocalDate.parse(customerQueryService.findCustomerById(currentCustomerId).getRegisterAt());
+			LocalDate currentCustomerRegisterDate = LocalDate.parse(
+				customerQueryService.findCustomerById(currentCustomerId).getRegisterAt()
+			);
 			if (currentCustomerRegisterDate.isAfter(startDateStart)
 			 || currentCustomerRegisterDate.isEqual(startDateStart)) {
 				newCustomerIdSet.add(currentCustomerId);
 			}
-			/* 설명. totalRentalAmount 총 렌탈 금액 */
+			/* totalRentalAmount 총 렌탈 금액 */
 			totalRentalAmount += contractDTO.getAmount();
 		}
 		
-		epDTO.setRentalProductCount(rentalProductCount);
-		epDTO.setRentalRetentionCount(rentalRetentionCount);
-		epDTO.setNewCustomerCount(newCustomerIdSet.size());
-		epDTO.setTotalRentalAmount(totalRentalAmount);
-		epDTO.setTargetDate(targetDate);
-		epDTO.setEmployeeId(employeeId);
+		EmployeePerformanceDTO epDTO = EmployeePerformanceDTO.builder()
+			.employeeId(employeeId)
+			.targetDate(targetDate)
+			.rentalProductCount(rentalProductCount)
+			.rentalRetentionCount(rentalRetentionCount)
+			.totalRentalCount(totalRentalCount)
+			.newCustomerCount(newCustomerIdSet.size())
+			.totalRentalAmount(totalRentalAmount)
+			.build();
 		
-		/* 설명. customerFeedbackScore 피드백 점수 총합 */
+		/* customerFeedbackScore 피드백 점수 총합 */
 		
 		
-		/* 설명. customerFeedbackCount 피드백 한 사람 수 */
+		/* customerFeedbackCount 피드백 한 사람 수 */
 		
 		
-		/* 설명. 조회 시 없으면 새로 만들기, 있으면 업데이트하기 */
+		/* 조회 시 없으면 새로 만들기, 있으면 업데이트하기 */
+		mapIntToDividedDouble(
+			DepartmentPerformanceDTO.class,
+			DepartmentPerformance.class,
+			DepartmentPerformanceDTO::getCustomerFeedbackScore,
+			DepartmentPerformance::setCustomerFeedbackScore
+		);
 		if (currentEP == null) {
-			EmployeePerformance newEP = new EmployeePerformance();
-			setEPDTOToEP(epDTO, newEP);
+			EmployeePerformance newEP = modelMapper.map(epDTO, EmployeePerformance.class);
 			employeePerformanceRepository.save(newEP);
 		} else {
-			setEPDTOToEP(epDTO,currentEP);
+			currentEP = modelMapper.map(epDTO, EmployeePerformance.class);
 			employeePerformanceRepository.save(currentEP);
 		}
 	}
@@ -128,7 +148,7 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 		int deptId = departmentRepository.findByName(deptName).getId();
 		
 		DepartmentPerformance currentDP = departmentPerformanceRepository.findByDepartmentIdAndTargetDate(deptId, targetDate);
-		DepartmentPerformanceDTO dpDTO = new DepartmentPerformanceDTO();
+		
 		int dpRentalProductCount = 0;
 		int dpRentalRetentionCount = 0;
 		int dpTotalRentalCount = 0;
@@ -141,62 +161,65 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 		List<EmployeeEntity> employeeList = employeeRepository.findByDepartmentIdAndIsAdmin(deptId, false);
 		for (EmployeeEntity employee : employeeList) {
 			String employeeCode = employee.getCode();
-			List<EmployeePerformanceDTO> epDTOList = performanceQueryService.searchEmployeePerformanceByEmployeeCode(employeeCode, searchTermDTO);
+			List<EmployeePerformanceDTO> epDTOList =
+				performanceQueryService.searchEmployeePerformanceByEmployeeCode(employeeCode, searchTermDTO);
+			
 			if (epDTOList != null && !epDTOList.isEmpty()) {
 				EmployeePerformanceDTO epDTO = epDTOList.get(0);
-				dpRentalProductCount += Optional.ofNullable(epDTO.getRentalProductCount()).orElse(0);
-				dpRentalRetentionCount += Optional.ofNullable(epDTO.getRentalRetentionCount()).orElse(0);
-				dpTotalRentalCount += Optional.ofNullable(epDTO.getTotalRentalCount()).orElse(0);
-				dpNewCustomerCount += Optional.ofNullable(epDTO.getNewCustomerCount()).orElse(0);
-				dpTotalRentalAmount += Optional.ofNullable(epDTO.getTotalRentalAmount()).orElse(0L);
-				dpCustomerFeedbackScore += Optional.ofNullable(epDTO.getCustomerFeedbackScore()).orElse(0);
-				dpCustomerFeedbackCount += Optional.ofNullable(epDTO.getCustomerFeedbackCount()).orElse(0);
+				dpRentalProductCount += epDTO.getRentalProductCount();
+				dpRentalRetentionCount += epDTO.getRentalRetentionCount();
+				dpTotalRentalCount += epDTO.getTotalRentalCount();
+				dpNewCustomerCount += epDTO.getNewCustomerCount();
+				dpTotalRentalAmount += epDTO.getTotalRentalAmount();
+				dpCustomerFeedbackScore += epDTO.getCustomerFeedbackScore();
+				dpCustomerFeedbackCount += epDTO.getCustomerFeedbackCount();
 			}
 		}
+		DepartmentPerformanceDTO dpDTO = DepartmentPerformanceDTO.builder()
+			.departmentId(deptId)
+			.targetDate(targetDate)
+			.rentalProductCount(dpRentalProductCount)
+			.rentalRetentionCount(dpRentalRetentionCount)
+			.totalRentalCount(dpTotalRentalCount)
+			.newCustomerCount(dpNewCustomerCount)
+			.totalRentalAmount(dpTotalRentalAmount)
+			.customerFeedbackScore(dpCustomerFeedbackScore)
+			.customerFeedbackCount(dpCustomerFeedbackCount)
+			.build();
 		
-		dpDTO.setDepartmentId(deptId);
-		dpDTO.setTargetDate(targetDate);
-		dpDTO.setRentalProductCount(dpRentalProductCount);
-		dpDTO.setRentalRetentionCount(dpRentalRetentionCount);
-		dpDTO.setTotalRentalCount(dpTotalRentalCount);
-		dpDTO.setNewCustomerCount(dpNewCustomerCount);
-		dpDTO.setTotalRentalAmount(dpTotalRentalAmount);
-		dpDTO.setCustomerFeedbackScore(dpCustomerFeedbackScore);
-		dpDTO.setCustomerFeedbackCount(dpCustomerFeedbackCount);
-		
-		/* 설명. 조회 시 없으면 새로 만들기, 있으면 업데이트하기 */
+		/* 조회 시 없으면 새로 만들기, 있으면 업데이트하기 */
+		mapIntToDividedDouble(
+			DepartmentPerformanceDTO.class,
+			DepartmentPerformance.class,
+			DepartmentPerformanceDTO::getCustomerFeedbackScore,
+			DepartmentPerformance::setCustomerFeedbackScore
+		);
 		if (currentDP == null) {
-			DepartmentPerformance newDP = new DepartmentPerformance();
-			setDPDTOToDP(dpDTO, newDP);
+			DepartmentPerformance newDP = modelMapper.map(dpDTO, DepartmentPerformance.class);
 			departmentPerformanceRepository.save(newDP);
 		} else {
-			setDPDTOToDP(dpDTO,currentDP);
+			currentDP = modelMapper.map(dpDTO, DepartmentPerformance.class);
 			departmentPerformanceRepository.save(currentDP);
 		}
 	}
 	
-	private void setDPDTOToDP(DepartmentPerformanceDTO dto, DepartmentPerformance entity) {
-		entity.setDepartmentId(dto.getDepartmentId());
-		entity.setTargetDate(dto.getTargetDate());
-		entity.setRentalProductCount(Optional.ofNullable(dto.getRentalProductCount()).orElse(0));
-		entity.setRentalRetentionCount(Optional.ofNullable(dto.getRentalRetentionCount()).orElse(0));
-		entity.setTotalRentalCount(Optional.ofNullable(dto.getTotalRentalCount()).orElse(0));
-		entity.setNewCustomerCount(Optional.ofNullable(dto.getNewCustomerCount()).orElse(0));
-		entity.setTotalRentalAmount(Optional.ofNullable(dto.getTotalRentalAmount()).orElse(0L));
-		entity.setCustomerFeedbackScore(Optional.ofNullable(dto.getCustomerFeedbackScore()).orElse(0).doubleValue() / 10);
-		entity.setCustomerFeedbackCount(Optional.ofNullable(dto.getCustomerFeedbackCount()).orElse(0));
-	}
-	
-	private void setEPDTOToEP(EmployeePerformanceDTO dto, EmployeePerformance entity) {
-		entity.setEmployeeId(dto.getEmployeeId());
-		entity.setTargetDate(dto.getTargetDate());
-		entity.setRentalProductCount(Optional.ofNullable(dto.getRentalProductCount()).orElse(0));
-		entity.setRentalRetentionCount(Optional.ofNullable(dto.getRentalRetentionCount()).orElse(0));
-		entity.setTotalRentalCount(Optional.ofNullable(dto.getTotalRentalCount()).orElse(0));
-		entity.setNewCustomerCount(Optional.ofNullable(dto.getNewCustomerCount()).orElse(0));
-		entity.setTotalRentalAmount(Optional.ofNullable(dto.getTotalRentalAmount()).orElse(0L));
-		entity.setCustomerFeedbackScore(Optional.ofNullable(dto.getCustomerFeedbackScore()).orElse(0).doubleValue() / 10);
-		entity.setCustomerFeedbackCount(Optional.ofNullable(dto.getCustomerFeedbackCount()).orElse(0));
+	public <S, D> void mapIntToDividedDouble(
+		Class<S> sourceClass,
+		Class<D> destClass,
+		SourceGetter<S> sourceGetter,
+		DestinationSetter<D, Double> destSetter
+	) {
+		/*
+		 * dto에서는 10을 곱해 int 값으로 사용하던 customerFeedbackScore를
+		 * entity를 통해 DB에 넣을 때 10으로 나누기
+		 * */
+		Converter<Integer, Double> converter = ctx -> {
+			Integer source = ctx.getSource();
+			return (source == null) ? null : source / 10.0;
+		};
+		
+		modelMapper.typeMap(sourceClass, destClass)
+			.addMappings(m -> m.using(converter).map(sourceGetter, destSetter));
 	}
 	
 	private EmployeeQueryDTO getEmployeeByCode(String employeeCode) throws EmployeeNotFoundException {

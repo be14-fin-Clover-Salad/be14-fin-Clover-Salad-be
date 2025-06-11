@@ -3,6 +3,8 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.clover.salad.approval.query.mapper.ApprovalMapper">
+
+    <!--  결재 내역 목록  -->
     <resultMap id="ApprovalSearchResultMap" type="com.clover.salad.approval.query.dto.ApprovalSearchResponseDTO">
         <id property="id" column="id" />
         <result property="code" column="code" />
@@ -15,6 +17,23 @@
         <result property="reqName" column="reqName" />
         <result property="aprvName" column="aprvName" />
         <result property="contractCode" column="contractCode" />
+    </resultMap>
+
+    <!--  결재 상세 정보  -->
+    <resultMap id="ApprovalDetailResultMap" type="com.clover.salad.approval.query.dto.ApprovalDetailDTO">
+        <id property="id" column="id" />
+        <result property="code" column="code" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="reqDate" column="reqDate" />
+        <result property="aprvDate" column="aprvDate" />
+        <result property="state" column="state" />
+        <result property="comment" column="comment" />
+        <result property="reqName" column="reqName" />
+        <result property="aprvName" column="aprvName" />
+        <result property="contractCode" column="contractCode" />
+        <result property="reqId" column="reqId"/>
+        <result property="aprvId" column="aprvId"/>
     </resultMap>
 
     <!-- 관리자 검색 -->
@@ -198,5 +217,27 @@
             </if>
         </where>
          ORDER BY a.code DESC
+    </select>
+    <select id="findApprovalDetailById" parameterType="int"
+            resultType="com.clover.salad.approval.query.dto.ApprovalDetailDTO">
+        SELECT
+               a.id
+             , a.code
+             , a.title
+             , a.content
+             , a.req_date AS reqDate
+             , a.aprv_date AS aprvDate
+             , a.state
+             , a.comment
+             , req.name AS reqName
+             , aprv.name AS aprvName
+             , c.code AS contractCode
+             , a.req_id AS reqId
+             , a.aprv_id AS aprvId
+        FROM approval a
+          LEFT JOIN employee req ON a.req_id = req.id
+          LEFT JOIN employee aprv ON a.aprv_id = aprv.id
+          LEFT JOIN contract c ON a.contract_id = c.id
+         WHERE a.id = #{id}
     </select>
 </mapper>

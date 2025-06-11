@@ -27,7 +27,7 @@ public class ApprovalSearchRequestDTO {
 	private String contractCode;
 
 	// 내부에서 권한 기반으로 설정 (사용자 입력 금지)
-g	@JsonIgnore
+	@JsonIgnore
 	private Integer reqId;
 
 	@JsonIgnore

@@ -60,4 +60,17 @@ public class ApprovalEntity {
 
 	@Column(name = "contract_id")
 	private int contractId;
+
+	/* 설명. 결재 승인, 반려 */
+	public void approve(LocalDateTime now) {
+		this.state = ApprovalState.APPROVED;
+		this.aprvDate = now;
+		this.comment = null;
+	}
+
+	public void reject(String comment, LocalDateTime now) {
+		this.state = ApprovalState.REJECTED;
+		this.aprvDate = now;
+		this.comment = comment;
+	}
 }

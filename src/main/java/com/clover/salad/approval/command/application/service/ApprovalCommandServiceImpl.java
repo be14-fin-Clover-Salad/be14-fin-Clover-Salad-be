@@ -1,5 +1,6 @@
 package com.clover.salad.approval.command.application.service;
 
+import com.clover.salad.approval.command.application.dto.ApprovalDecisionDTO;
 import com.clover.salad.approval.command.application.dto.ApprovalRequestDTO;
 import com.clover.salad.approval.command.domain.aggregate.entity.ApprovalEntity;
 import com.clover.salad.approval.command.domain.aggregate.enums.ApprovalState;
@@ -13,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -113,5 +115,45 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 		}
 
 		throw new IllegalStateException("결재 코드 생성 실패 - 중복 발생");
+	}
+
+	/* 설명. 팀장의 결재 로직 */
+	@Override
+	public void decideApproval(ApprovalDecisionDTO dto) {
+		int approverId = SecurityUtil.getEmployeeId();
+
+		if (!SecurityUtil.hasRole("ROLE_MANAGER")) {
+			throw new AccessDeniedException("팀장만 결재 처리가 가능합니다.");
+		}
+
+		ApprovalEntity approval = approvalRepository.findById(dto.getApprovalId())
+			.orElseThrow(() -> new EntityNotFoundException("결재 요청을 찾을 수 없습니다."));
+
+		if (!approval.getAprvId().equals(approverId)) {
+			throw new AccessDeniedException("본인에게 배정된 결재만 처리할 수 있습니다.");
+		}
+
+		// 결재를 승인, 반려하려면 요청이 있어야하니까
+		if (!approval.getState().equals(ApprovalState.REQUESTED)) {
+			throw new IllegalStateException("이미 처리된 결재입니다.");
+		}
+
+		// 대소문자 예외처리 위해 equalsIgnoreCase 사용 후 decision 값이 approve면 승인
+		if ("APPROVE".equalsIgnoreCase(dto.getDecision())) {
+			approval.approve(LocalDateTime.now());
+
+		// decision 값이 reject면 반려. 반려 사유 입력했는지 체크
+		} else if ("REJECT".equalsIgnoreCase(dto.getDecision())) {
+			if (dto.getComment() == null || dto.getComment().isBlank()) {
+				throw new IllegalArgumentException("반려 시 사유를 입력해야 합니다.");
+			}
+			approval.reject(dto.getComment(), LocalDateTime.now());
+
+		// 그외 접근은 예외처리
+		} else {
+			throw new IllegalArgumentException("결재 처리 방식이 유효하지 않습니다.");
+		}
+
+		approvalRepository.save(approval);
 	}
 }

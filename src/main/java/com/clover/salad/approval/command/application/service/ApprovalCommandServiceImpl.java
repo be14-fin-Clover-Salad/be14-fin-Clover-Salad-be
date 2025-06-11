@@ -42,6 +42,11 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 	public int requestApproval(ApprovalRequestDTO dto) {
 		int requesterId = SecurityUtil.getEmployeeId();
 
+		/* 설명. 팀장은 결재 요청 불가능 */
+		if (SecurityUtil.hasRole("ROLE_MANAGER")) {
+			throw new AccessDeniedException("사원만 결재 요청이 가능합니다.");
+		}
+
 		/* 설명. 사원은 하나의 계약에 대해 결재를 요청했다면 반려 전까지는 같은 계약 건에 대해 새로운 결재를 생성할 수 없음 */
 		// 하나의 계약 건에 대해 기존에 결재를 요청한 적이 있는지 체크
 		ApprovalExistenceCheckDTO checkDTO = new ApprovalExistenceCheckDTO();

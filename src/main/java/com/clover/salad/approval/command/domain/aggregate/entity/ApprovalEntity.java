@@ -42,7 +42,7 @@ public class ApprovalEntity {
 	@Column(name = "req_date")
 	private LocalDateTime reqDate;
 
-	@Column(name = "arpv_date")
+	@Column(name = "aprv_date")
 	private LocalDateTime aprvDate;
 
 	@Column(name = "state")
@@ -56,7 +56,7 @@ public class ApprovalEntity {
 	private int reqId;
 
 	@Column(name = "aprv_id")
-	private int aprvId;
+	private Integer aprvId;
 
 	@Column(name = "contract_id")
 	private int contractId;

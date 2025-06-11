@@ -24,4 +24,8 @@ public interface ApprovalMapper {
 
 	/* 설명. 결재 내역 상세 조회 */
 	ApprovalDetailDTO findApprovalDetailById(@Param("id") int id);
+
+	/* 설명. 결재 코드 생성을 위해 해당 월의 마지막 결재 코드 찾는 로직 */
+	String findLastCodeByPrefix(@Param("prefix") String prefix);
+
 }

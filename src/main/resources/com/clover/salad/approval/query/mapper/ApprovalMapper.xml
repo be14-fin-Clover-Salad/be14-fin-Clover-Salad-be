@@ -240,4 +240,12 @@
           LEFT JOIN contract c ON a.contract_id = c.id
          WHERE a.id = #{id}
     </select>
+    <!--  결재의 마지막 코드 찾기  -->
+    <select id="findLastCodeByPrefix" resultType="string">
+        SELECT a.code
+          FROM approval a
+         WHERE a.code LIKE CONCAT(#{prefix}, '%')
+         ORDER BY a.code DESC
+         LIMIT 1
+    </select>
 </mapper>

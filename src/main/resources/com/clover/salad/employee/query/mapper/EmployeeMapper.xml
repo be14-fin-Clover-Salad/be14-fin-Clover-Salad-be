@@ -129,4 +129,20 @@
          WHERE id = #{id}
            AND is_deleted = false
     </select>
+
+    <!--  사원의 경우 나의 팀장 찾기 위한 로직  -->
+    <select id="findDepartmentIdByEmployeeId" parameterType="int" resultType="int">
+        SELECT department_id
+        FROM employee
+        WHERE id = #{employeeId}
+          AND is_deleted = false
+    </select>
+    <select id="findManagerIdByDeptId" parameterType="int" resultType="int">
+        SELECT id
+        FROM employee
+        WHERE department_id = #{deptId}
+          AND level = '팀장'
+          AND is_deleted = false
+        LIMIT 1
+    </select>
 </mapper>

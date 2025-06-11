@@ -28,4 +28,9 @@ public interface PerformanceMapper {
 		@Param("startDate") String startDate,
 		@Param("endDate") String endDate
 	);
+	
+	List<EmployeePerformanceDTO> selectEmployeePerformanceByTargetDateAndDepartmentId(
+		@Param("deptId") int deptId,
+		@Param("targetDate") int targetDate
+	);
 }

@@ -60,6 +60,11 @@ public class PerformanceQueryServiceImpl implements PerformanceQueryService {
 		);
 	}
 	
+	@Override
+	public List<EmployeePerformanceDTO> searchEmployeePerformanceByTargetDateAndDepartmentId(int deptId, int targetDate) {
+		return performanceMapper.selectEmployeePerformanceByTargetDateAndDepartmentId(deptId, targetDate);
+	}
+	
 	public static String getDayOfMonth(int yyyyMM, boolean isFirst) {
 		
 		int year = yyyyMM / 100;

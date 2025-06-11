@@ -19,15 +19,12 @@ import com.clover.salad.contract.query.dto.ContractDTO;
 import com.clover.salad.contract.query.dto.ContractSearchDTO;
 import com.clover.salad.contract.query.service.ContractService;
 import com.clover.salad.customer.query.service.CustomerQueryService;
-import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.repository.DepartmentRepository;
-import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
 import com.clover.salad.performance.command.application.dto.DepartmentPerformanceDTO;
 import com.clover.salad.performance.command.application.dto.EmployeePerformanceDTO;
-import com.clover.salad.performance.command.application.dto.SearchTermDTO;
 import com.clover.salad.performance.command.domain.aggregate.entity.DepartmentPerformance;
 import com.clover.salad.performance.command.domain.aggregate.entity.EmployeePerformance;
 import com.clover.salad.performance.command.domain.repository.DepartmentPerformanceRepository;
@@ -49,7 +46,6 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 	private final DepartmentRepository departmentRepository;
 	private final DepartmentPerformanceRepository departmentPerformanceRepository;
 	private final PerformanceQueryService performanceQueryService;
-	private final EmployeeRepository employeeRepository;
 	private final ContractProductRepository contractProductRepository;
 	private final ModelMapper modelMapper;
 	
@@ -160,23 +156,16 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 		int dpCustomerFeedbackScore = 0;
 		int dpCustomerFeedbackCount = 0;
 		
-		SearchTermDTO searchTermDTO = new SearchTermDTO(targetDate, targetDate);
-		List<EmployeeEntity> employeeList = employeeRepository.findByDepartmentIdAndIsAdmin(deptId, false);
-		for (EmployeeEntity employee : employeeList) {
-			String employeeCode = employee.getCode();
-			List<EmployeePerformanceDTO> epDTOList =
-				performanceQueryService.searchEmployeePerformanceByEmployeeCode(employeeCode, searchTermDTO);
-			
-			if (epDTOList != null && !epDTOList.isEmpty()) {
-				EmployeePerformanceDTO epDTO = epDTOList.get(0);
-				dpRentalProductCount += epDTO.getRentalProductCount();
-				dpRentalRetentionCount += epDTO.getRentalRetentionCount();
-				dpTotalRentalCount += epDTO.getTotalRentalCount();
-				dpNewCustomerCount += epDTO.getNewCustomerCount();
-				dpTotalRentalAmount += epDTO.getTotalRentalAmount();
-				dpCustomerFeedbackScore += epDTO.getCustomerFeedbackScore();
-				dpCustomerFeedbackCount += epDTO.getCustomerFeedbackCount();
-			}
+		List<EmployeePerformanceDTO> employeePerformanceDTOList =
+			performanceQueryService.searchEmployeePerformanceByTargetDateAndDepartmentId(targetDate, deptId);
+		for (EmployeePerformanceDTO epDTO : employeePerformanceDTOList) {
+			dpRentalProductCount += epDTO.getRentalProductCount();
+			dpRentalRetentionCount += epDTO.getRentalRetentionCount();
+			dpTotalRentalCount += epDTO.getTotalRentalCount();
+			dpNewCustomerCount += epDTO.getNewCustomerCount();
+			dpTotalRentalAmount += epDTO.getTotalRentalAmount();
+			dpCustomerFeedbackScore += epDTO.getCustomerFeedbackScore();
+			dpCustomerFeedbackCount += epDTO.getCustomerFeedbackCount();
 		}
 		DepartmentPerformanceDTO dpDTO = DepartmentPerformanceDTO.builder()
 			.departmentId(deptId)

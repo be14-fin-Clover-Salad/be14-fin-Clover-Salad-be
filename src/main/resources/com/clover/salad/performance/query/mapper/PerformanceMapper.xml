@@ -92,4 +92,24 @@
            AND C.START_DATE BETWEEN #{startDate} AND #{endDate}
          GROUP BY CP.PRODUCT_ID
     </select>
+
+    <select id="selectEmployeePerformanceByTargetDateAndDepartmentId" resultMap="EmployeePerformanceResultMap" parameterType="map">
+        SELECT
+               EP.ID
+             , EP.RENTAL_PRODUCT_COUNT
+             , EP.RENTAL_RETENTION_COUNT
+             , EP.TOTAL_RENTAL_COUNT
+             , EP.NEW_CUSTOMER_COUNT
+             , EP.TOTAL_RENTAL_AMOUNT
+             , (EP.CUSTOMER_FEEDBACK_SCORE * 10)
+             , EP.CUSTOMER_FEEDBACK_COUNT
+             , EP.TARGET_DATE
+             , EP.EMPLOYEE_ID
+          FROM EMPLOYEE_PERFORMANCE EP
+         WHERE EP.EMPLOYEE_ID IN (SELECT E.ID
+                                    FROM EMPLOYEE E
+                                   WHERE E.DEPARTMENT_ID = #{deptId}
+                                     AND E.IS_ADMIN = FALSE)
+           AND EP.TARGET_DATE = #{targetDate}
+    </select>
 </mapper>

@@ -22,4 +22,9 @@ public interface PerformanceQueryService {
 		String productCode,
 		SearchTermDTO searchTerm
 	);
+	
+	List<EmployeePerformanceDTO> searchEmployeePerformanceByTargetDateAndDepartmentId(
+		int deptId,
+		int targetDate
+	);
 }

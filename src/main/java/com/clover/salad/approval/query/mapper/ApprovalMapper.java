@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.clover.salad.approval.query.dto.ApprovalDetailDTO;
+import com.clover.salad.approval.query.dto.ApprovalExistenceCheckDTO;
 import com.clover.salad.approval.query.dto.ApprovalSearchRequestDTO;
 import com.clover.salad.approval.query.dto.ApprovalSearchResponseDTO;
 
@@ -28,4 +29,8 @@ public interface ApprovalMapper {
 	/* 설명. 결재 코드 생성을 위해 해당 월의 마지막 결재 코드 찾는 로직 */
 	String findLastCodeByPrefix(@Param("prefix") String prefix);
 
+	int countByCode(String newCode);
+
+	/* 설명. 계약에 대한 기존 결재 유무 체크 */
+	int countExistingApprovalRequest(ApprovalExistenceCheckDTO dto);
 }

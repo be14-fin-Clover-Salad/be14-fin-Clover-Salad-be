@@ -128,17 +128,20 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 		
 		
 		/* 조회 시 없으면 새로 만들기, 있으면 업데이트하기 */
-		mapIntToDividedDouble(
-			DepartmentPerformanceDTO.class,
-			DepartmentPerformance.class,
-			DepartmentPerformanceDTO::getCustomerFeedbackScore,
-			DepartmentPerformance::setCustomerFeedbackScore
+		mapIntToDividedDoubleAndIgnoreId(
+			EmployeePerformanceDTO.class,
+			EmployeePerformance.class,
+			EmployeePerformanceDTO::getCustomerFeedbackScore,
+			EmployeePerformance::setCustomerFeedbackScore,
+			EmployeePerformance::setId
 		);
 		if (currentEP == null) {
+			log.info("개인 실적 생성: {}", targetDate);
 			EmployeePerformance newEP = modelMapper.map(epDTO, EmployeePerformance.class);
 			employeePerformanceRepository.save(newEP);
 		} else {
-			currentEP = modelMapper.map(epDTO, EmployeePerformance.class);
+			log.info("개인 실적 갱신: {}", targetDate);
+			modelMapper.map(epDTO, currentEP);
 			employeePerformanceRepository.save(currentEP);
 		}
 	}
@@ -188,26 +191,30 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 			.build();
 		
 		/* 조회 시 없으면 새로 만들기, 있으면 업데이트하기 */
-		mapIntToDividedDouble(
+		mapIntToDividedDoubleAndIgnoreId(
 			DepartmentPerformanceDTO.class,
 			DepartmentPerformance.class,
 			DepartmentPerformanceDTO::getCustomerFeedbackScore,
-			DepartmentPerformance::setCustomerFeedbackScore
+			DepartmentPerformance::setCustomerFeedbackScore,
+			DepartmentPerformance::setId
 		);
 		if (currentDP == null) {
+			log.info("팀 실적 생성: {}", targetDate);
 			DepartmentPerformance newDP = modelMapper.map(dpDTO, DepartmentPerformance.class);
 			departmentPerformanceRepository.save(newDP);
 		} else {
-			currentDP = modelMapper.map(dpDTO, DepartmentPerformance.class);
+			log.info("팀 실적 갱신: {}", targetDate);
+			modelMapper.map(dpDTO, currentDP);
 			departmentPerformanceRepository.save(currentDP);
 		}
 	}
 	
-	public <S, D> void mapIntToDividedDouble(
+	public <S, D> void mapIntToDividedDoubleAndIgnoreId(
 		Class<S> sourceClass,
 		Class<D> destClass,
 		SourceGetter<S> sourceGetter,
-		DestinationSetter<D, Double> destSetter
+		DestinationSetter<D, Double> destSetter,
+		DestinationSetter<D, Integer> idSetter
 	) {
 		/*
 		 * dto에서는 10을 곱해 int 값으로 사용하던 customerFeedbackScore를
@@ -219,7 +226,8 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 		};
 		
 		modelMapper.typeMap(sourceClass, destClass)
-			.addMappings(m -> m.using(converter).map(sourceGetter, destSetter));
+			.addMappings(m -> m.using(converter).map(sourceGetter, destSetter))
+			.addMappings(mapper -> mapper.skip(idSetter));
 	}
 	
 	private EmployeeQueryDTO getEmployeeByCode(String employeeCode) throws EmployeeNotFoundException {

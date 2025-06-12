@@ -194,7 +194,12 @@ VALUES (1, False, 1, 1),
        (4, False, 4, 4),
        (5, False, 5, 5),
        (6, False, 6, 6),
-       (7, False, 7, 7);
+       (7, False, 7, 7),
+       (8, False, 2, 1),
+       (9, False, 3, 1),
+       (10, False, 4, 1),
+       (11, False, 5, 1),
+       (12, False, 6, 1);
 
 -- DEPARTMENT_PERFORMANCE
 INSERT INTO DEPARTMENT_PERFORMANCE (id, rental_product_count, rental_retention_count, total_rental_count,

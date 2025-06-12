@@ -34,4 +34,6 @@ public interface EmployeeMapper {
 	/* 설명. 사원이 결재를 하는 경우 자신의 팀장을 찾는 로직에 사용하는 메서드들 */
 	Integer findDepartmentIdByEmployeeId(@Param("employeeId") int employeeId);
 	Integer findManagerIdByDeptId(@Param("deptId") int deptId);
+
+	EmployeeQueryDTO findEmployeeById(@Param("id") int id);
 }

@@ -240,4 +240,30 @@
           LEFT JOIN contract c ON a.contract_id = c.id
          WHERE a.id = #{id}
     </select>
+    <!--  결재의 마지막 코드 찾기  -->
+    <select id="findLastCodeByPrefix" resultType="string">
+        SELECT code
+          FROM approval
+         WHERE code LIKE CONCAT(#{prefix}, '%')
+         ORDER BY code DESC
+         LIMIT 1
+    </select>
+
+    <!--  결재코드 중복 생성 예외처리를 위한 쿼리  -->
+    <select id="countByCode" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+          FROM approval
+         WHERE code = #{code}
+    </select>
+
+    <!--  결재 요청 시 기존 결재 존재 유무 체크  -->
+    <select id="countExistingApprovalRequest"
+            parameterType="com.clover.salad.approval.query.dto.ApprovalExistenceCheckDTO"
+            resultType="int">
+        SELECT COUNT(*)
+          FROM approval
+         WHERE req_id = #{reqId}
+           AND contract_id = #{contractId}
+           AND state != 'REJECTED'
+    </select>
 </mapper>

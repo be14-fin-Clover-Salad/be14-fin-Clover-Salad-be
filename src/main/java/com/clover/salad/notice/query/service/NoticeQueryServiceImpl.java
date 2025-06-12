@@ -41,9 +41,13 @@ public class NoticeQueryServiceImpl implements NoticeQueryService {
 
 	@Override
 	public NoticeDetailDTO getNoticeDetail(int noticeId, int employeeId) {
+
+		EmployeeQueryDTO employee = employeeMapper.findEmployeeById(employeeId);
+
 		Map<String, Object> params = new HashMap<>();
 		params.put("noticeId", noticeId);
 		params.put("employeeId", employeeId);
+		params.put("level", employee.getLevel());
 
 		NoticeDetailDTO detail = noticeMapper.getNoticeDetail(params);
 		if (detail == null) {

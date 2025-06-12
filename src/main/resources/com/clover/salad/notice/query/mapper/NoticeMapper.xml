@@ -88,10 +88,16 @@
                e.level AS writerLevel,
                d.name AS departmentName
           FROM notice n
-          JOIN employee_notice en ON en.notice_id = n.id
           JOIN employee e ON n.employee_id = e.id
           JOIN department d ON e.department_id = d.id
-         WHERE n.id = #{noticeId}
-           AND en.employee_id = #{employeeId}
+        <where>
+            n.id = #{noticeId}
+            <if test="level != '관리자'">
+                AND EXISTS (
+                SELECT 1 FROM employee_notice en
+                WHERE en.notice_id = n.id AND en.employee_id = #{employeeId}
+                )
+            </if>
+        </where>
     </select>
 </mapper>

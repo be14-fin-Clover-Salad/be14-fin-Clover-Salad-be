@@ -12,28 +12,22 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name="notice")
+@Table(name="employee_notice")
 @Getter
 @Setter
-public class Notice {
+public class EmployeeNotice {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id;
 
-	@Column(name = "title", nullable = false)
-	private String title;
-
-	@Column(name = "content", nullable = false)
-	private String content;
-
-	@Column(name = "created_at", nullable = false)
-	private LocalDateTime createdAt;
-
-	@Column(name = "is_deleted", nullable = false)
-	private boolean isDeleted = false;
+	@Column(name = "is_checked", nullable = false)
+	private boolean isChecked = false;
 
 	@Column(name = "employee_id", nullable = false)
 	private int employeeId;
+
+	@Column(name = "notice_id", nullable = false)
+	private int noticeId;
 }

@@ -12,7 +12,6 @@ import lombok.Setter;
 public class NoticeListDTO {
 	private int id;
 	private String title;
-	private String content;
 	private LocalDateTime createdAt;
 	@JsonProperty("isDeleted")
 	private boolean isDeleted;

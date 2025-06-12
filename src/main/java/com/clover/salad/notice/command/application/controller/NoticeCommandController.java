@@ -3,13 +3,15 @@ package com.clover.salad.notice.command.application.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.clover.salad.notice.command.application.dto.NoticeCreateRequest;
-import com.clover.salad.notice.command.application.dto.NoticeCreateResponse;
+import com.clover.salad.notice.command.application.dto.NoticeUpdateRequest;
 import com.clover.salad.notice.command.application.service.NoticeCommandService;
 import com.clover.salad.security.SecurityUtil;
 
@@ -28,5 +30,17 @@ public class NoticeCommandController {
 		int writerId = SecurityUtil.getEmployeeId();
 		noticeCommandService.createNotice(request, writerId);
 		return ResponseEntity.ok("공지 사항 등록 완료");
+	}
+
+	// 공지 사항 수정
+	@PutMapping("/edit/{noticeId}")
+	public ResponseEntity<String> noticeUpdate(
+		@PathVariable("noticeId") int noticeId,
+		@RequestBody NoticeUpdateRequest request){
+
+		int writerId = SecurityUtil.getEmployeeId();
+
+		noticeCommandService.updateNotice(noticeId, request, writerId);
+		return ResponseEntity.ok("공지 사항 수정 완료");
 	}
 }

@@ -1,4 +1,4 @@
-package com.clover.salad.notice.command.domain.entity;
+package com.clover.salad.notice.command.domain.aggregate.entity;
 
 import java.time.LocalDateTime;
 
@@ -12,22 +12,28 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name="employee_notice")
+@Table(name="notice")
 @Getter
 @Setter
-public class EmployeeNotice {
+public class Notice {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id;
 
-	@Column(name = "is_checked", nullable = false)
-	private boolean isChecked = false;
+	@Column(name = "title", nullable = false)
+	private String title;
+
+	@Column(name = "content", nullable = false)
+	private String content;
+
+	@Column(name = "created_at", nullable = false)
+	private LocalDateTime createdAt;
+
+	@Column(name = "is_deleted", nullable = false)
+	private boolean isDeleted = false;
 
 	@Column(name = "employee_id", nullable = false)
 	private int employeeId;
-
-	@Column(name = "notice_id", nullable = false)
-	private int noticeId;
 }

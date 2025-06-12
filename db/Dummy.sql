@@ -3,12 +3,72 @@ USE saladdb;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- DEPARTMENT
-INSERT INTO DEPARTMENT (id, name, is_deleted, sup_dept_id)
-VALUES (1, '본부', False, NULL),
-       (2, '영업1팀', False, 1),
-       (3, '영업2팀', False, 1),
-       (4, '고객지원팀', False, 1),
-       (5, '기술지원팀', False, 1);
+-- 미배정 부서 (id=1)
+INSERT INTO department (name, is_deleted, sup_dept_id) VALUES
+    ('미배정', FALSE, NULL);
+
+-- 상위 부서 (id=2~10)\
+INSERT INTO department (name, is_deleted, sup_dept_id) VALUES
+('인사부', FALSE, NULL),
+('마케팅부', FALSE, NULL),
+('재무/회계부', FALSE, NULL),
+('생산부', FALSE, NULL),
+('연구개발부', FALSE, NULL),
+('IT/정보시스템부', FALSE, NULL),
+('전략기획부', FALSE, NULL),
+('영업부', FALSE, NULL),
+('법무부', FALSE, NULL);
+
+-- 하위 부서 (sup_dept_id = 상위 부서 id 반영)
+INSERT INTO department (name, is_deleted, sup_dept_id) VALUES
+-- 인사부(2)
+('인재채용팀', FALSE, 2),
+('인사운영팀', FALSE, 2),
+('노무관리팀', FALSE, 2),
+
+-- 마케팅부(3)
+('브랜드팀', FALSE, 3),
+('콘텐츠팀', FALSE, 3),
+('광고팀', FALSE, 3),
+('프로모션팀', FALSE, 3),
+
+-- 재무/회계부(4)
+('재무팀', FALSE, 4),
+('회계팀', FALSE, 4),
+('자금팀', FALSE, 4),
+
+-- 생산부(5)
+('생산1팀', FALSE, 5),
+('생산2팀', FALSE, 5),
+('생산기술팀', FALSE, 5),
+('품질관리팀', FALSE, 5),
+
+-- 연구개발부(6)
+('연구1팀', FALSE, 6),
+('연구2팀', FALSE, 6),
+('제품개발팀', FALSE, 6),
+
+-- IT/정보시스템부(7)
+('IT운영팀', FALSE, 7),
+('인프라팀', FALSE, 7),
+('개발팀', FALSE, 7),
+('보안팀', FALSE, 7),
+
+-- 전략기획부(8)
+('전략팀', FALSE, 8),
+('기획팀', FALSE, 8),
+('사업개발팀', FALSE, 8),
+
+-- 영업부(9)
+('영업1팀', FALSE, 9),
+('영업2팀', FALSE, 9),
+('영업3팀', FALSE, 9),
+('영업4팀', FALSE, 9),
+('영업5팀', FALSE, 9),
+
+-- 법무부(10)
+('법무지원팀', FALSE, 10),
+('계약검토팀', FALSE, 10);
 
 -- FILE_UPLOAD
 INSERT INTO FILE_UPLOAD (origin_file, rename_file, path, created_at, type)
@@ -24,13 +84,209 @@ VALUES ('profile1.png', 'uuid1.png', '/uploads/', '2025-05-28 02:13:22', '프로
      , ('profile4.png', 'uuid10.png', '/uploads/', '2025-05-29 23:34:38', '프로필');
 
 -- EMPLOYEE
-INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile)
- VALUES ('202501001', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','강수지','01038679572','teamflover_s@naver.com','사원','2025-01-01',NULL,FALSE,FALSE,'서울본사',1,1),
-        ('202501002', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','고성연','01019990502','teamflover_j@naver.com','주임','2025-01-01',NULL,FALSE,FALSE,'서울본사',1,1),
-        ('202501003', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','고윤석','01095009870','teamflover_d@naver.com','대리','2025-01-01',NULL,FALSE,FALSE,'서울본사',1,1),
-        ('202501004', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','김성민','01046792202','teamflover_k@naver.com','과장','2025-01-01',NULL,FALSE,FALSE,'서울본사',1,1),
-        ('202501005', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','이청민','01020000101','teamflover_t@naver.com','팀장','2025-01-01',NULL,FALSE,FALSE,'서울본사',1,1),
-        ('202501006', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','관리자','01020250605','teamflover_a@naver.com','관리자','2025-01-01',NULL,TRUE,FALSE,'서울본사',1,1);
+-- 관리자 더미
+INSERT INTO employee (id, code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+(-1, 'ADMIN', '$2a$10$eu/cmPGCdI.cJKQHSi12..fq50TgXsJ3UjKg/nB4SC6rvAyK0woWW', '관리자', '01000000000', 'admin@saladerp.com', '관리자', '1000-01-01', NULL, TRUE, FALSE, '관리자', 1, 1);
+
+-- 사원, 팀장 더미
+-- 영업 1팀
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+('202501001', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','강수지','01038679572','teamflover_s@naver.com','사원','2025-01-01',NULL,FALSE,FALSE,'서울강남',1,1),
+('202501002', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','고성연','01019990502','teamflover_j@naver.com','주임','2025-01-01',NULL,FALSE,FALSE,'서울강남',1,1),
+('202501003', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','고윤석','01095009870','teamflover_d@naver.com','대리','2025-01-01',NULL,FALSE,FALSE,'서울강남',1,1),
+('202501004', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','김성민','01046792202','teamflover_k@naver.com','과장','2025-01-01',NULL,FALSE,FALSE,'서울강남',1,1),
+('202501005', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','이청민','01020000101','teamflover_t@naver.com','팀장','2025-01-01',NULL,FALSE,FALSE,'서울강남',1,1);
+
+-- 영업 2팀
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+('202503993', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최은경', '01000000001', '202503993@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울강북', 2, 1),
+('201811926', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이주은', '01000000002', '201811926@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울강북', 2, 1),
+('201207641', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤수수', '01000000003', '201207641@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울강북', 2, 1),
+('200604639', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최민진', '01000000004', '200604639@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울강북', 2, 1),
+('200001446', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤민하', '01000000005', '200001446@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울강북', 2, 1);
+
+-- 영업 3팀
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+('202503665', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김슬민', '01000000006', '202503665@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '인천부평', 3, 1),
+('201811852', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이은민', '01000000007', '201811852@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '인천부평', 3, 1),
+('201207899', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '정석하', '01000000008', '201207899@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '인천부평', 3, 1),
+('200604962', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한석슬', '01000000009', '200604962@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '인천부평', 3, 1),
+('200001225', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임석경', '01000000010', '200001225@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '인천부평', 3, 1);
+
+-- 영업 4팀
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+('202503444', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '정하슬', '01000000011', '202503444@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '경기성남', 4, 1),
+('201811566', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이진하', '01000000012', '201811566@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '경기성남', 4, 1),
+('201207130', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '장현우', '01000000013', '201207130@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '경기성남', 4, 1),
+('200604252', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최주호', '01000000014', '200604252@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '경기성남', 4, 1),
+('200001223', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박현주', '01000000015', '200001223@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '경기성남', 4, 1);
+
+-- 영업 5팀
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+('202503358', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김은수', '01000000016', '202503358@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '부산해운대', 5, 1),
+('201811460', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한호은', '01000000017', '201811460@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '부산해운대', 5, 1),
+('201207841', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한진경', '01000000018', '201207841@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '부산해운대', 5, 1),
+('200604792', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한슬수', '01000000019', '200604792@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '부산해운대', 5, 1),
+('200001749', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임하진', '01000000020', '200001749@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '부산해운대', 5, 1);
+
+-- 인사부
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+('202503563', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '정현호', '01000000021', '202503563@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울본사', 11, 1),
+('201811274', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '장경석', '01000000022', '201811274@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울본사', 11, 1),
+('201207741', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박석진', '01000000023', '201207741@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울본사', 11, 1),
+('200604370', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤연연', '01000000024', '200604370@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울본사', 11, 1),
+('200001565', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조경석', '01000000025', '200001565@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울본사', 11, 1),
+('202503352', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이연은', '01000000026', '202503352@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울본사', 12, 1),
+('201811428', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조석연', '01000000027', '201811428@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울본사', 12, 1),
+('201207208', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '장은슬', '01000000028', '201207208@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울본사', 12, 1),
+('200604186', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최주석', '01000000029', '200604186@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울본사', 12, 1),
+('200001928', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최민호', '01000000030', '200001928@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울본사', 12, 1),
+('202503919', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김수호', '01000000031', '202503919@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울본사', 13, 1),
+('201811783', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최진호', '01000000032', '201811783@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울본사', 13, 1),
+('201207227', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임석수', '01000000033', '201207227@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울본사', 13, 1),
+('200604119', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이석호', '01000000034', '200604119@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울본사', 13, 1),
+('200001296', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박아석', '01000000035', '200001296@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울본사', 13, 1);
+
+-- 마케팅부
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+('202503227', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이진연', '01000000036', '202503227@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울본사', 14, 1),
+('201811826', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박수연', '01000000037', '201811826@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울본사', 14, 1),
+('201207525', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박연호', '01000000038', '201207525@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울본사', 14, 1),
+('200604218', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '정아은', '01000000039', '200604218@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울본사', 14, 1),
+('200001822', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김석주', '01000000040', '200001822@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울본사', 14, 1),
+('202503452', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최연민', '01000000041', '202503452@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울본사', 15, 1),
+('201811877', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이은아', '01000000042', '201811877@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울본사', 15, 1),
+('201207859', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최연진', '01000000043', '201207859@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울본사', 15, 1),
+('200604481', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김진슬', '01000000044', '200604481@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울본사', 15, 1),
+('200001528', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한진슬', '01000000045', '200001528@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울본사', 15, 1),
+('202503854', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한민연', '01000000046', '202503854@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울본사', 16, 1),
+('201811215', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김호민', '01000000047', '201811215@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울본사', 16, 1),
+('201207260', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한하민', '01000000048', '201207260@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울본사', 16, 1),
+('200604527', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이민우', '01000000049', '200604527@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울본사', 16, 1),
+('200001403', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박석수', '01000000050', '200001403@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울본사', 16, 1),
+('202503460', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조하석', '01000000051', '202503460@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울본사', 17, 1),
+('201811542', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤연석', '01000000052', '201811542@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울본사', 17, 1),
+('201207984', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박아하', '01000000053', '201207984@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울본사', 17, 1),
+('200604909', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤경민', '01000000054', '200604909@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울본사', 17, 1),
+('200001581', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최진연', '01000000055', '200001581@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울본사', 17, 1);
+
+-- 재무/회계부
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+    ('202503924', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이연호', '01000000056', '202503924@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울본사', 18, 1),
+    ('201811108', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤슬진', '01000000057', '201811108@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울본사', 18, 1),
+    ('201207121', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조민하', '01000000058', '201207121@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울본사', 18, 1),
+    ('200604279', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '정은경', '01000000059', '200604279@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울본사', 18, 1),
+    ('200001386', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박은수', '01000000060', '200001386@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울본사', 18, 1),
+    ('202503928', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '장우진', '01000000061', '202503928@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울본사', 19, 1),
+    ('201811285', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조아수', '01000000062', '201811285@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울본사', 19, 1),
+    ('201207410', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임우진', '01000000063', '201207410@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울본사', 19, 1),
+    ('200604534', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임주석', '01000000064', '200604534@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울본사', 19, 1),
+    ('200001876', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한하현', '01000000065', '200001876@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울본사', 19, 1),
+    ('202503149', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김은석', '01000000066', '202503149@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울본사', 20, 1),
+    ('201811564', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조석호', '01000000067', '201811564@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울본사', 20, 1),
+    ('201207225', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박아은', '01000000068', '201207225@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울본사', 20, 1),
+    ('200604991', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조아하', '01000000069', '200604991@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울본사', 20, 1),
+    ('200001585', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한현연', '01000000070', '200001585@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울본사', 20, 1);
+
+-- 생산부
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+('202503309', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임아수', '01000000071', '202503309@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울공장', 21, 1),
+('201811556', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김현우', '01000000072', '201811556@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울공장', 21, 1),
+('201207131', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한진주', '01000000073', '201207131@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울공장', 21, 1),
+('200604408', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이진은', '01000000074', '200604408@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울공장', 21, 1),
+('200001168', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최경우', '01000000075', '200001168@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울공장', 21, 1),
+('202503720', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최진우', '01000000076', '202503720@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울공장', 22, 1),
+('201811122', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임수진', '01000000077', '201811122@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울공장', 22, 1),
+('201207188', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤수석', '01000000078', '201207188@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울공장', 22, 1),
+('200604663', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '정수하', '01000000079', '200604663@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울공장', 22, 1),
+('200001865', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤아하', '01000000080', '200001865@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울공장', 22, 1),
+('202503391', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이진주', '01000000081', '202503391@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울공장', 23, 1),
+('201811114', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조현진', '01000000082', '201811114@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울공장', 23, 1),
+('201207648', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한아수', '01000000083', '201207648@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울공장', 23, 1),
+('200604365', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이슬민', '01000000084', '200604365@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울공장', 23, 1),
+('200001946', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임연호', '01000000085', '200001946@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울공장', 23, 1),
+('202503276', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조수호', '01000000086', '202503276@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울공장', 24, 1),
+('201811117', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤슬연', '01000000087', '201811117@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울공장', 24, 1),
+('201207379', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한주석', '01000000088', '201207379@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울공장', 24, 1),
+('200604492', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이연진', '01000000089', '200604492@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울공장', 24, 1),
+('200001745', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '정진슬', '01000000090', '200001745@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울공장', 24, 1);
+
+-- 연구개발부
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+('202503636', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤호호', '01000000091', '202503636@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울연구소', 25, 1),
+('201411563', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최민주', '01000000092', '201411563@saladerp.com', '주임', '2014-11-06', NULL, FALSE, FALSE, '서울연구소', 25, 1),
+('201311530', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '강수호', '01000000093', '201311530@saladerp.com', '대리', '2013-11-07', NULL, FALSE, FALSE, '서울연구소', 25, 1),
+('201804340', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김호하', '01000000094', '201804340@saladerp.com', '과장', '2018-04-25', NULL, FALSE, FALSE, '서울연구소', 25, 1),
+('200001199', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박수석', '01000000095', '200001199@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울연구소', 25, 1),
+('202503987', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박슬주', '01000000096', '202503987@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울연구소', 26, 1),
+('200305793', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최하진', '01000000097', '200305793@saladerp.com', '주임', '2003-05-16', NULL, FALSE, FALSE, '서울연구소', 26, 1),
+('202303246', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조석슬', '01000000098', '202303246@saladerp.com', '대리', '2023-03-13', NULL, FALSE, FALSE, '서울연구소', 26, 1),
+('201903532', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임수수', '01000000099', '201903532@saladerp.com', '과장', '2019-03-13', NULL, FALSE, FALSE, '서울연구소', 26, 1),
+('200001254', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조석민', '01000000100', '200001254@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울연구소', 26, 1),
+('202503571', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박연수', '01000000101', '202503571@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울연구소', 27, 1),
+('200303937', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한주주', '01000000102', '200303937@saladerp.com', '주임', '2003-03-31', NULL, FALSE, FALSE, '서울연구소', 27, 1),
+('201801108', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '정연슬', '01000000103', '201801108@saladerp.com', '대리', '2018-01-30', NULL, FALSE, FALSE, '서울연구소', 27, 1),
+('201611358', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이주연', '01000000104', '201611358@saladerp.com', '과장', '2016-11-28', NULL, FALSE, FALSE, '서울연구소', 27, 1),
+('200001164', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조하슬', '01000000105', '200001164@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울연구소', 27, 1);
+
+-- IT/정보시스템부
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+('202503540', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박수석', '01000000106', '202503540@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '판교IT센터', 28, 1),
+('201109809', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤진수', '01000000107', '201109809@saladerp.com', '주임', '2011-09-01', NULL, FALSE, FALSE, '판교IT센터', 28, 1),
+('200412486', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤진우', '01000000108', '200412486@saladerp.com', '대리', '2004-12-27', NULL, FALSE, FALSE, '판교IT센터', 28, 1),
+('202106934', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박연진', '01000000109', '202106934@saladerp.com', '과장', '2021-06-22', NULL, FALSE, FALSE, '판교IT센터', 28, 1),
+('200001395', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김주우', '01000000110', '200001395@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '판교IT센터', 28, 1),
+('202503659', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최슬석', '01000000111', '202503659@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '판교IT센터', 29, 1),
+('201501402', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한우석', '01000000112', '201501402@saladerp.com', '주임', '2015-01-17', NULL, FALSE, FALSE, '판교IT센터', 29, 1),
+('200404963', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조슬우', '01000000113', '200404963@saladerp.com', '대리', '2004-04-14', NULL, FALSE, FALSE, '판교IT센터', 29, 1),
+('200504814', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한연주', '01000000114', '200504814@saladerp.com', '과장', '2005-04-11', NULL, FALSE, FALSE, '판교IT센터', 29, 1),
+('200001478', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조주민', '01000000115', '200001478@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '판교IT센터', 29, 1),
+('202503576', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤호연', '01000000116', '202503576@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '판교IT센터', 30, 1),
+('201002530', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조하민', '01000000117', '201002530@saladerp.com', '주임', '2010-02-12', NULL, FALSE, FALSE, '판교IT센터', 30, 1),
+('202203996', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김진슬', '01000000118', '202203996@saladerp.com', '대리', '2022-03-20', NULL, FALSE, FALSE, '판교IT센터', 30, 1),
+('201903383', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박호호', '01000000119', '201903383@saladerp.com', '과장', '2019-03-17', NULL, FALSE, FALSE, '판교IT센터', 30, 1),
+('200001145', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤수하', '01000000120', '200001145@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '판교IT센터', 30, 1),
+('202503458', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임호우', '01000000121', '202503458@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '판교IT센터', 31, 1),
+('202302550', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조주연', '01000000122', '202302550@saladerp.com', '주임', '2023-02-13', NULL, FALSE, FALSE, '판교IT센터', 31, 1),
+('201304601', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '강수연', '01000000123', '201304601@saladerp.com', '대리', '2013-04-26', NULL, FALSE, FALSE, '판교IT센터', 31, 1),
+('201209148', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한석주', '01000000124', '201209148@saladerp.com', '과장', '2012-09-30', NULL, FALSE, FALSE, '판교IT센터', 31, 1),
+('200001560', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이수수', '01000000125', '200001560@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '판교IT센터', 31, 1);
+
+-- 전략기획부
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+('202503392', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤호주', '01000000126', '202503392@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '본사전략부', 32, 1),
+('201702585', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최수호', '01000000127', '201702585@saladerp.com', '주임', '2017-02-03', NULL, FALSE, FALSE, '본사전략부', 32, 1),
+('201611786', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한연우', '01000000128', '201611786@saladerp.com', '대리', '2016-11-28', NULL, FALSE, FALSE, '본사전략부', 32, 1),
+('201503151', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최민하', '01000000129', '201503151@saladerp.com', '과장', '2015-03-08', NULL, FALSE, FALSE, '본사전략부', 32, 1),
+('200001705', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한슬호', '01000000130', '200001705@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '본사전략부', 32, 1),
+('202503844', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '강주주', '01000000131', '202503844@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '본사전략부', 33, 1),
+('201701733', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한슬주', '01000000132', '201701733@saladerp.com', '주임', '2017-01-05', NULL, FALSE, FALSE, '본사전략부', 33, 1),
+('200408388', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최우수', '01000000133', '200408388@saladerp.com', '대리', '2004-08-14', NULL, FALSE, FALSE, '본사전략부', 33, 1),
+('200706391', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조민주', '01000000134', '200706391@saladerp.com', '과장', '2007-06-06', NULL, FALSE, FALSE, '본사전략부', 33, 1),
+('200001743', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김우하', '01000000135', '200001743@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '본사전략부', 33, 1),
+('202503298', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤연석', '01000000136', '202503298@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '본사전략부', 34, 1),
+('201704544', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임슬우', '01000000137', '201704544@saladerp.com', '주임', '2017-04-21', NULL, FALSE, FALSE, '본사전략부', 34, 1),
+('201305897', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이민민', '01000000138', '201305897@saladerp.com', '대리', '2013-05-08', NULL, FALSE, FALSE, '본사전략부', 34, 1),
+('200107983', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한주하', '01000000139', '200107983@saladerp.com', '과장', '2001-07-16', NULL, FALSE, FALSE, '본사전략부', 34, 1),
+('200001134', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최석석', '01000000140', '200001134@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '본사전략부', 34, 1);
+
+-- 법무부
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+('202503658', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김슬호', '01000000141', '202503658@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울법무실', 35, 1),
+('202406207', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조진석', '01000000142', '202406207@saladerp.com', '주임', '2024-06-11', NULL, FALSE, FALSE, '서울법무실', 35, 1),
+('200106375', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '조석주', '01000000143', '200106375@saladerp.com', '대리', '2001-06-01', NULL, FALSE, FALSE, '서울법무실', 35, 1),
+('202111355', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박수석', '01000000144', '202111355@saladerp.com', '과장', '2021-11-08', NULL, FALSE, FALSE, '서울법무실', 35, 1),
+('200001475', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최주주', '01000000145', '200001475@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울법무실', 35, 1),
+('202503143', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한민석', '01000000146', '202503143@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울법무실', 36, 1),
+('202301251', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '정슬우', '01000000147', '202301251@saladerp.com', '주임', '2023-01-08', NULL, FALSE, FALSE, '서울법무실', 36, 1),
+('201912371', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤호민', '01000000148', '201912371@saladerp.com', '대리', '2019-12-27', NULL, FALSE, FALSE, '서울법무실', 36, 1),
+('201405695', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임슬수', '01000000149', '201405695@saladerp.com', '과장', '2014-05-28', NULL, FALSE, FALSE, '서울법무실', 36, 1),
+('200001216', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '강연호', '01000000150', '200001216@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울법무실', 36, 1);
+
+-- 미배정
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+('202503986', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤슬우', '01000000151', '202503986@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '미배정', 1, 1),
+('202503758', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박진주', '01000000152', '202503758@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '미배정', 1, 1);
 
 -- CUSTOMER
 INSERT INTO CUSTOMER (id, name, birthdate, address, phone, email, register_at, is_deleted, type, etc)
@@ -235,3 +491,23 @@ VALUES (1, 6, 81, 100, 4, 1100000, 4.5, 50, 202405, 1),
        (5, 10, 85, 104, 8, 1500000, 4.5, 54, 202405, 5),
        (6, 11, 86, 105, 9, 1600000, 4.0, 55, 202405, 6),
        (7, 12, 87, 106, 10, 1700000, 4.5, 56, 202405, 7);
+
+UPDATE product
+SET name = '청소기',
+    company = '삼성',
+    serial_number = 'SN20240001'
+WHERE id = 6;
+
+UPDATE product
+SET name = '정수기',
+    company = 'LG',
+    serial_number = 'SN20240002'
+WHERE id = 1;
+
+UPDATE product
+SET name = '비데',
+    company = '쿠쿠',
+    serial_number = 'SN20240003'
+WHERE id = 2;
+
+COMMIT;

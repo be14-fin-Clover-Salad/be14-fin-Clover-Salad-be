@@ -22,6 +22,11 @@ public class ContractFileHistory {
 	@JoinColumn(name = "contract_id", nullable = false)
 	private ContractEntity contract;
 
+	@ManyToOne
+	@JoinColumn(name = "replaced_contract_id")
+	private ContractEntity replacedContract;
+
+
 	private int version;
 
 	@Column(name = "origin_file", nullable = false)

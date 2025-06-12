@@ -365,19 +365,20 @@ CREATE TABLE APPROVAL
 # 계약셔 변경 이력 테이블
 CREATE TABLE CONTRACT_FILE_HISTORY
 (
-    id            INT           NOT NULL AUTO_INCREMENT,
-    contract_id   INT           NOT NULL,
-    version       INT           NOT NULL,
-    origin_file   VARCHAR(255)  NOT NULL,
-    renamed_file  VARCHAR(255)  NOT NULL,
-    uploaded_at   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    uploader_id   INT           NULL,
-    note          TEXT          NULL,
-    CONSTRAINT PK_CONTRACT_FILE_HISTORY PRIMARY KEY (id),
-    CONSTRAINT FK_CONTRACT_TO_FILE_HISTORY
-        FOREIGN KEY (contract_id)
-            REFERENCES CONTRACT (id)
+    id                   INT           NOT NULL AUTO_INCREMENT,
+    contract_id          INT           NOT NULL, -- 새 계약
+    replaced_contract_id INT           NULL,     -- 대체된 계약
+    version              INT           NOT NULL,
+    origin_file          VARCHAR(255)  NOT NULL,
+    renamed_file         VARCHAR(255)  NOT NULL,
+    uploaded_at          DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    uploader_id          INT           NULL,
+    note                 TEXT          NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (contract_id) REFERENCES CONTRACT(id),
+    FOREIGN KEY (replaced_contract_id) REFERENCES CONTRACT(id)
 );
+
 
 
 # 계약서 변경시 고객 통지 로그용 테이블

@@ -2,6 +2,7 @@ package com.clover.salad.contract.command.service;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,15 +71,13 @@ public class ContractService {
 		String prefix = "C-";
 		java.time.LocalDate now = java.time.LocalDate.now();
 
-		String yy = String.format("%02d", now.getYear() % 100); // ex: "25"
-		String mm = String.format("%02d", now.getMonthValue()); // ex: "06"
+		String yy = String.format("%02d", now.getYear() % 100);
+		String mm = String.format("%02d", now.getMonthValue());
 		String datePart = yy + mm;
 		String seq = String.format("%04d", contractRepository.count() + 1);
 
 		return prefix + datePart + "-" + seq;
 	}
-
-
 
 	@Transactional
 	public ContractEntity markContractDeleted(int contractId) {
@@ -95,10 +94,20 @@ public class ContractService {
 		contractFileHistoryRepository.save(history);
 	}
 
-	public int getNextVersion(int contractId) {
-		return contractFileHistoryRepository.findMaxVersionByContractId(contractId)
+	public int getNextVersion(int replacedContractId) {
+		int rootId = findRootContractId(replacedContractId);
+		return contractFileHistoryRepository.findMaxVersionByReplacedContractId(rootId)
 			.map(v -> v + 1)
 			.orElse(1);
+	}
+
+	private int findRootContractId(int contractId) {
+		Integer current = contractId;
+		while (true) {
+			Optional<ContractFileHistory> next = contractFileHistoryRepository.findByReplacedContract_Id(current);
+			if (next.isEmpty()) return current;
+			current = next.get().getContract().getId(); // 다음 새 계약 ID
+		}
 	}
 
 	@Transactional

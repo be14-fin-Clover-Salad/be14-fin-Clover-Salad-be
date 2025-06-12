@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
-import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.notice.command.application.dto.NoticeCreateRequest;
 import com.clover.salad.notice.command.application.dto.NoticeUpdateRequest;
 import com.clover.salad.notice.command.domain.aggregate.entity.EmployeeNotice;

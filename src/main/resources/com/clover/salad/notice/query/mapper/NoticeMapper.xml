@@ -76,7 +76,7 @@
          WHERE en.notice_id = #{noticeId}
     </select>
 
-    <select id="findNoticeDetail" parameterType="map" resultMap="NoticeDetailResultMap">
+    <select id="getNoticeDetail" parameterType="map" resultMap="NoticeDetailResultMap">
         SELECT
                n.id,
                n.title,

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.mapper.EmployeeMapper;
+import com.clover.salad.notice.query.dto.CheckInfoDTO;
 import com.clover.salad.notice.query.dto.NoticeDetailDTO;
 import com.clover.salad.notice.query.dto.NoticeListDTO;
 import com.clover.salad.notice.query.mapper.NoticeMapper;
@@ -43,6 +44,15 @@ public class NoticeQueryServiceImpl implements NoticeQueryService {
 		Map<String, Object> params = new HashMap<>();
 		params.put("noticeId", noticeId);
 		params.put("employeeId", employeeId);
-		return noticeMapper.getNoticeDetail(params);
+
+		NoticeDetailDTO detail = noticeMapper.getNoticeDetail(params);
+		if (detail == null) {
+			return null;
+		}
+
+		List<CheckInfoDTO> checkList = noticeMapper.findTargetEmployeesOfNotice(noticeId);
+		detail.setCheckList(checkList);
+
+		return detail;
 	}
 }

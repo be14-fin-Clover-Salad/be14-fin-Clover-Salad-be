@@ -62,10 +62,10 @@ public class ApprovalEntity {
 	private int contractId;
 
 	/* 설명. 결재 승인, 반려 */
-	public void approve(LocalDateTime now) {
+	public void approve(String comment, LocalDateTime now) {
 		this.state = ApprovalState.APPROVED;
 		this.aprvDate = now;
-		this.comment = null;
+		this.comment = comment;
 	}
 
 	public void reject(String comment, LocalDateTime now) {

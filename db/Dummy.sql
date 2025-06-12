@@ -91,11 +91,11 @@ INSERT INTO employee (id, code, password, name, phone, email, level, hire_date, 
 -- 사원, 팀장 더미
 -- 영업 1팀
 INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
-('202501001', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','강수지','01038679572','teamflover_s@naver.com','사원','2025-01-01',NULL,FALSE,FALSE,'서울강남',1,1),
-('202501002', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','고성연','01019990502','teamflover_j@naver.com','주임','2025-01-01',NULL,FALSE,FALSE,'서울강남',1,1),
-('202501003', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','고윤석','01095009870','teamflover_d@naver.com','대리','2025-01-01',NULL,FALSE,FALSE,'서울강남',1,1),
-('202501004', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','김성민','01046792202','teamflover_k@naver.com','과장','2025-01-01',NULL,FALSE,FALSE,'서울강남',1,1),
-('202501005', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','이청민','01020000101','teamflover_t@naver.com','팀장','2025-01-01',NULL,FALSE,FALSE,'서울강남',1,1);
+('202501001', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','강수지','01038679572','teamflover_s@naver.com','사원','2025-01-01',NULL,FALSE,FALSE,'서울강남',35,1),
+('202501002', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','고성연','01019990502','teamflover_j@naver.com','주임','2025-01-01',NULL,FALSE,FALSE,'서울강남',35,1),
+('202501003', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','고윤석','01095009870','teamflover_d@naver.com','대리','2025-01-01',NULL,FALSE,FALSE,'서울강남',35,1),
+('202501004', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','김성민','01046792202','teamflover_k@naver.com','과장','2025-01-01',NULL,FALSE,FALSE,'서울강남',35,1),
+('202501005', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq','이청민','01020000101','teamflover_t@naver.com','팀장','2025-01-01',NULL,FALSE,FALSE,'서울강남',35,1);
 
 -- 영업 2팀
 INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES

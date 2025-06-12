@@ -98,22 +98,21 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 	/* 설명. 결재 코드 작성 */
 	private String generateCode() {
 		LocalDate now = LocalDate.now();
-		String yearMonth = String.format("%02d%02d", now.getYear() % 100, now.getMonthValue());
-		String prefix = "A-" + yearMonth;
+		String yearMonth = String.format("%02d%02d", now.getYear() % 100, now.getMonthValue()); // 2501
+		String prefix = "A-" + yearMonth; // A-2501
 
 		for (int attempt = 0; attempt < 5; attempt++) {
-			String lastCode = approvalMapper.findLastCodeByPrefix(prefix);
+			String lastCode = approvalMapper.findLastCodeByPrefix(prefix); // e.g., A-2501-0003
 
 			int nextSeq = 1;
 
-			if (lastCode != null && lastCode.length() == 10) {
-				String lastSeqStr = lastCode.substring(7);
+			if (lastCode != null && lastCode.length() == 11) { // "A-2501-0003" = 11글자
+				String lastSeqStr = lastCode.substring(8); // "0003"
 				nextSeq = Integer.parseInt(lastSeqStr) + 1;
 			}
 
-			String newCode = String.format("%s%04d", prefix, nextSeq);
+			String newCode = String.format("%s-%04d", prefix, nextSeq); // "A-2501-0004"
 
-			// 중복 체크 (이미 존재하면 재시도)
 			if (approvalMapper.countByCode(newCode) == 0) {
 				return newCode;
 			}

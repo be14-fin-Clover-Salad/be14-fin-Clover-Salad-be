@@ -28,5 +28,8 @@ public interface EmployeeMapper {
 	// 마이페이지 정보 조회
 	EmployeeMypageQueryDTO selectMyPageInfoById(@Param("id") int id);
 
+	// 사원 이름 조회 추가
+	String findNameById(@Param("id") int id);
+
 	EmployeeQueryDTO findEmployeeById(@Param("id") int id);
 }

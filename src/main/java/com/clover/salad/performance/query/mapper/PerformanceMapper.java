@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.clover.salad.performance.command.application.dto.DepartmentPerformanceDTO;
 import com.clover.salad.performance.command.application.dto.EmployeePerformanceDTO;
+import com.clover.salad.performance.command.application.dto.ProductPerformancePerMonthDTO;
 
 @Mapper
 public interface PerformanceMapper {
@@ -20,5 +21,16 @@ public interface PerformanceMapper {
 		@Param("deptName") String deptName,
 		@Param("startDate") Integer startDate,
 		@Param("endDate") Integer endDate
+	);
+	
+	List<ProductPerformancePerMonthDTO> selectProductPerformanceByProductCode(
+		@Param("productCode") String productCode,
+		@Param("startDate") String startDate,
+		@Param("endDate") String endDate
+	);
+	
+	List<EmployeePerformanceDTO> selectEmployeePerformanceByTargetDateAndDepartmentId(
+		@Param("deptId") int deptId,
+		@Param("targetDate") int targetDate
 	);
 }

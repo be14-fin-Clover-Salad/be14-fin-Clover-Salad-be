@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.clover.salad.performance.command.application.dto.DepartmentPerformanceDTO;
 import com.clover.salad.performance.command.application.dto.EmployeePerformanceDTO;
+import com.clover.salad.performance.command.application.dto.ProductPerformancePerMonthDTO;
 import com.clover.salad.performance.command.application.dto.SearchTermDTO;
 
 public interface PerformanceQueryService {
@@ -15,5 +16,15 @@ public interface PerformanceQueryService {
 	List<DepartmentPerformanceDTO> searchDepartmentPerformanceByDepartmentName(
 		String deptName,
 		SearchTermDTO searchTerm
+	);
+	
+	List<ProductPerformancePerMonthDTO> searchProductPerformanceByProductCode(
+		String productCode,
+		SearchTermDTO searchTerm
+	);
+	
+	List<EmployeePerformanceDTO> searchEmployeePerformanceByTargetDateAndDepartmentId(
+		int deptId,
+		int targetDate
 	);
 }

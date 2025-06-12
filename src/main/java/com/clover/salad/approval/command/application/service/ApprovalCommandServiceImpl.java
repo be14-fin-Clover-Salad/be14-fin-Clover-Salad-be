@@ -144,7 +144,7 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 
 		// 대소문자 예외처리 위해 equalsIgnoreCase 사용 후 decision 값이 approve면 승인
 		if ("APPROVE".equalsIgnoreCase(dto.getDecision())) {
-			approval.approve(LocalDateTime.now());
+			approval.approve(dto.getComment(), LocalDateTime.now());
 
 		// decision 값이 reject면 반려. 반려 사유 입력했는지 체크
 		} else if ("REJECT".equalsIgnoreCase(dto.getDecision())) {

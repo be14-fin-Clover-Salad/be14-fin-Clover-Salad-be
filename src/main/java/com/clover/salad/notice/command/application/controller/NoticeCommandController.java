@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.clover.salad.notice.command.application.dto.NoticeCreateRequest;
-import com.clover.salad.notice.command.application.dto.NoticeDeleteRequest;
 import com.clover.salad.notice.command.application.dto.NoticeUpdateRequest;
 import com.clover.salad.notice.command.application.service.NoticeCommandService;
 import com.clover.salad.security.SecurityUtil;
@@ -49,12 +48,20 @@ public class NoticeCommandController {
 	// 공지 사항 삭제
 	@DeleteMapping("/delete/{noticeId}")
 	public ResponseEntity<String> noticeDelete(@PathVariable("noticeId") int noticeId){
-
 		int writerId = SecurityUtil.getEmployeeId();
 
-		// noticeCommandService.deleteNotice(noticeId, writerId);
+		noticeCommandService.deleteNotice(noticeId, writerId);
 		return ResponseEntity.ok("공지 사항 삭제 완료");
 
+	}
+
+	// 공지 사항 반응 등록
+	@PutMapping("/{noticeId}/check")
+	public ResponseEntity<String> noticeCheck(@PathVariable("noticeId") int noticeId) {
+		int writerId = SecurityUtil.getEmployeeId();
+
+		noticeCommandService.checkNotice(noticeId, writerId);
+		return ResponseEntity.ok("공지 사항 반응 등록 완료");
 	}
 
 }

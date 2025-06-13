@@ -8,5 +8,7 @@ public interface NoticeCommandService {
 
 	void updateNotice(int noticeId, NoticeUpdateRequest request, int writerId);
 
-	// void deleteNotice(int noticeId, int writerId);
+	void deleteNotice(int noticeId, int writerId);
+
+	void checkNotice(int noticeId, int writerId);
 }

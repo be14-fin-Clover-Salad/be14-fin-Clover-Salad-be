@@ -80,6 +80,7 @@ public class NoticeCommandServiceImpl implements NoticeCommandService {
 
 		notice.setTitle(request.getTitle());
 		notice.setContent(request.getContent());
+		notice.setCreatedAt(LocalDateTime.now());
 		noticeRepository.save(notice);
 
 		List<EmployeeNotice> existingNotices = employeeNoticeRepository.findByNoticeId(noticeId);
@@ -108,5 +109,38 @@ public class NoticeCommandServiceImpl implements NoticeCommandService {
 
 		employeeNoticeRepository.deleteAll(toDelete);
 		employeeNoticeRepository.saveAll(toAdd);
+	}
+
+	@Override
+	@Transactional
+	public void deleteNotice(int noticeId, int writerId) {
+		Notice notice = noticeRepository.findById(noticeId)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공지입니다."));
+
+		EmployeeEntity writer = employeeRepository.findById(writerId)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+		boolean isAdmin = writer.isAdmin();
+
+		if(!isAdmin && notice.getEmployeeId() != writerId) {
+			throw new SecurityException("작성자 또는 관리자만 삭제할 수 있습니다.");
+		}
+
+		notice.setDeleted(true);
+
+		noticeRepository.save(notice);
+	}
+
+	@Override
+	@Transactional
+	public void checkNotice(int noticeId, int employeeId) {
+		EmployeeNotice record = employeeNoticeRepository
+			.findByNoticeIdAndEmployeeId(noticeId, employeeId)
+			.orElseThrow(() -> new IllegalArgumentException("공지 대상이 아닙니다."));
+
+		if(!record.isChecked()) {
+			record.setChecked(true);
+			employeeNoticeRepository.save(record);
+		}
 	}
 }

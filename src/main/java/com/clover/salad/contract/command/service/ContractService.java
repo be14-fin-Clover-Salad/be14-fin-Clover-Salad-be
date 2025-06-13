@@ -102,12 +102,14 @@ public class ContractService {
 	}
 
 	private int findRootContractId(int contractId) {
-		Integer current = contractId;
-		while (true) {
-			Optional<ContractFileHistory> next = contractFileHistoryRepository.findByReplacedContract_Id(current);
-			if (next.isEmpty()) return current;
-			current = next.get().getContract().getId(); // 다음 새 계약 ID
+		Optional<ContractFileHistory> historyOpt = contractFileHistoryRepository.findByContract_Id(contractId);
+
+		while (historyOpt.isPresent() && historyOpt.get().getReplacedContract() != null) {
+			contractId = historyOpt.get().getReplacedContract().getId();
+			historyOpt = contractFileHistoryRepository.findByContract_Id(contractId);
 		}
+
+		return contractId;
 	}
 
 	@Transactional

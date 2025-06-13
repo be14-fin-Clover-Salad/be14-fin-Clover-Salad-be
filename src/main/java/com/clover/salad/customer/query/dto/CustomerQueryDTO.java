@@ -1,5 +1,8 @@
 package com.clover.salad.customer.query.dto;
 
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
@@ -23,8 +26,9 @@ public class CustomerQueryDTO {
 
     private String email;
 
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     @JsonProperty("registerAt")
-    private String registerAt;
+    private LocalDate registerAt;
 
     @JsonProperty("isDeleted")
     private boolean isDeleted;

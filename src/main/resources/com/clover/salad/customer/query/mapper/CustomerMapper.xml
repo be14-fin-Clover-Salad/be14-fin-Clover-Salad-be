@@ -17,16 +17,61 @@
         <result property="etc" column="etc"/>
     </resultMap>
 
-    <select id="findCustomerById" resultMap="CustomerResultMap">
-        SELECT * FROM customer WHERE id = #{id}
-    </select>
-
     <select id="findAll" resultMap="CustomerResultMap">
-        SELECT * FROM customer
+        SELECT
+               c.id
+             , c.name
+             , c.birthdate
+             , c.address
+             , c.phone
+             , c.email
+             , c.register_at
+             , c.is_deleted
+             , c.type
+             , c.etc
+          FROM customer c
     </select>
 
     <select id="findAllActive" resultMap="CustomerResultMap">
-        SELECT * FROM customer WHERE is_deleted = false
+        SELECT
+               c.id
+             , c.name
+             , c.birthdate
+             , c.address
+             , c.phone
+             , c.email
+             , c.register_at
+             , c.is_deleted
+             , c.type
+             , c.etc
+          FROM customer c
+         WHERE is_deleted = false
+    </select>
+
+    <select id="findCustomerById" resultMap="CustomerResultMap">
+        SELECT
+               c.id
+             , c.name
+             , c.birthdate
+             , c.address
+             , c.phone
+             , c.email
+             , c.register_at
+             , c.is_deleted
+             , c.type
+             , c.etc
+          FROM customer c
+         WHERE id = #{id}
+    </select>
+
+    <select id="findRegisteredCustomerId" resultType="int">
+        SELECT c.id
+          FROM customer c
+                      <!-- JOIN employee e ON c.employee_id = e.id -->
+         WHERE c.name = #{customerName}
+           AND c.birthdate = #{customerBirthdate}
+           AND c.phone = #{customerPhone}
+           AND c.is_deleted = false
     </select>
 
 </mapper>

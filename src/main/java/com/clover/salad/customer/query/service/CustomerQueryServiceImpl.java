@@ -31,4 +31,13 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
     public List<CustomerQueryDTO> findAllActive() {
         return customerMapper.findAllActive();
     }
+
+    @Override
+    public Integer findRegisteredCustomerId(String customerName, String customerBirthdate,
+            String customerPhone) {
+        Integer customerId = customerMapper.findRegisteredCustomerId(customerName,
+                customerBirthdate, customerPhone);
+        log.debug("조회된 고객 ID: {}", customerId);
+        return customerId;
+    }
 }

@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.clover.salad.employee.query.dto.EmployeeDetailDTO;
 import com.clover.salad.employee.query.dto.EmployeeMypageQueryDTO;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.EmployeeSearchRequestDTO;
@@ -43,6 +45,13 @@ public class EmployeeQueryController {
 		return ResponseEntity.ok(employeeQueryService.searchEmployees(requestDTO));
 	}
 
+	/* 설명. 사원 상세 조회 */
+	@GetMapping("/detail")
+	public ResponseEntity<EmployeeDetailDTO> getEmployeeDetail(@RequestParam("employeeId") int id) {
+		EmployeeDetailDTO dto = employeeQueryService.getEmployeeDetailById(id);
+		return ResponseEntity.ok(dto);
+	}
+
 	@GetMapping("/header")
 	public ResponseEntity<LoginHeaderInfoDTO> getLoginHeaderInfo() {
 		int employeeId = SecurityUtil.getEmployeeId();
@@ -58,4 +67,5 @@ public class EmployeeQueryController {
 		EmployeeMypageQueryDTO dto = employeeQueryService.getMyPageInfoById(employeeId);
 		return ResponseEntity.ok(dto);
 	}
+
 }

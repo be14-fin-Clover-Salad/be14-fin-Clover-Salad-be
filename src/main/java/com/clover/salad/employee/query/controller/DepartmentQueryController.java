@@ -47,10 +47,4 @@ public class DepartmentQueryController {
 		return ResponseEntity.ok(result);
 	}
 
-	@GetMapping("/detail")
-	public ResponseEntity<EmployeeDetailDTO> getEmployeeDetail(@RequestParam("employeeId") int id) {
-		EmployeeDetailDTO dto = employeeQueryService.getEmployeeDetailById(id);
-		return ResponseEntity.ok(dto);
-	}
-
 }

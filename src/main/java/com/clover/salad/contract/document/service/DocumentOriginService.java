@@ -73,4 +73,29 @@ public class DocumentOriginService {
 
 		return documentOriginRepository.save(documentOrigin);
 	}
+
+	@Transactional
+	public void rollback(DocumentOrigin origin) {
+		if (origin == null || origin.getFileUpload() == null) return;
+
+		FileUploadEntity fileUpload = origin.getFileUpload();
+
+		// 실제 파일 삭제
+		try {
+			File file = new File(fileUpload.getPath());
+			if (file.exists()) {
+				boolean deleted = file.delete();
+				if (!deleted) {
+					System.err.println("파일 삭제 실패: " + file.getAbsolutePath());
+				}
+			}
+		} catch (Exception e) {
+			System.err.println("파일 삭제 중 예외 발생: " + e.getMessage());
+		}
+
+		// DB 데이터 삭제 (document_origin 삭제후 file_upload)
+		documentOriginRepository.delete(origin);
+		fileUploadRepository.delete(fileUpload);
+	}
+
 }

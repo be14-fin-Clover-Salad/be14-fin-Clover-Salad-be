@@ -62,4 +62,23 @@ public class ContractUploadController {
 		return ResponseEntity.ok(contractService.deleteContract(contractId));
 	}
 
+
+	/*
+	* 기존 계약 계약서 잘못 적힌경우 재업로드
+	* 기존 계약을 SoftDelete처리하고, 새 계약 등록한뒤, 이력 기록을 남김
+	* */
+	@PatchMapping("/replace/{contractId}")
+	public ResponseEntity<ContractUploadResponseDTO> replaceContractPdf(
+		@PathVariable int contractId,
+		@RequestParam("file") MultipartFile file,
+		@RequestParam(value = "note", required = false) String note
+	) {
+		try {
+			ContractUploadResponseDTO response = contractUploadFacade.handleReplace(contractId, file, note);
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			return ResponseEntity.internalServerError().body(
+				new ContractUploadResponseDTO(-1, "계약 갱신 실패: " + e.getMessage()));
+		}
+	}
 }

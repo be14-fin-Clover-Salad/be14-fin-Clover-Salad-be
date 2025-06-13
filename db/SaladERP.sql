@@ -39,12 +39,12 @@ CREATE TABLE DEPARTMENT
 
 CREATE TABLE FILE_UPLOAD
 (
-    id          INT         NOT NULL AUTO_INCREMENT,
+    id          INT          NOT NULL AUTO_INCREMENT,
     origin_file VARCHAR(512) NOT NULL,
     rename_file VARCHAR(512) NOT NULL,
     path        VARCHAR(512) NOT NULL,
-    created_at  DATETIME    NOT NULL,
-    type        VARCHAR(3)  NOT NULL,
+    created_at  DATETIME     NOT NULL,
+    type        VARCHAR(3)   NOT NULL,
     CONSTRAINT PK_FILE_UPLOAD PRIMARY KEY (id)
 );
 
@@ -167,7 +167,7 @@ CREATE TABLE CUSTOMER
     id          INT          NOT NULL AUTO_INCREMENT,
     name        VARCHAR(20)  NOT NULL,
     birthdate   VARCHAR(20)  NULL,
-    address     VARCHAR(255)  NULL,
+    address     VARCHAR(255) NULL,
     phone       VARCHAR(11)  NOT NULL,
     email       VARCHAR(255) NULL,
     register_at DATE         NULL,
@@ -277,24 +277,24 @@ CREATE TABLE EMPLOYEE_GOAL
 
 CREATE TABLE CONTRACT
 (
-    id                 INT         NOT NULL AUTO_INCREMENT,
-    code               VARCHAR(11) NOT NULL,
-    created_at         DATETIME    NOT NULL,
-    start_date         DATE        NOT NULL,
-    end_date           DATE        NOT NULL,
-    status             VARCHAR(10) NOT NULL,
-    amount             INT         NOT NULL,
-    bank_name          VARCHAR(20) NOT NULL,
-    bank_account       VARCHAR(20) NOT NULL,
-    payment_day        INT         NOT NULL,
-    deposit_owner      VARCHAR(20) NOT NULL,
-    relationship       VARCHAR(20) NOT NULL,
+    id                 INT          NOT NULL AUTO_INCREMENT,
+    code               VARCHAR(11)  NOT NULL,
+    created_at         DATETIME     NOT NULL,
+    start_date         DATE         NOT NULL,
+    end_date           DATE         NOT NULL,
+    status             VARCHAR(10)  NOT NULL,
+    amount             INT          NOT NULL,
+    bank_name          VARCHAR(20)  NOT NULL,
+    bank_account       VARCHAR(20)  NOT NULL,
+    payment_day        INT          NOT NULL,
+    deposit_owner      VARCHAR(20)  NOT NULL,
+    relationship       VARCHAR(20)  NOT NULL,
     payment_email      VARCHAR(255) NOT NULL,
-    is_deleted         BOOLEAN     NOT NULL DEFAULT FALSE,
-    etc                VARCHAR(20) NULL,
-    document_origin_id INT         NOT NULL,
-    customer_id        INT         NOT NULL,
-    employee_id        INT         NOT NULL,
+    is_deleted         BOOLEAN      NOT NULL DEFAULT FALSE,
+    etc                VARCHAR(20)  NULL,
+    document_origin_id INT          NOT NULL,
+    customer_id        INT          NOT NULL,
+    employee_id        INT          NOT NULL,
     CONSTRAINT PK_CONTRACT PRIMARY KEY (id),
     CONSTRAINT FK_DOCUMENT_ORIGIN_TO_CONTRACT
         FOREIGN KEY (document_origin_id)
@@ -358,6 +358,40 @@ CREATE TABLE APPROVAL
         FOREIGN KEY (aprv_id)
             REFERENCES EMPLOYEE (id),
     CONSTRAINT FK_CONTRACT_TO_APPROVAL
+        FOREIGN KEY (contract_id)
+            REFERENCES CONTRACT (id)
+);
+
+# 계약셔 변경 이력 테이블
+CREATE TABLE CONTRACT_FILE_HISTORY
+(
+    id                   INT           NOT NULL AUTO_INCREMENT,
+    contract_id          INT           NOT NULL, -- 새 계약
+    replaced_contract_id INT           NULL,     -- 대체된 계약
+    version              INT           NOT NULL,
+    origin_file          VARCHAR(255)  NOT NULL,
+    renamed_file         VARCHAR(255)  NOT NULL,
+    uploaded_at          DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    uploader_id          INT           NULL,
+    note                 TEXT          NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (contract_id) REFERENCES CONTRACT(id),
+    FOREIGN KEY (replaced_contract_id) REFERENCES CONTRACT(id)
+);
+
+
+
+# 계약서 변경시 고객 통지 로그용 테이블
+CREATE TABLE CONTRACT_CHANGE_NOTICE
+(
+    id            INT           NOT NULL AUTO_INCREMENT,
+    contract_id   INT           NOT NULL,
+    notified_to   VARCHAR(100)  NOT NULL, -- 고객 이메일 or ID
+    notified_at   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    method        ENUM('EMAIL', 'SMS', 'PHONE') NOT NULL,
+    description   TEXT          NULL,
+    CONSTRAINT PK_CONTRACT_CHANGE_NOTICE PRIMARY KEY (id),
+    CONSTRAINT FK_CONTRACT_TO_CHANGE_NOTICE
         FOREIGN KEY (contract_id)
             REFERENCES CONTRACT (id)
 );

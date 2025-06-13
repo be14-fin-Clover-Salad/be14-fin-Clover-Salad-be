@@ -7,11 +7,13 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.clover.salad.common.file.entity.FileUploadEntity;
 import com.clover.salad.common.file.repository.FileUploadRepository;
 
+@Service
 public class LocalFileStorageService implements FileStorageService {
 
 	@Value("${file.upload.dir}")

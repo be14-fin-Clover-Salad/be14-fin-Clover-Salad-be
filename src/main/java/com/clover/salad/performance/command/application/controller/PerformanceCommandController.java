@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class PerformanceCommandController {
 	private final PerformanceCommandService performanceCommandService;
-	
+
 	/* 설명. 기본적으로 자동 갱신되지만 수동으로도 갱신할 수 있도록 함 */
 	/* 설명. 개인 실적 추가/갱신 */
 	@PutMapping("/refresh/employee/{employeeCode}/{targetDate}")
@@ -28,7 +28,7 @@ public class PerformanceCommandController {
 		performanceCommandService.refreshEmployeePerformance(employeeCode, targetDate);
 		return ResponseEntity.ok("개인 실적 항목 갱신 완료");
 	}
-	
+
 	/* 설명. 팀 실적 추가/갱신 */
 	@PutMapping("/refresh/department/{deptName}/{targetDate}")
 	public ResponseEntity<String> refreshDepartmentPerformance(

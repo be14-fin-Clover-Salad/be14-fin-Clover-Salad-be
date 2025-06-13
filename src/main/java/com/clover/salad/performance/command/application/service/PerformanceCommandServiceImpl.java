@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class PerformanceCommandServiceImpl implements PerformanceCommandService {
-	
+
 	private final EmployeePerformanceRepository employeePerformanceRepository;
 	private final EmployeeQueryService employeeQueryService;
 	private final ContractService contractService;
@@ -50,17 +50,17 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 	private final PerformanceQueryService performanceQueryService;
 	private final ContractProductRepository contractProductRepository;
 	private final ModelMapper modelMapper;
-	
+
 	@Override
 	public void refreshEmployeePerformance(String employeeCode, int targetDate) {
 		int employeeId = getEmployeeByCode(employeeCode).getId();
-		
+
 		YearMonth yearMonth = YearMonth.of(targetDate / 100, targetDate % 100);
 		LocalDate startDateStart = yearMonth.atDay(1);
 		LocalDate startDateEnd = yearMonth.atEndOfMonth();
-		
+
 		EmployeePerformance currentEP = employeePerformanceRepository.findByEmployeeIdAndTargetDate(employeeId, targetDate);
-		
+
 		/* 계약 조회를 위한 검색 조건 생성 */
 		ContractSearchDTO contractSearchDTO = ContractSearchDTO.builder()
 			.employeeId(employeeId)
@@ -68,23 +68,23 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 			.startDateStart(startDateStart)
 			.startDateEnd(startDateEnd)
 			.build();
-		
+
 		List<ContractDTO> contractDTOList = contractService.searchContracts(employeeId, contractSearchDTO);
-		
+
 		int rentalProductCount = 0;
-		
+
 		/* totalRentalCount 이번 달의 총 계약 수 */
 		int totalRentalCount = contractDTOList.size();
-		
+
 		/* 현재 유지되는 계약을 확인하기 위해 이전 달 계약 수로 초기화 */
 		int rentalRetentionCount = totalRentalCount;
-		
+
 		/* 총 계약 금액을 저장할 변수 */
 		long totalRentalAmount = 0L;
-		
+
 		/* 새로운 고객을 중복없이 저장하기 위한 Set */
 		Set<Integer> newCustomerIdSet = new HashSet<>();
-		
+
 		for (ContractDTO contractDTO : contractDTOList) {
 			/* rentalProductCount 렌탈 상품 수 */
 			List<ContractProductEntity> cpEntityList = contractProductRepository.findByContractId(contractDTO.getId());
@@ -108,7 +108,7 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 			/* totalRentalAmount 총 렌탈 금액 */
 			totalRentalAmount += contractDTO.getAmount();
 		}
-		
+
 		EmployeePerformanceDTO epDTO = EmployeePerformanceDTO.builder()
 			.employeeId(employeeId)
 			.targetDate(targetDate)
@@ -118,13 +118,13 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 			.newCustomerCount(newCustomerIdSet.size())
 			.totalRentalAmount(totalRentalAmount)
 			.build();
-		
+
 		/* customerFeedbackScore 피드백 점수 총합 */
-		
-		
+
+
 		/* customerFeedbackCount 피드백 한 사람 수 */
-		
-		
+
+
 		/* 조회 시 없으면 새로 만들기, 있으면 업데이트하기 */
 		mapIntToDividedDoubleAndIgnoreId(
 			EmployeePerformanceDTO.class,
@@ -143,13 +143,13 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 			employeePerformanceRepository.save(currentEP);
 		}
 	}
-	
+
 	@Override
 	public void refreshDepartmentPerformance(String deptName, int targetDate) {
 		int deptId = departmentRepository.findByName(deptName).getId();
-		
+
 		DepartmentPerformance currentDP = departmentPerformanceRepository.findByDepartmentIdAndTargetDate(deptId, targetDate);
-		
+
 		int dpRentalProductCount = 0;
 		int dpRentalRetentionCount = 0;
 		int dpTotalRentalCount = 0;
@@ -157,7 +157,7 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 		long dpTotalRentalAmount = 0L;
 		int dpCustomerFeedbackScore = 0;
 		int dpCustomerFeedbackCount = 0;
-		
+
 		List<EmployeePerformanceDTO> employeePerformanceDTOList =
 			performanceQueryService.searchEmployeePerformanceByTargetDateAndDepartmentId(targetDate, deptId);
 		for (EmployeePerformanceDTO epDTO : employeePerformanceDTOList) {
@@ -180,7 +180,7 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 			.customerFeedbackScore(dpCustomerFeedbackScore)
 			.customerFeedbackCount(dpCustomerFeedbackCount)
 			.build();
-		
+
 		/* 조회 시 없으면 새로 만들기, 있으면 업데이트하기 */
 		mapIntToDividedDoubleAndIgnoreId(
 			DepartmentPerformanceDTO.class,
@@ -199,7 +199,7 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 			departmentPerformanceRepository.save(currentDP);
 		}
 	}
-	
+
 	public <S, D> void mapIntToDividedDoubleAndIgnoreId(
 		Class<S> sourceClass,
 		Class<D> destClass,
@@ -215,7 +215,7 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 			Integer source = ctx.getSource();
 			return (source == null) ? null : source / 10.0;
 		};
-		
+
 		modelMapper.typeMap(sourceClass, destClass)
 			.addMappings(m -> m.using(converter).map(sourceGetter, destSetter))
 			.addMappings(mapper -> mapper.skip(idSetter));

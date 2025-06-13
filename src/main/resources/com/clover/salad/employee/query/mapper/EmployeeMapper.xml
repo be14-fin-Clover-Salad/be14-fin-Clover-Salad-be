@@ -31,6 +31,17 @@
         <result property="profilePath" column="profile_path"/>
         <result property="departmentName" column="department_name"/>
     </resultMap>
+    <resultMap id="EmployeeDetailResultMap" type="com.clover.salad.employee.query.dto.EmployeeDetailDTO">
+        <result property="name" column="name"/>
+        <result property="level" column="level"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="code" column="code"/>
+        <result property="hireDate" column="hire_date"/>
+        <result property="workPlace" column="work_place"/>
+        <result property="departmentName" column="departmentName"/>
+        <result property="profilePath" column="profilePath"/>
+    </resultMap>
 
     <!-- 사원 조건 검색 -->
     <select id="searchEmployees"
@@ -185,18 +196,20 @@
     <!--  사원 상세 조회  -->
     <select id="findEmployeeDetailById"
             parameterType="int"
-            resultType="com.clover.salad.employee.query.dto.EmployeeDetailDTO">
+            resultMap="EmployeeDetailResultMap">
         SELECT
                e.name
              , e.level
              , e.phone
              , e.email
              , e.code
-             , e.hire_date AS hireDate
+             , e.hire_date
              , e.work_place
              , d.name AS departmentName
+             , f.path AS profilePath
           FROM employee e
           JOIN department d ON e.department_id = d.id
+          LEFT JOIN file_upload f ON e.profile = f.id
          WHERE e.id = #{id}
            AND e.is_deleted = FALSE
     </select>

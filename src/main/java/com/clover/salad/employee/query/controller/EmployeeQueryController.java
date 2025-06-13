@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.clover.salad.employee.query.dto.EmployeeMypageQueryDTO;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
+import com.clover.salad.employee.query.dto.EmployeeSearchRequestDTO;
+import com.clover.salad.employee.query.dto.EmployeeSearchResponseDTO;
 import com.clover.salad.employee.query.dto.LoginHeaderInfoDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
@@ -33,11 +35,12 @@ public class EmployeeQueryController {
 		this.employeeQueryService = employeeQueryService;
 	}
 
+	/* 설명. 사원 조회 */
+	// 사원 검색
 	@PostMapping("/search")
-	public ResponseEntity<List<EmployeeQueryDTO>> searchEmployees(@RequestBody SearchEmployeeDTO searchEmployeeDTO) {
-		log.info("사원 조건 검색 요청: {}", searchEmployeeDTO);
-		List<EmployeeQueryDTO> employees = employeeQueryService.searchEmployees(searchEmployeeDTO);
-		return ResponseEntity.ok(employees);
+	public ResponseEntity<List<EmployeeSearchResponseDTO>> searchEmployees(
+		@RequestBody EmployeeSearchRequestDTO requestDTO) {
+		return ResponseEntity.ok(employeeQueryService.searchEmployees(requestDTO));
 	}
 
 	@GetMapping("/header")

@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class DepartmentQueryDTO {
+public class DepartmentHierarchyDTO {
 	private int id;
 	private String name;
 	private Integer supDeptId;

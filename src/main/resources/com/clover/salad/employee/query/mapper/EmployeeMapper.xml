@@ -34,27 +34,21 @@
 
     <!-- 사원 조건 검색 -->
     <select id="searchEmployees"
-            parameterType="com.clover.salad.employee.query.dto.SearchEmployeeDTO"
-            resultMap="SearchEmployeeResultMap">
+            parameterType="com.clover.salad.employee.query.dto.EmployeeSearchRequestDTO"
+            resultType="com.clover.salad.employee.query.dto.EmployeeSearchResponseDTO">
         SELECT
-               e.id
-             , e.code
+               e.code
              , e.name
              , e.phone
              , e.email
              , e.level
-             , e.hire_date
+             , DATE_FORMAT(e.hire_date, '%Y-%m-%d') AS hireDate
              , e.work_place
-             , e.profile
-             , d.id AS dept_id
-             , d.name AS dept_name
-             , d.sup_dept_id
+             , d.name AS departmentName
           FROM employee e
           JOIN department d ON e.department_id = d.id
-         WHERE e.is_admin = false
-           AND e.is_deleted = false
-
-        <if test="code != null">
+         WHERE e.is_deleted = FALSE
+        <if test="code != null and code != ''">
             AND e.code LIKE CONCAT('%', #{code}, '%')
         </if>
         <if test="name != null and name != ''">
@@ -70,10 +64,10 @@
             AND e.level = #{level}
         </if>
         <if test="hireDateFrom != null">
-            AND e.hire_date &gt;= #{hireDateFrom}
+            AND e.hire_date &gt; #{hireDateFrom}
         </if>
         <if test="hireDateTo != null">
-            AND e.hire_date &lt;= #{hireDateTo}
+            AND e.hire_date &lt; #{hireDateTo}
         </if>
         <if test="workPlace != null and workPlace != ''">
             AND e.work_place LIKE CONCAT('%', #{workPlace}, '%')
@@ -81,6 +75,7 @@
         <if test="departmentName != null and departmentName != ''">
             AND d.name LIKE CONCAT('%', #{departmentName}, '%')
         </if>
+         ORDER BY e.hire_date DESC
     </select>
     <select id="selectIdByCodeAndEmail" resultType="int">
         SELECT id
@@ -163,5 +158,46 @@
           JOIN department d ON e.department_id = d.id
          WHERE e.id = #{id}
            AND e.is_deleted = false
+    </select>
+
+    <!--  부서별 사원 조회  -->
+    <select id="searchEmployeesByDeptIds"
+            parameterType="list"
+            resultType="com.clover.salad.employee.query.dto.DepartmentEmployeeSearchResponseDTO">
+        SELECT
+               e.id
+             , e.name
+             , e.level
+             , e.phone
+             , e.email
+             , d.name AS departmentName
+             , f.path AS path
+          FROM employee e
+          JOIN department d ON e.department_id = d.id
+          LEFT JOIN file_upload f ON e.profile = f.id
+         WHERE e.department_id IN
+        <foreach item="id" collection="deptIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+           AND e.is_deleted = FALSE
+    </select>
+
+    <!--  사원 상세 조회  -->
+    <select id="findEmployeeDetailById"
+            parameterType="int"
+            resultType="com.clover.salad.employee.query.dto.EmployeeDetailDTO">
+        SELECT
+               e.name
+             , e.level
+             , e.phone
+             , e.email
+             , e.code
+             , e.hire_date AS hireDate
+             , e.work_place
+             , d.name AS departmentName
+          FROM employee e
+          JOIN department d ON e.department_id = d.id
+         WHERE e.id = #{id}
+           AND e.is_deleted = FALSE
     </select>
 </mapper>

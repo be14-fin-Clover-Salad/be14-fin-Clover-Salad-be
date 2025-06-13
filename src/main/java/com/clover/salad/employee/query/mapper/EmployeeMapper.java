@@ -5,16 +5,19 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.clover.salad.employee.query.dto.DepartmentEmployeeSearchResponseDTO;
+import com.clover.salad.employee.query.dto.EmployeeDetailDTO;
 import com.clover.salad.employee.query.dto.EmployeeMypageQueryDTO;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
+import com.clover.salad.employee.query.dto.EmployeeSearchRequestDTO;
+import com.clover.salad.employee.query.dto.EmployeeSearchResponseDTO;
 import com.clover.salad.employee.query.dto.LoginHeaderInfoDTO;
-import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 
 @Mapper
 public interface EmployeeMapper {
 
 	// 사원 검색
-	List<EmployeeQueryDTO> searchEmployees(SearchEmployeeDTO searchEmployeeDTO);
+	List<EmployeeSearchResponseDTO> searchEmployees(EmployeeSearchRequestDTO requestDTO);
 
 	// 비밀번호 재설정 로직 중
 	Integer selectIdByCodeAndEmail(@Param("code") String code, @Param("email") String email);
@@ -36,4 +39,11 @@ public interface EmployeeMapper {
 	Integer findManagerIdByDeptId(@Param("deptId") int deptId);
 
 	EmployeeQueryDTO findEmployeeById(@Param("id") int id);
+
+	List<EmployeeSearchResponseDTO> searchEmployeesByDeptId(int deptId);
+
+	List<DepartmentEmployeeSearchResponseDTO> searchEmployeesByDeptIds(@Param("deptIds") List<Integer> deptIds);
+
+	// 사원 상세 조회 페이지
+	EmployeeDetailDTO findEmployeeDetailById(@Param("id") int id);
 }

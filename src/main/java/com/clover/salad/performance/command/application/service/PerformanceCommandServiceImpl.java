@@ -21,6 +21,8 @@ import com.clover.salad.contract.query.service.ContractService;
 import com.clover.salad.customer.query.service.CustomerQueryService;
 import com.clover.salad.employee.command.domain.repository.DepartmentRepository;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
+import com.clover.salad.employee.query.dto.EmployeeSearchRequestDTO;
+import com.clover.salad.employee.query.dto.EmployeeSearchResponseDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
 import com.clover.salad.performance.command.application.dto.DepartmentPerformanceDTO;
@@ -218,11 +220,11 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 			.addMappings(m -> m.using(converter).map(sourceGetter, destSetter))
 			.addMappings(mapper -> mapper.skip(idSetter));
 	}
-	
-	private EmployeeQueryDTO getEmployeeByCode(String employeeCode) throws EmployeeNotFoundException {
-		SearchEmployeeDTO searchEmployeeDTO = new SearchEmployeeDTO();
-		searchEmployeeDTO.setCode(employeeCode);
-		List<EmployeeQueryDTO> employeeList = employeeQueryService.searchEmployees(searchEmployeeDTO);
+
+	private EmployeeSearchResponseDTO getEmployeeByCode(String employeeCode) throws EmployeeNotFoundException {
+		EmployeeSearchRequestDTO searchDTO = new EmployeeSearchRequestDTO();
+		searchDTO.setCode(employeeCode);
+		List<EmployeeSearchResponseDTO> employeeList = employeeQueryService.searchEmployees(searchDTO);
 		if (employeeList.isEmpty()) throw new EmployeeNotFoundException();
 		return employeeList.get(0);
 	}

@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.clover.salad.common.file.entity.FileUploadEntity;
 import com.clover.salad.common.file.repository.FileUploadRepository;
@@ -20,10 +21,16 @@ import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.aggregate.enums.EmployeeLevel;
 import com.clover.salad.employee.command.domain.repository.DepartmentRepository;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
+import com.clover.salad.employee.query.dto.DepartmentEmployeeSearchResponseDTO;
+import com.clover.salad.employee.query.dto.DepartmentHierarchyDTO;
+import com.clover.salad.employee.query.dto.EmployeeDetailDTO;
 import com.clover.salad.employee.query.dto.EmployeeMypageQueryDTO;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
+import com.clover.salad.employee.query.dto.EmployeeSearchRequestDTO;
+import com.clover.salad.employee.query.dto.EmployeeSearchResponseDTO;
 import com.clover.salad.employee.query.dto.LoginHeaderInfoDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
+import com.clover.salad.employee.query.mapper.DepartmentMapper;
 import com.clover.salad.employee.query.mapper.EmployeeMapper;
 import com.clover.salad.security.EmployeeDetails;
 
@@ -34,24 +41,29 @@ import lombok.extern.slf4j.Slf4j;
 public class EmployeeQueryServiceImpl implements EmployeeQueryService, UserDetailsService {
 
 	private final EmployeeMapper employeeMapper;
+	private final DepartmentMapper departmentMapper;
+
 	private final EmployeeRepository employeeRepository;
 	private final FileUploadRepository fileUploadRepository;
 	private final DepartmentRepository departmentRepository;
 
 	@Autowired
 	public EmployeeQueryServiceImpl(EmployeeMapper employeeMapper,
+		DepartmentMapper departmentMapper,
 		EmployeeRepository employeeRepository,
 		FileUploadRepository fileUploadRepository,
-		DepartmentRepository departmentRepository) {
+		DepartmentRepository departmentRepository
+	) {
 		this.employeeMapper = employeeMapper;
+		this.departmentMapper = departmentMapper;
 		this.employeeRepository = employeeRepository;
 		this.fileUploadRepository = fileUploadRepository;
 		this.departmentRepository = departmentRepository;
 	}
 
 	@Override
-	public List<EmployeeQueryDTO> searchEmployees(SearchEmployeeDTO searchEmployeeDTO) {
-		return employeeMapper.searchEmployees(searchEmployeeDTO);
+	public List<EmployeeSearchResponseDTO> searchEmployees(EmployeeSearchRequestDTO requestDTO) {
+		return employeeMapper.searchEmployees(requestDTO);
 	}
 
 	@Override
@@ -77,6 +89,14 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService, UserDetai
 		}
 		return name;
 
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<DepartmentEmployeeSearchResponseDTO> searchEmployeesByDepartmentWithSub(int departmentId) {
+		List<DepartmentHierarchyDTO> subDepartments = departmentMapper.selectSubDepartments(departmentId);
+		List<Integer> deptIds = subDepartments.stream().map(DepartmentHierarchyDTO::getId).toList();
+		return employeeMapper.searchEmployeesByDeptIds(deptIds);
 	}
 
 	@Override
@@ -120,7 +140,7 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService, UserDetai
 		DepartmentEntity dept = departmentRepository.findById(employee.getDepartmentId()).orElse(null);
 
 		EmployeeMypageQueryDTO dto = new EmployeeMypageQueryDTO();
-		dto.setCode(employee.getCode()); // 여전히 프론트 표시용으로 code 유지
+		dto.setCode(employee.getCode());
 		dto.setName(employee.getName());
 		dto.setPhone(employee.getPhone());
 		dto.setEmail(employee.getEmail());
@@ -162,5 +182,14 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService, UserDetai
 			employee.getPassword(),
 			getAuthorities(employee)
 		);
+	}
+
+	@Override
+	public EmployeeDetailDTO getEmployeeDetailById(int id) {
+		EmployeeDetailDTO dto = employeeMapper.findEmployeeDetailById(id);
+		if (dto == null) {
+			throw new IllegalArgumentException("해당 ID의 사원이 존재하지 않습니다: " + id);
+		}
+		return dto;
 	}
 }

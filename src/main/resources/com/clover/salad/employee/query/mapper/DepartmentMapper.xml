@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.clover.salad.employee.query.mapper.DepartmentMapper">
+    <resultMap id="DepartmentHierarchyResultMap" type="com.clover.salad.employee.query.dto.DepartmentHierarchyDTO">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="supDeptId" column="sup_dept_id"/>
+    </resultMap>
+
+    <!--  부서 계층 검색  -->
+    <select id="selectAllDepartmentsWithHierarchy"
+            resultMap="DepartmentHierarchyResultMap">
+        SELECT
+            id,
+            name,
+            sup_dept_id
+        FROM department
+        WHERE is_deleted = FALSE
+    </select>
+
+    <!--  하위 부서 찾기  -->
+    <select id="selectSubDepartments" parameterType="int" resultMap="DepartmentHierarchyResultMap">
+        WITH RECURSIVE sub_depts AS (
+             ## 사용자가 클릭한 부서
+             SELECT id
+                  , name
+                  , sup_dept_id
+                  , is_deleted
+               FROM department
+              WHERE id = #{deptId}
+
+              UNION ALL
+
+              ## 클릭한 부서의 하위 부서
+              SELECT
+                     d.id
+                   , d.name
+                   , d.sup_dept_id
+                   , d.is_deleted
+                FROM department d
+                JOIN sub_depts sd
+                  ON d.sup_dept_id = sd.id
+        )
+        SELECT
+               *
+          FROM sub_depts
+         WHERE is_deleted = FALSE
+    </select>
+</mapper>

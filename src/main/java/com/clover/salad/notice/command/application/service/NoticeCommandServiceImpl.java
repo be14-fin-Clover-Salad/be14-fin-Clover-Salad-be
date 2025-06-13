@@ -69,6 +69,11 @@ public class NoticeCommandServiceImpl implements NoticeCommandService {
 		Notice notice = noticeRepository.findById(noticeId)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공지입니다."));
 
+
+		if (notice.isDeleted()) {
+			throw new IllegalStateException("삭제된 공지사항은 수정할 수 없습니다.");
+		}
+
 		EmployeeEntity writer = employeeRepository.findById(writerId)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
@@ -138,6 +143,14 @@ public class NoticeCommandServiceImpl implements NoticeCommandService {
 	@Override
 	@Transactional
 	public void checkNotice(int noticeId, int employeeId) {
+
+		Notice notice = noticeRepository.findById(noticeId)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공지입니다."));
+
+		if (notice.isDeleted()) {
+			throw new IllegalStateException("삭제된 공지에는 반응할 수 없습니다.");
+		}
+
 		EmployeeNotice record = employeeNoticeRepository
 			.findByNoticeIdAndEmployeeId(noticeId, employeeId)
 			.orElseThrow(() -> new IllegalArgumentException("공지 대상이 아닙니다."));

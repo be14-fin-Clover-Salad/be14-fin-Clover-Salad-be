@@ -228,4 +228,17 @@
         WHERE c.id = #{contractId}
     </select>
 
+    <select id="findCustomerIdsByEmployeeId" parameterType="int" resultType="int">
+        SELECT DISTINCT customer_id
+        FROM CONTRACT
+        WHERE employee_id = #{employeeId}
+          AND is_deleted = FALSE
+    </select>
+
+    <select id="existsById" parameterType="int" resultType="boolean">
+        SELECT COUNT(id)
+        FROM contract
+        WHERE id = #{id}
+    </select>
+
 </mapper>

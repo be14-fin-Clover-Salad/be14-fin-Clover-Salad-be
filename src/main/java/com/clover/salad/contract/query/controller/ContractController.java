@@ -43,4 +43,14 @@ public class ContractController {
 	public ResponseEntity<ContractResponseDTO> findDetailInfoByContractId(@PathVariable int contractId) {
 		return ResponseEntity.ok(contractService.findDetailInfo(contractId));
 	}
+
+	@GetMapping("/employees/{employeeId}/customers")
+	public ResponseEntity<List<Integer>> getCustomersByEmployee(@PathVariable int employeeId) {
+		return ResponseEntity.ok(contractService.getCustomerIdsByEmployee(employeeId));
+	}
+
+	@GetMapping("/validContract/{contractId}")
+	public ResponseEntity<Boolean> checkContractById(@PathVariable int contractId) {
+		return ResponseEntity.ok(contractService.contractValidationById(contractId));
+	}
 }

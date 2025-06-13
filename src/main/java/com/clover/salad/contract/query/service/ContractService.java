@@ -12,4 +12,8 @@ public interface ContractService {
 	List<ContractDTO> searchContracts(int employeeId, ContractSearchDTO contractSearchDTO);
 
 	ContractResponseDTO findDetailInfo(int contractId);
+
+	List<Integer> getCustomerIdsByEmployee(int employeeId);
+
+	Boolean contractValidationById(int contractId);
 }

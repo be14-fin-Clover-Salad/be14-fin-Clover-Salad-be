@@ -10,4 +10,6 @@ public interface CustomerQueryService {
     List<CustomerQueryDTO> findAll();
 
     List<CustomerQueryDTO> findAllActive();
+
+    Integer findRegisteredCustomerId(String name, String birthdate, String phone);
 }

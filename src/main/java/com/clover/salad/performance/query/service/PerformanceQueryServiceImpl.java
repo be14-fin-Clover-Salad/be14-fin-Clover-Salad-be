@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.clover.salad.common.exception.EmployeeNotFoundException;
 import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
+import com.clover.salad.employee.query.dto.EmployeeSearchRequestDTO;
+import com.clover.salad.employee.query.dto.EmployeeSearchResponseDTO;
 import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
 import com.clover.salad.performance.command.application.dto.DepartmentPerformanceDTO;
@@ -83,13 +85,22 @@ public class PerformanceQueryServiceImpl implements PerformanceQueryService {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		return yearMonth.atDay(day).format(formatter);
 	}
-	
-	private EmployeeQueryDTO getEmployeeByCode(String employeeCode)
+
+	// DTO 변경
+	private EmployeeSearchResponseDTO getEmployeeByCode(String employeeCode)
 		throws EmployeeNotFoundException {
-		SearchEmployeeDTO searchEmployeeDTO = new SearchEmployeeDTO();
-		searchEmployeeDTO.setCode(employeeCode);
-		List<EmployeeQueryDTO> employeeList = employeeQueryService.searchEmployees(searchEmployeeDTO);
+		EmployeeSearchRequestDTO searchDTO = new EmployeeSearchRequestDTO();
+		searchDTO.setCode(employeeCode);
+		List<EmployeeSearchResponseDTO> employeeList = employeeQueryService.searchEmployees(searchDTO);
 		if (employeeList.isEmpty()) throw new EmployeeNotFoundException();
 		return employeeList.get(0);
 	}
+	// private EmployeeQueryDTO getEmployeeByCode(String employeeCode)
+	// 	throws EmployeeNotFoundException {
+	// 	SearchEmployeeDTO searchEmployeeDTO = new SearchEmployeeDTO();
+	// 	searchEmployeeDTO.setCode(employeeCode);
+	// 	List<EmployeeQueryDTO> employeeList = employeeQueryService.searchEmployees(searchEmployeeDTO);
+	// 	if (employeeList.isEmpty()) throw new EmployeeNotFoundException();
+	// 	return employeeList.get(0);
+	// }
 }

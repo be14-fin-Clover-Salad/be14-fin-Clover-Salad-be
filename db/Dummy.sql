@@ -99,35 +99,35 @@ INSERT INTO employee (code, password, name, phone, email, level, hire_date, resi
 
 -- 영업 2팀
 INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
-('202503993', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최은경', '01000000001', '202503993@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울강북', 2, 1),
-('201811926', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이주은', '01000000002', '201811926@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울강북', 2, 1),
-('201207641', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤수수', '01000000003', '201207641@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울강북', 2, 1),
-('200604639', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최민진', '01000000004', '200604639@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울강북', 2, 1),
-('200001446', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤민하', '01000000005', '200001446@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울강북', 2, 1);
+('202503993', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최은경', '01000000001', '202503993@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '서울강북', 36, 1),
+('201811926', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이주은', '01000000002', '201811926@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '서울강북', 36, 1),
+('201207641', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤수수', '01000000003', '201207641@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '서울강북', 36, 1),
+('200604639', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최민진', '01000000004', '200604639@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '서울강북', 36, 1),
+('200001446', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '윤민하', '01000000005', '200001446@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '서울강북', 36, 1);
 
 -- 영업 3팀
 INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
-('202503665', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김슬민', '01000000006', '202503665@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '인천부평', 3, 1),
-('201811852', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이은민', '01000000007', '201811852@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '인천부평', 3, 1),
-('201207899', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '정석하', '01000000008', '201207899@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '인천부평', 3, 1),
-('200604962', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한석슬', '01000000009', '200604962@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '인천부평', 3, 1),
-('200001225', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임석경', '01000000010', '200001225@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '인천부평', 3, 1);
+('202503665', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김슬민', '01000000006', '202503665@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '인천부평', 37, 1),
+('201811852', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이은민', '01000000007', '201811852@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '인천부평', 37, 1),
+('201207899', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '정석하', '01000000008', '201207899@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '인천부평', 37, 1),
+('200604962', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한석슬', '01000000009', '200604962@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '인천부평', 37, 1),
+('200001225', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임석경', '01000000010', '200001225@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '인천부평', 37, 1);
 
 -- 영업 4팀
 INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
-('202503444', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '정하슬', '01000000011', '202503444@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '경기성남', 4, 1),
-('201811566', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이진하', '01000000012', '201811566@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '경기성남', 4, 1),
-('201207130', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '장현우', '01000000013', '201207130@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '경기성남', 4, 1),
-('200604252', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최주호', '01000000014', '200604252@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '경기성남', 4, 1),
-('200001223', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박현주', '01000000015', '200001223@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '경기성남', 4, 1);
+('202503444', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '정하슬', '01000000011', '202503444@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '경기성남', 38, 1),
+('201811566', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '이진하', '01000000012', '201811566@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '경기성남', 38, 1),
+('201207130', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '장현우', '01000000013', '201207130@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '경기성남', 38, 1),
+('200604252', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '최주호', '01000000014', '200604252@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '경기성남', 38, 1),
+('200001223', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '박현주', '01000000015', '200001223@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '경기성남', 38, 1);
 
 -- 영업 5팀
 INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
-('202503358', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김은수', '01000000016', '202503358@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '부산해운대', 5, 1),
-('201811460', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한호은', '01000000017', '201811460@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '부산해운대', 5, 1),
-('201207841', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한진경', '01000000018', '201207841@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '부산해운대', 5, 1),
-('200604792', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한슬수', '01000000019', '200604792@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '부산해운대', 5, 1),
-('200001749', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임하진', '01000000020', '200001749@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '부산해운대', 5, 1);
+('202503358', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '김은수', '01000000016', '202503358@saladerp.com', '사원', '2025-03-01', NULL, FALSE, FALSE, '부산해운대', 39, 1),
+('201811460', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한호은', '01000000017', '201811460@saladerp.com', '주임', '2018-11-15', NULL, FALSE, FALSE, '부산해운대', 39, 1),
+('201207841', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한진경', '01000000018', '201207841@saladerp.com', '대리', '2012-07-31', NULL, FALSE, FALSE, '부산해운대', 39, 1),
+('200604792', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '한슬수', '01000000019', '200604792@saladerp.com', '과장', '2006-04-16', NULL, FALSE, FALSE, '부산해운대', 39, 1),
+('200001749', '$2a$10$a20vES08g9Y66UpTd5FQDeqC10eBvivO1jmTFGy/txQzFJ9Vywbyq', '임하진', '01000000020', '200001749@saladerp.com', '팀장', '2000-01-01', NULL, FALSE, FALSE, '부산해운대', 39, 1);
 
 -- 인사부
 INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES

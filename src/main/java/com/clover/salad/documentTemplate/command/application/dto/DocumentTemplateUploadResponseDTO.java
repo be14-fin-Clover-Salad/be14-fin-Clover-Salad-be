@@ -1,14 +1,13 @@
 package com.clover.salad.documentTemplate.command.application.dto;
 
-import org.springframework.stereotype.Service;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
-@Service
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString

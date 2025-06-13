@@ -40,7 +40,7 @@ public class Qna {
 	private String answerContent;
 
 	@Column(name = "is_deleted", nullable = false)
-	private boolean isDeleted;
+	private boolean isDeleted = false;
 
 	@Column(name = "employee_id", nullable = false)
 	private int employeeId;

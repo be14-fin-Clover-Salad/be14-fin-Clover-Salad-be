@@ -44,7 +44,6 @@ public class CustomerQueryController {
             @RequestParam("birthdate") String birthdate, @RequestParam("phone") String phone) {
 
         Integer customerId = customerQueryService.findRegisteredCustomerId(name, birthdate, phone);
-        return customerId != null ? ResponseEntity.ok(customerId)
-                : ResponseEntity.notFound().build();
+        return customerId != null ? ResponseEntity.ok(customerId) : null;
     }
 }

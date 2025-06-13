@@ -17,5 +17,9 @@ public interface ContractMapper {
 		@Param("search") ContractSearchDTO contractSearchDTO);
 
 	ContractResponseDTO selectDetailContractInfo(int contractId);
+
+	List<Integer> findCustomerIdsByEmployeeId(@Param("employeeId") int employeeId);
+
+	Boolean existsById(int contractId);
 }
 

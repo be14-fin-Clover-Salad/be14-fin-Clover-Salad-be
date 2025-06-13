@@ -10,6 +10,9 @@ import com.clover.salad.contract.query.dto.ContractResponseDTO;
 import com.clover.salad.contract.query.dto.ContractSearchDTO;
 import com.clover.salad.contract.query.mapper.ContractMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class ContractServiceImpl implements ContractService {
 
@@ -33,5 +36,15 @@ public class ContractServiceImpl implements ContractService {
 	@Override
 	public ContractResponseDTO findDetailInfo(int contractId) {
 		return contractMapper.selectDetailContractInfo(contractId);
+	}
+
+	@Override
+	public List<Integer> getCustomerIdsByEmployee(int employeeId) {
+		return contractMapper.findCustomerIdsByEmployeeId(employeeId);
+	}
+
+	@Override
+	public Boolean contractValidationById(int contractId) {
+		return contractMapper.existsById(contractId);
 	}
 }

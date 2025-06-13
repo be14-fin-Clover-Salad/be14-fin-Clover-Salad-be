@@ -3,6 +3,7 @@ package com.clover.salad.notice.command.application.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.clover.salad.notice.command.application.dto.NoticeCreateRequest;
+import com.clover.salad.notice.command.application.dto.NoticeDeleteRequest;
 import com.clover.salad.notice.command.application.dto.NoticeUpdateRequest;
 import com.clover.salad.notice.command.application.service.NoticeCommandService;
 import com.clover.salad.security.SecurityUtil;
@@ -43,4 +45,16 @@ public class NoticeCommandController {
 		noticeCommandService.updateNotice(noticeId, request, writerId);
 		return ResponseEntity.ok("공지 사항 수정 완료");
 	}
+
+	// 공지 사항 삭제
+	@DeleteMapping("/delete/{noticeId}")
+	public ResponseEntity<String> noticeDelete(@PathVariable("noticeId") int noticeId){
+
+		int writerId = SecurityUtil.getEmployeeId();
+
+		// noticeCommandService.deleteNotice(noticeId, writerId);
+		return ResponseEntity.ok("공지 사항 삭제 완료");
+
+	}
+
 }

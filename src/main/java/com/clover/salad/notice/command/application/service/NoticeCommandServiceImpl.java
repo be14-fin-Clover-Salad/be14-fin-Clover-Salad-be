@@ -1,6 +1,7 @@
 package com.clover.salad.notice.command.application.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 import com.clover.salad.notice.command.application.dto.NoticeCreateRequest;
 import com.clover.salad.notice.command.application.dto.NoticeUpdateRequest;
@@ -41,7 +43,13 @@ public class NoticeCommandServiceImpl implements NoticeCommandService {
 		notice.setEmployeeId(writerId);
 		noticeRepository.save(notice);
 
-		List<EmployeeNotice> employeeNotices = request.getTargetEmployeeId().stream()
+		List<Integer> targetIds = new ArrayList<>(request.getTargetEmployeeId());
+
+		if(!targetIds.contains(writerId)){
+			targetIds.add(writerId);
+		}
+
+		List<EmployeeNotice> employeeNotices = targetIds.stream()
 			.map(empId -> {
 				if (!employeeRepository.existsById(empId)) {
 					throw new IllegalArgumentException("존재하지 않는 사원 ID입니다: " + empId);
@@ -61,8 +69,13 @@ public class NoticeCommandServiceImpl implements NoticeCommandService {
 		Notice notice = noticeRepository.findById(noticeId)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공지입니다."));
 
-		if(notice.getEmployeeId() != writerId) {
-			throw new SecurityException("작성자만 수정할 수 있습니다.");
+		EmployeeEntity writer = employeeRepository.findById(writerId)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+		boolean isAdmin = writer.isAdmin();
+
+		if(!isAdmin && notice.getEmployeeId() != writerId) {
+			throw new SecurityException("작성자 또는 관리자만 수정할 수 있습니다.");
 		}
 
 		notice.setTitle(request.getTitle());

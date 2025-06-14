@@ -17,8 +17,7 @@ public interface NoticeMapper {
 		@Param("level") String label,
 		@Param("departmentId") int departmentId);
 
-	NoticeDetailDTO getNoticeDetail(
-		Map<String, Object> params);
+	NoticeDetailDTO getNoticeDetail(Map<String, Object> params);
 
 	List<CheckInfoDTO> findTargetEmployeesOfNotice(int noticeId);
 }

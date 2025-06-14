@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clover.salad.qna.query.mapper.QnaMapper">
+    
+    <resultMap id="QnaResultMap" type="com.clover.salad.qna.query.dto.QnaListDTO">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="answerStatus" column="answer_status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="writerId" column="writerId"/>
+    </resultMap>
+    
+    <resultMap id="QnaDetailResultMap" type="com.clover.salad.qna.query.dto.QnaDetailDTO">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="answerStatus" column="answer_status"/>
+        <result property="answerContent" column="answer_content"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="writerId" column="employee_id"/>
+        <result property="writerName" column="writer_name"/>
+        <result property="writerLevel" column="writer_level"/>
+        <result property="departmentName" column="department_name"/>
+    </resultMap>
+
+    <select id="findQnaList" resultMap="QnaResultMap">
+        SELECT
+               q.id,
+               q.title,
+               q.created_at,
+               q.answer_status,
+               q.is_deleted,
+               q.employee_id AS writerId
+          FROM qna q
+          JOIN employee e ON q.employee_id = e.id
+         <where>
+             <if test="level != '관리자'">
+                 q.is_deleted = false
+                 AND q.employee_id = #{employeeId}
+             </if>
+         </where>
+         ORDER BY q.created_at DESC
+    </select>
+
+    <select id="findQnaDetail" resultMap="QnaDetailResultMap">
+    SELECT
+           q.id,
+           q.title,
+           q.content,
+           q.created_at,
+           q.answer_status,
+           q.answer_content,
+           q.is_deleted,
+           e.id AS employee_id,
+           e.name AS writer_name,
+           e.level AS writer_level,
+           d.name AS department_name
+      FROM qna q
+      JOIN employee e ON q.employee_id = e.id
+      JOIN department d ON e.department_id = d.id
+     WHERE q.id = #{qnaId}
+         <if test="level != '관리자'">
+             AND q.is_deleted = false
+             AND q.employee_id = #{employeeId}
+         </if>
+    </select>
+</mapper>

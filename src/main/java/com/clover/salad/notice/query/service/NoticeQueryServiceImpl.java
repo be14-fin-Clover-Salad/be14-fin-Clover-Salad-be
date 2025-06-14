@@ -19,8 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class NoticeQueryServiceImpl implements NoticeQueryService {
 
-	private NoticeMapper noticeMapper;
-	private EmployeeMapper employeeMapper;
+	private final NoticeMapper noticeMapper;
+	private final EmployeeMapper employeeMapper;
 
 	@Autowired
 	public NoticeQueryServiceImpl(NoticeMapper noticeMapper, EmployeeMapper employeeMapper) {

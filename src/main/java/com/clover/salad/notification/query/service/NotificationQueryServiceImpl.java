@@ -1,6 +1,7 @@
 package com.clover.salad.notification.query.service;
 
 import com.clover.salad.notification.query.dto.NotificationDropdownResponseDTO;
+import com.clover.salad.notification.query.dto.NotificationListResponseDTO;
 import com.clover.salad.notification.query.mapper.NotificationMapper;
 import com.clover.salad.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,5 +25,13 @@ public class NotificationQueryServiceImpl implements NotificationQueryService {
 	public List<NotificationDropdownResponseDTO> getUnreadTop5() {
 		int employeeId = SecurityUtil.getEmployeeId();
 		return notificationMapper.findTop5UnreadByEmployeeId(employeeId);
+	}
+
+	@Override
+	public List<NotificationListResponseDTO> getAllNotifications(int page) {
+		int employeeId = SecurityUtil.getEmployeeId();
+		int limit = 20;
+		int offset = page * limit;
+		return notificationMapper.findAllByEmployeeIdWithPaging(employeeId, limit, offset);
 	}
 }

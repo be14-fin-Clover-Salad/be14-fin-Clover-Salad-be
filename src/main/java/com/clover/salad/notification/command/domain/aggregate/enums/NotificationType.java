@@ -1,10 +1,14 @@
 package com.clover.salad.notification.command.domain.aggregate.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@
+	RequiredArgsConstructor
 public enum NotificationType {
 
 	APPROVAL("결재"),
@@ -13,6 +17,12 @@ public enum NotificationType {
 
 	private final String label;
 
+	@JsonValue
+	public String getLabel() {
+		return label;
+	}
+
+	@JsonCreator
 	public static NotificationType fromLabel(String label) {
 		for (NotificationType type : NotificationType.values()) {
 			if (type.label.equals(label)) {

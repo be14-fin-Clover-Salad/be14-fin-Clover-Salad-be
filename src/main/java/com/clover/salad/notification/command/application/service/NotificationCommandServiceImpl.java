@@ -25,6 +25,7 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
 			.type(notificationCreateDTO.getType())
 			.content(notificationCreateDTO.getContent())
 			.url(notificationCreateDTO.getUrl())
+			.employeeId(notificationCreateDTO.getEmployeeId())
 			.createdAt(LocalDateTime.now())
 			.isRead(false)
 			.isDeleted(false)

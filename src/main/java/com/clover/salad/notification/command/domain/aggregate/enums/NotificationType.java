@@ -5,10 +5,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
-@
-	RequiredArgsConstructor
+@RequiredArgsConstructor
 public enum NotificationType {
 
 	APPROVAL("결재"),
@@ -24,8 +25,9 @@ public enum NotificationType {
 
 	@JsonCreator
 	public static NotificationType fromLabel(String label) {
+		if (label == null) return null;
 		for (NotificationType type : NotificationType.values()) {
-			if (type.label.equals(label)) {
+			if (type.label.equals(label) || type.name().equals(label)) {
 				return type;
 			}
 		}

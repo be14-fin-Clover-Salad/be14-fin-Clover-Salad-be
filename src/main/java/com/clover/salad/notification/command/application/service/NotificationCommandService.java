@@ -4,4 +4,6 @@ import com.clover.salad.notification.command.application.dto.NotificationCreateD
 
 public interface NotificationCommandService {
 	void createNotification(NotificationCreateDTO notificationCreateDTO);
+
+	void markAsRead(int id);
 }

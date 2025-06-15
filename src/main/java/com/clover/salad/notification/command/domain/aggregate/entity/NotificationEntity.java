@@ -42,4 +42,11 @@ public class NotificationEntity {
 
 	@Column(name = "employee_id", nullable = false)
 	private int employeeId;
+
+	/* 설명. 읽음 처리 - setter 대신 명시적인 도메인 메서드 사용 */
+	public void markAsRead() {
+		if (!this.isRead) {
+			this.isRead = true;
+		}
+	}
 }

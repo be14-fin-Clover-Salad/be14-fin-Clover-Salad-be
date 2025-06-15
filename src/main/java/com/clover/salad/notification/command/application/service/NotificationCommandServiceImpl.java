@@ -1,6 +1,7 @@
 package com.clover.salad.notification.command.application.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -52,5 +53,20 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
 		notificationEntity.markAsRead(); // 변경 감지 발생
 
 		notificationRepository.save(notificationEntity);
+	}
+
+	@Override
+	public void softDeleteNotifications(List<Integer> deleteNotification) {
+		int employeeId = SecurityUtil.getEmployeeId();
+		List<NotificationEntity> notifications = notificationRepository.findAllById(deleteNotification);
+
+		for (NotificationEntity n : notifications) {
+			if (n.getEmployeeId() != employeeId) {
+				throw new AccessDeniedException("본인의 알림만 삭제할 수 있습니다.");
+			}
+			n.markAsDeleted(); // 소프트 딜리트
+		}
+
+		notificationRepository.saveAll(notifications);
 	}
 }

@@ -49,4 +49,8 @@ public class NotificationEntity {
 			this.isRead = true;
 		}
 	}
+
+	public void markAsDeleted() {
+		this.isDeleted = true;
+	}
 }

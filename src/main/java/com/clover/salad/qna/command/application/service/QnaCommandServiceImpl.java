@@ -10,6 +10,7 @@ import com.clover.salad.common.exception.BadRequestException;
 import com.clover.salad.common.exception.NotFoundException;
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
+import com.clover.salad.qna.command.application.dto.QnaAnswerRequest;
 import com.clover.salad.qna.command.application.dto.QnaCreateRequest;
 import com.clover.salad.qna.command.domain.aggregate.entity.Qna;
 import com.clover.salad.qna.command.domain.repository.QnaRepository;
@@ -51,6 +52,7 @@ public class QnaCommandServiceImpl implements QnaCommandService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteQna(int qnaId, int writerId) {
 		Qna qna = qnaRepository.findById(qnaId)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문의사항입니다."));
@@ -73,4 +75,34 @@ public class QnaCommandServiceImpl implements QnaCommandService {
 
 		qnaRepository.save(qna);
 	}
+
+	@Override
+	@Transactional
+	public void answerQna(int qnaId, QnaAnswerRequest request, int writerId) {
+		Qna qna = qnaRepository.findById(qnaId)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문의사항입니다."));
+
+		EmployeeEntity employee = employeeRepository.findById(writerId)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+		if(qna.isDeleted()){
+			throw new IllegalStateException("삭제된 문의에는 답변할 수 없습니다.");
+		}
+
+		boolean isAdmin = employee.isAdmin();
+
+		if(!isAdmin) {
+			throw new SecurityException("관리자만 작성할 수 있습니다.");
+		}
+
+		if("완료".equals(qna.getAnswerStatus())){
+			throw new BadRequestException("이미 답변이 완료된 문의사항입니다.");
+		}
+
+		qna.setAnswerContent(request.getAnswerContent());
+		qna.setAnswerStatus("완료");
+
+		qnaRepository.save(qna);
+	}
+
 }

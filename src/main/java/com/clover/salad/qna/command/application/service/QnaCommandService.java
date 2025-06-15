@@ -12,4 +12,6 @@ public interface QnaCommandService {
 	void deleteQna(int qnaId, int writerId);
 
 	void answerQna(int qnaId, QnaAnswerRequest request, int writerId);
+
+	void updateAnswer(int qnaId, QnaAnswerRequest request, int writerId);
 }

@@ -35,8 +35,7 @@ public class NoticeCommandController {
 
 	// 공지 사항 수정
 	@PutMapping("/edit/{noticeId}")
-	public ResponseEntity<String> noticeUpdate(
-		@PathVariable("noticeId") int noticeId,
+	public ResponseEntity<String> noticeUpdate(@PathVariable("noticeId") int noticeId,
 		@RequestBody NoticeUpdateRequest request){
 
 		int writerId = SecurityUtil.getEmployeeId();

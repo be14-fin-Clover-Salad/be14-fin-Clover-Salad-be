@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,7 +48,16 @@ public class QnaCommandController {
 
 		qnaCommandService.answerQna(qnaId, request, writerId);
 		return ResponseEntity.ok("문의 사항 답변 등록 완료");
+	}
 
+	// 문의 사항 답변 수정
+	@PutMapping("{qnaId}/answer")
+	public ResponseEntity<String> qnaUpdate(@PathVariable("qnaId") int qnaId,
+		@RequestBody QnaAnswerRequest request) {
+		int writerId = SecurityUtil.getEmployeeId();
+
+		qnaCommandService.updateAnswer(qnaId, request, writerId);
+		return ResponseEntity.ok("문의 사항 답변 수정 완료");
 	}
 
 

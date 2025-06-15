@@ -105,4 +105,32 @@ public class QnaCommandServiceImpl implements QnaCommandService {
 		qnaRepository.save(qna);
 	}
 
+	@Override
+	@Transactional
+	public void updateAnswer(int qnaId, QnaAnswerRequest request, int writerId) {
+		Qna qna = qnaRepository.findById(qnaId)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문의사항입니다."));
+
+		EmployeeEntity employee = employeeRepository.findById(writerId)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+		if(qna.isDeleted()) {
+			throw new IllegalStateException("삭제된 문의에는 답변할 수 없습니다.");
+		}
+
+		if("대기".equals(qna.getAnswerStatus())) {
+			throw new IllegalStateException("답변이 달리지 않는 문의는 수정할 수 없습니다.");
+		}
+
+		boolean isAdmin = employee.isAdmin();
+
+		if(!isAdmin) {
+			throw new SecurityException("관리자만 수정할 수 있습니다.");
+		}
+
+		qna.setAnswerContent(request.getAnswerContent());
+
+		qnaRepository.save(qna);
+	}
+
 }

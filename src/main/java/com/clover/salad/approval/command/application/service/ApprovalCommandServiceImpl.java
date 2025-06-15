@@ -98,7 +98,7 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 			notificationCommandService.createNotification(NotificationCreateDTO.builder()
 				.type(NotificationType.APPROVAL)
 				.content(requesterName + " 님이 결재를 요청했습니다.")
-				.url("/approval/detail/" + approvalId)
+				.url("/approval/" + approvalId)
 				.employeeId(managerId)
 				.build());
 
@@ -186,7 +186,7 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 		notificationCommandService.createNotification(NotificationCreateDTO.builder()
 			.type(NotificationType.APPROVAL)
 			.content("결재가 " + decisionLabel + "되었습니다.")
-			.url("/approval/detail/" + approval.getId())
+			.url("/approval/" + approval.getId())
 			.employeeId(approval.getReqId())
 			.build());
 	}

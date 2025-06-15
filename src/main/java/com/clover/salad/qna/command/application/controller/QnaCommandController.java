@@ -1,6 +1,8 @@
 package com.clover.salad.qna.command.application.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,15 @@ public class QnaCommandController {
 		int writerId = SecurityUtil.getEmployeeId();
 		qnaCommandService.createQna(request, writerId);
 		return ResponseEntity.ok("문의 사항 등록 완료");
+	}
+
+	// 문의 사항 삭제
+	@DeleteMapping("/delete/{qnaId}")
+	public ResponseEntity<String> qnaDelete(@PathVariable("qnaId") int qnaId){
+		int writerId = SecurityUtil.getEmployeeId();
+
+		qnaCommandService.deleteQna(qnaId,writerId);
+		return ResponseEntity.ok("문의 사항 삭제 완료");
 	}
 
 

@@ -493,11 +493,11 @@ VALUES (1, 6, 81, 100, 4, 1100000, 4.5, 50, 202405, 1),
        (7, 12, 87, 106, 10, 1700000, 4.5, 56, 202405, 7);
 
 -- 알림 더미 데이터 (결재 알림)
-INSERT INTO NOTIFICATION (type, content, created_at, url, is_read, is_deleted, employee_id)
-VALUES
-    ('APPROVAL', '[결재 요청] A-2506-0001 계약에 대한 승인을 요청했습니다.', NOW(), 'http://www.naver.com', FALSE, FALSE, 1),
-    ('APPROVAL', '[결재 요청] A-2506-0002 계약에 대한 승인을 요청했습니다.', NOW(), 'http://www.naver.com', FALSE, FALSE, 1),
-    ('APPROVAL', '[결재 요청] A-2506-0003 계약에 대한 승인을 요청받았습니다.', NOW(), 'http://www.naver.com', FALSE, FALSE, 5);
+# INSERT INTO NOTIFICATION (type, content, created_at, url, is_read, is_deleted, employee_id)
+# VALUES
+#     ('APPROVAL', '[결재 요청] A-2506-0001 계약에 대한 승인을 요청했습니다.', NOW(), 'http://www.naver.com', FALSE, FALSE, 1),
+#     ('APPROVAL', '[결재 요청] A-2506-0002 계약에 대한 승인을 요청했습니다.', NOW(), 'http://www.naver.com', FALSE, FALSE, 1),
+#     ('APPROVAL', '[결재 요청] A-2506-0003 계약에 대한 승인을 요청받았습니다.', NOW(), 'http://www.naver.com', FALSE, FALSE, 5);
 
 UPDATE product
 SET name = '청소기',

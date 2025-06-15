@@ -2,6 +2,7 @@ package com.clover.salad.notification.command.application.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,7 @@ public class NotificationCommandController {
 		return ResponseEntity.ok("알림을 읽었습니다.");
 	}
 
+	@Transactional
 	@PatchMapping("/delete")
 	public ResponseEntity<String> softDeleteNotifications(@RequestBody NotificationDeleteRequestDTO dto) {
 		notificationCommandService.softDeleteNotifications(dto.getDeleteNotification());

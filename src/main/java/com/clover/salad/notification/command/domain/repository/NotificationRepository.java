@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.clover.salad.notification.command.domain.aggregate.entity.NotificationEntity;
 
 public interface NotificationRepository extends JpaRepository<NotificationEntity, Integer> {
-	void deleteByCreatedAtBefore(LocalDateTime dateTime);
+	void deleteByIsDeletedTrueAndCreatedAtBefore(LocalDateTime beforeDateTime);
 }

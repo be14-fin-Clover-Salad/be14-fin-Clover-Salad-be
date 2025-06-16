@@ -16,4 +16,5 @@ public class EmployeeDetailDTO {
 	private String code;
 	private LocalDate hireDate;
 	private String workPlace;
+	private String profilePath;
 }

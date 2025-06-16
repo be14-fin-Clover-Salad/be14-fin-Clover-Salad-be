@@ -7,6 +7,7 @@ import com.clover.salad.approval.command.domain.aggregate.enums.ApprovalState;
 import com.clover.salad.approval.command.domain.repository.ApprovalRepository;
 import com.clover.salad.approval.query.dto.ApprovalExistenceCheckDTO;
 import com.clover.salad.approval.query.mapper.ApprovalMapper;
+import com.clover.salad.contract.query.mapper.ContractMapper;
 import com.clover.salad.employee.query.mapper.EmployeeMapper;
 import com.clover.salad.notification.command.application.dto.NotificationCreateDTO;
 import com.clover.salad.notification.command.application.service.NotificationCommandService;
@@ -32,22 +33,30 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 	private final EmployeeMapper employeeMapper;
 	private final ApprovalMapper approvalMapper;
 	private final NotificationCommandService notificationCommandService;
+	private final ContractMapper contractMapper;
 
 	@Autowired
 	public ApprovalCommandServiceImpl(ApprovalRepository approvalRepository,
 		EmployeeMapper employeeMapper,
 		ApprovalMapper approvalMapper,
-		NotificationCommandService notificationCommandService
+		NotificationCommandService notificationCommandService,
+		ContractMapper contractMapper
 	) {
 		this.approvalRepository = approvalRepository;
 		this.employeeMapper = employeeMapper;
 		this.approvalMapper = approvalMapper;
 		this.notificationCommandService = notificationCommandService;
+		this.contractMapper = contractMapper;
 	}
 
 	@Override
 	public int requestApproval(ApprovalRequestDTO dto) {
 		int requesterId = SecurityUtil.getEmployeeId();
+
+		boolean contractExists = contractMapper.existsById(dto.getContractId());
+		if (!contractExists) {
+			throw new IllegalArgumentException("계약이 존재하지 않습니다. 계약 ID: " + dto.getContractId());
+		}
 
 		/* 설명. 팀장은 결재 요청 불가능 */
 		if (SecurityUtil.hasRole("ROLE_MANAGER")) {

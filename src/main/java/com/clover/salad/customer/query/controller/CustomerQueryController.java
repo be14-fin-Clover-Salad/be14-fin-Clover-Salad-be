@@ -25,9 +25,17 @@ public class CustomerQueryController {
 
     private final CustomerQueryService customerQueryService;
 
+    /** 설명. 전체 고객 목록 조회 - 관리자 */
     @GetMapping
     public ResponseEntity<List<CustomerQueryDTO>> findAll() {
         return ResponseEntity.ok(customerQueryService.findAll());
+    }
+
+    /** 설명. 고객 단건 조회 - 관리자 */
+    @GetMapping("/{customerId}")
+    public ResponseEntity<CustomerQueryDTO> findCustomerById(@PathVariable int customerId) {
+        CustomerQueryDTO customer = customerQueryService.findCustomerById(customerId);
+        return ResponseEntity.ok(customer);
     }
 
     /** 설명. 특정 사원(employeeId에 해당하는)이 담당하는 고객 목록(다중 건) 조회 */

@@ -26,6 +26,11 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
     }
 
     @Override
+    public CustomerQueryDTO findCustomerById(int customerId) {
+        return customerMapper.findCustomerById(customerId);
+    }
+
+    @Override
     public List<CustomerQueryDTO> findCustomersByEmployeeId(int employeeId) {
         List<Integer> customerIds = contractService.getCustomerIdsByEmployee(employeeId);
 

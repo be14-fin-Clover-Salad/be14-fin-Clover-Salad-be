@@ -8,9 +8,9 @@ public interface CustomerQueryService {
 
     List<CustomerQueryDTO> findAll();
 
-    CustomerQueryDTO findCustomerById(int id);
-
     List<CustomerQueryDTO> findCustomersByEmployeeId(int employeeId);
+
+    CustomerQueryDTO findCustomerByEmployeeAndCustomerId(int customerId, int employeeId);
 
     Integer findRegisteredCustomerId(String name, String birthdate, String phone);
 }

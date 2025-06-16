@@ -93,18 +93,18 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 			}
 			/* rentalRetentionCount 계약 유지 건수 = 이번 달 총 계약 수 - 이번 달에 시작된 계약 수 */
 			if (contractDTO.getStartDate().isAfter(startDateStart)
-			 || contractDTO.getStartDate().isEqual(startDateStart)) {
+				|| contractDTO.getStartDate().isEqual(startDateStart)) {
 				rentalRetentionCount--;
 			}
 			/* newCustomerCount 신규 고객 수: 리스트로 만들고 id 개수를 세는 로직 */
-			int currentCustomerId = contractDTO.getCustomerId();
-			LocalDate currentCustomerRegisterDate = LocalDate.parse(
-				customerQueryService.findCustomerById(currentCustomerId).getRegisterAt()
-			);
-			if (currentCustomerRegisterDate.isAfter(startDateStart)
-			 || currentCustomerRegisterDate.isEqual(startDateStart)) {
-				newCustomerIdSet.add(currentCustomerId);
-			}
+			// int currentCustomerId = contractDTO.getCustomerId();
+			// LocalDate currentCustomerRegisterDate = LocalDate.parse(
+			// 	customerQueryService.findCustomerById(currentCustomerId).getRegisterAt()
+			// );
+			// if (currentCustomerRegisterDate.isAfter(startDateStart)
+			//  || currentCustomerRegisterDate.isEqual(startDateStart)) {
+			// 	newCustomerIdSet.add(currentCustomerId);
+			// }
 			/* totalRentalAmount 총 렌탈 금액 */
 			totalRentalAmount += contractDTO.getAmount();
 		}

@@ -1,8 +1,5 @@
 package com.clover.salad.qna.command.application.service;
 
-import org.apache.coyote.BadRequestException;
-import org.apache.ibatis.javassist.NotFoundException;
-
 import com.clover.salad.qna.command.application.dto.QnaAnswerRequest;
 import com.clover.salad.qna.command.application.dto.QnaCreateRequest;
 

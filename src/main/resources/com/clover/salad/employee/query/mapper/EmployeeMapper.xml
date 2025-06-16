@@ -102,7 +102,9 @@
     </select>
     <select id="findLoginHeaderInfoById" resultType="com.clover.salad.employee.query.dto.LoginHeaderInfoDTO">
         SELECT
-               e.name
+               e.id AS id
+             , e.name
+             , e.level
              , d.name AS departmentName
              , f.path AS profilePath
           FROM employee e

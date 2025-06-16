@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.clover.salad.common.exception.CustomerAccessDeniedException;
+import com.clover.salad.common.exception.CustomersException;
 import com.clover.salad.customer.query.dto.CustomerQueryDTO;
 import com.clover.salad.customer.query.service.CustomerQueryService;
 
@@ -37,7 +37,7 @@ public class CustomerQueryController {
             List<CustomerQueryDTO> customers =
                     customerQueryService.findCustomersByEmployeeId(employeeId);
             return ResponseEntity.ok(customers);
-        } catch (IllegalArgumentException ex) {
+        } catch (CustomersException.CustomerNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
@@ -50,7 +50,7 @@ public class CustomerQueryController {
             CustomerQueryDTO customer = customerQueryService
                     .findCustomerByEmployeeAndCustomerId(customerId, employeeId);
             return ResponseEntity.ok(customer);
-        } catch (CustomerAccessDeniedException ex) {
+        } catch (CustomersException.CustomerAccessDeniedException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }

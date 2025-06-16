@@ -8,6 +8,9 @@ import com.clover.salad.approval.command.domain.repository.ApprovalRepository;
 import com.clover.salad.approval.query.dto.ApprovalExistenceCheckDTO;
 import com.clover.salad.approval.query.mapper.ApprovalMapper;
 import com.clover.salad.employee.query.mapper.EmployeeMapper;
+import com.clover.salad.notification.command.application.dto.NotificationCreateDTO;
+import com.clover.salad.notification.command.application.service.NotificationCommandService;
+import com.clover.salad.notification.command.domain.aggregate.enums.NotificationType;
 import com.clover.salad.security.SecurityUtil;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -28,14 +31,18 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 	private final ApprovalRepository approvalRepository;
 	private final EmployeeMapper employeeMapper;
 	private final ApprovalMapper approvalMapper;
+	private final NotificationCommandService notificationCommandService;
 
 	@Autowired
 	public ApprovalCommandServiceImpl(ApprovalRepository approvalRepository,
 		EmployeeMapper employeeMapper,
-		ApprovalMapper approvalMapper) {
+		ApprovalMapper approvalMapper,
+		NotificationCommandService notificationCommandService
+	) {
 		this.approvalRepository = approvalRepository;
 		this.employeeMapper = employeeMapper;
 		this.approvalMapper = approvalMapper;
+		this.notificationCommandService = notificationCommandService;
 	}
 
 	@Override
@@ -82,6 +89,20 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 			}
 
 			builder.aprvId(managerId);
+
+			ApprovalEntity approval = builder.build();
+			int approvalId = approvalRepository.save(approval).getId();
+
+			// 알림 생성
+			String requesterName = employeeMapper.findNameById(requesterId);
+			notificationCommandService.createNotification(NotificationCreateDTO.builder()
+				.type(NotificationType.APPROVAL)
+				.content(requesterName + " 님이 결재를 요청했습니다.")
+				.url("/approval/" + approvalId)
+				.employeeId(managerId)
+				.build());
+
+			return approvalId;
 		}
 
 		ApprovalEntity approval = builder.build();
@@ -159,5 +180,14 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 		}
 
 		approvalRepository.save(approval);
+
+		// 알림 생성
+		String decisionLabel = approval.getState().getLabel(); // 승인 or 반려
+		notificationCommandService.createNotification(NotificationCreateDTO.builder()
+			.type(NotificationType.APPROVAL)
+			.content("결재가 " + decisionLabel + "되었습니다.")
+			.url("/approval/" + approval.getId())
+			.employeeId(approval.getReqId())
+			.build());
 	}
 }

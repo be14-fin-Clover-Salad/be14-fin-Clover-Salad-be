@@ -22,6 +22,9 @@ DROP TABLE IF EXISTS EMPLOYEE_PERFORMANCE;
 DROP TABLE IF EXISTS EMPLOYEE;
 DROP TABLE IF EXISTS FILE_UPLOAD;
 DROP TABLE IF EXISTS DEPARTMENT;
+DROP TABLE IF EXISTS NOTIFICATION;
+DROP TABLE IF EXISTS CONTRACT_FILE_HISTORY;
+DROP TABLE IF EXISTS CONTRACT_CHANGE_NOTICE;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -362,34 +365,50 @@ CREATE TABLE APPROVAL
             REFERENCES CONTRACT (id)
 );
 
+# 알림 테이블
+CREATE TABLE NOTIFICATION
+(
+    id          INT          NOT NULL AUTO_INCREMENT COMMENT '알림 ID',
+    type        VARCHAR(20)  NOT NULL COMMENT '알림 유형 (APPROVAL, NOTICE, QNA 등)',
+    content     TEXT         NOT NULL COMMENT '알림 내용',
+    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '알림 생성 시각',
+    url         VARCHAR(255) NOT NULL COMMENT '알림 클릭 시 이동할 URL',
+    is_read     BOOLEAN      NOT NULL DEFAULT FALSE COMMENT '읽음 여부',
+    is_deleted  BOOLEAN      NOT NULL DEFAULT FALSE COMMENT '삭제 여부',
+    employee_id INT          NOT NULL COMMENT '알림을 받은 사원 ID',
+    PRIMARY KEY (id),
+    CONSTRAINT FK_EMPLOYEE_TO_NOTIFICATION
+        FOREIGN KEY (employee_id)
+            REFERENCES EMPLOYEE (id)
+);
+
 # 계약셔 변경 이력 테이블
 CREATE TABLE CONTRACT_FILE_HISTORY
 (
-    id                   INT           NOT NULL AUTO_INCREMENT,
-    contract_id          INT           NOT NULL, -- 새 계약
-    replaced_contract_id INT           NULL,     -- 대체된 계약
-    version              INT           NOT NULL,
-    origin_file          VARCHAR(255)  NOT NULL,
-    renamed_file         VARCHAR(255)  NOT NULL,
-    uploaded_at          DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    uploader_id          INT           NULL,
-    note                 TEXT          NULL,
+    id                   INT          NOT NULL AUTO_INCREMENT,
+    contract_id          INT          NOT NULL, -- 새 계약
+    replaced_contract_id INT          NULL,     -- 대체된 계약
+    version              INT          NOT NULL,
+    origin_file          VARCHAR(255) NOT NULL,
+    renamed_file         VARCHAR(255) NOT NULL,
+    uploaded_at          DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    uploader_id          INT          NULL,
+    note                 TEXT         NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (contract_id) REFERENCES CONTRACT(id),
-    FOREIGN KEY (replaced_contract_id) REFERENCES CONTRACT(id)
+    FOREIGN KEY (contract_id) REFERENCES CONTRACT (id),
+    FOREIGN KEY (replaced_contract_id) REFERENCES CONTRACT (id)
 );
-
 
 
 # 계약서 변경시 고객 통지 로그용 테이블
 CREATE TABLE CONTRACT_CHANGE_NOTICE
 (
-    id            INT           NOT NULL AUTO_INCREMENT,
-    contract_id   INT           NOT NULL,
-    notified_to   VARCHAR(100)  NOT NULL, -- 고객 이메일 or ID
-    notified_at   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    method        ENUM('EMAIL', 'SMS', 'PHONE') NOT NULL,
-    description   TEXT          NULL,
+    id          INT                            NOT NULL AUTO_INCREMENT,
+    contract_id INT                            NOT NULL,
+    notified_to VARCHAR(100)                   NOT NULL, -- 고객 이메일 or ID
+    notified_at DATETIME                       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    method      ENUM ('EMAIL', 'SMS', 'PHONE') NOT NULL,
+    description TEXT                           NULL,
     CONSTRAINT PK_CONTRACT_CHANGE_NOTICE PRIMARY KEY (id),
     CONSTRAINT FK_CONTRACT_TO_CHANGE_NOTICE
         FOREIGN KEY (contract_id)

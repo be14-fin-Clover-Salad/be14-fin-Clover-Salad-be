@@ -23,20 +23,24 @@ public class CustomerQueryController {
 
     private final CustomerQueryService customerQueryService;
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<CustomerQueryDTO> findById(@PathVariable("id") int id) {
-        CustomerQueryDTO customer = customerQueryService.findCustomerById(id);
-        return customer != null ? ResponseEntity.ok(customer) : ResponseEntity.notFound().build();
-    }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<CustomerQueryDTO>> findAll() {
         return ResponseEntity.ok(customerQueryService.findAll());
     }
 
-    @GetMapping("/active")
-    public ResponseEntity<List<CustomerQueryDTO>> findAllActive() {
-        return ResponseEntity.ok(customerQueryService.findAllActive());
+    @GetMapping("/{id}")
+    public ResponseEntity<CustomerQueryDTO> findCustomerById(@PathVariable("id") int id) {
+        CustomerQueryDTO customer = customerQueryService.findCustomerById(id);
+        return customer != null ? ResponseEntity.ok(customer) : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/employee/{employeeId}")
+    public ResponseEntity<List<CustomerQueryDTO>> getCustomersByEmployeeId(
+            @PathVariable int employeeId) {
+        List<CustomerQueryDTO> customers =
+                customerQueryService.findCustomersByEmployeeId(employeeId);
+        return ResponseEntity.ok(customers);
     }
 
     @GetMapping("/check")

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.clover.salad.contract.query.service.ContractService;
 import com.clover.salad.customer.query.dto.CustomerQueryDTO;
 import com.clover.salad.customer.query.mapper.CustomerMapper;
 
@@ -16,11 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomerQueryServiceImpl implements CustomerQueryService {
 
     private final CustomerMapper customerMapper;
-
-    @Override
-    public CustomerQueryDTO findCustomerById(int id) {
-        return customerMapper.findCustomerById(id);
-    }
+    private final ContractService contractService;
 
     @Override
     public List<CustomerQueryDTO> findAll() {
@@ -28,8 +25,14 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
     }
 
     @Override
-    public List<CustomerQueryDTO> findAllActive() {
-        return customerMapper.findAllActive();
+    public CustomerQueryDTO findCustomerById(int id) {
+        return customerMapper.findCustomerById(id);
+    }
+
+    @Override
+    public List<CustomerQueryDTO> findCustomersByEmployeeId(int employeeId) {
+        List<Integer> customerIds = contractService.getCustomerIdsByEmployee(employeeId);
+        return customerMapper.findCustomersByIds(customerIds);
     }
 
     @Override

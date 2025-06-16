@@ -10,11 +10,14 @@ import com.clover.salad.customer.query.dto.CustomerQueryDTO;
 @Mapper
 public interface CustomerMapper {
 
-    List<CustomerQueryDTO> findAll(); // 관리자용 전체 조회(삭제 포함)
+    List<CustomerQueryDTO> findAll();
 
-    List<CustomerQueryDTO> findAllActive(); // is_deleted = false
+    CustomerQueryDTO findCustomerById(@Param("id") int id);
 
-    CustomerQueryDTO findCustomerById(@Param("id") int id); // 수정 필요
+    List<CustomerQueryDTO> findCustomersByIds(@Param("customerIds") List<Integer> customerIds);
+
+    CustomerQueryDTO findCustomerByEmployeeAndCustomerId(@Param("customerId") int customerId,
+            @Param("customerIds") List<Integer> customerIds);
 
     /* 25. 06. 12 성연님 요청 사항 */
     Integer findRegisteredCustomerId(@Param("customerName") String customerName,

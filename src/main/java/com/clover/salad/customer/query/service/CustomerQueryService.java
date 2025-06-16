@@ -5,11 +5,12 @@ import java.util.List;
 import com.clover.salad.customer.query.dto.CustomerQueryDTO;
 
 public interface CustomerQueryService {
-    CustomerQueryDTO findCustomerById(int id);
 
     List<CustomerQueryDTO> findAll();
 
-    List<CustomerQueryDTO> findAllActive();
+    CustomerQueryDTO findCustomerById(int id);
+
+    List<CustomerQueryDTO> findCustomersByEmployeeId(int employeeId);
 
     Integer findRegisteredCustomerId(String name, String birthdate, String phone);
 }

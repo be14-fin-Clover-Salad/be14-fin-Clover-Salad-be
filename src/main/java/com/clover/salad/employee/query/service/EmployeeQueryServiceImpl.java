@@ -116,19 +116,19 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService, UserDetai
 
 	@Override
 	public LoginHeaderInfoDTO getLoginHeaderInfoById(int id) {
+		LoginHeaderInfoDTO rawDto = employeeMapper.findLoginHeaderInfoById(id);
+
 		EmployeeEntity employee = employeeRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("사원을 찾을 수 없습니다."));
-
-		String name = employee.getName();
 		String levelLabel = employee.getLevel().getLabel();
 
-		FileUploadEntity file = fileUploadRepository.findById(employee.getProfile()).orElse(null);
-		String profilePath = file != null ? file.getPath() : null;
-
-		DepartmentEntity dept = departmentRepository.findById(employee.getDepartmentId()).orElse(null);
-		String deptName = dept != null ? dept.getName() : null;
-
-		return new LoginHeaderInfoDTO(name, levelLabel, profilePath, deptName);
+		return new LoginHeaderInfoDTO(
+			rawDto.getId(),
+			rawDto.getName(),
+			levelLabel,
+			rawDto.getProfilePath(),
+			rawDto.getDepartmentName()
+		);
 	}
 
 	@Override

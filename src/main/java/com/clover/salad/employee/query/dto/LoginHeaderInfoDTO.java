@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class LoginHeaderInfoDTO {
+	private int id;
 	private String name;
 	private String levelLabel;
 	private String profilePath;

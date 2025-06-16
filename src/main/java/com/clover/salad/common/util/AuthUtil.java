@@ -22,10 +22,8 @@ public class AuthUtil {
     public static String resolveToken() {
         ServletRequestAttributes attributes =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-
-        if (attributes == null) {
+        if (attributes == null)
             return null;
-        }
 
         HttpServletRequest request = attributes.getRequest();
         String bearerToken = request.getHeader("Authorization");
@@ -33,47 +31,66 @@ public class AuthUtil {
         if (bearerToken != null && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(BEARER_PREFIX.length());
         }
-
         return null;
     }
 
-    // 현재 로그인된 사용자의 권한 문자열 (예: ROLE_ADMIN 등) 반환
+    /**
+     * 현재 로그인된 사용자의 권한 문자열 (예: ROLE_ADMIN 등) 반환
+     */
     public static String getRole() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || auth.getAuthorities().isEmpty()) {
+            throw new IllegalStateException("인증 정보가 없습니다. 로그인이 필요합니다.");
+        }
+
         return auth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                .filter(r -> r.startsWith("ROLE_")).findFirst().orElse("ROLE_MEMBER"); // 기본값
+                .filter(r -> r.startsWith("ROLE_")).findFirst()
+                .orElseThrow(() -> new IllegalStateException("유효한 ROLE이 없습니다."));
     }
 
-    // 권한이 ROLE_ADMIN인지 확인
+    /**
+     * 권한이 ROLE_ADMIN인지 확인
+     */
     public static boolean isAdmin() {
         return "ROLE_ADMIN".equals(getRole());
     }
 
-    // 권한이 ROLE_MANAGER인지 확인
+    /**
+     * 권한이 ROLE_MANAGER인지 확인
+     */
     public static boolean isManager() {
         return "ROLE_MANAGER".equals(getRole());
     }
 
-    // 권한이 ROLE_MEMBER인지 확인
+    /**
+     * 권한이 ROLE_MEMBER인지 확인
+     */
     public static boolean isMember() {
         return "ROLE_MEMBER".equals(getRole());
     }
 
-    // 관리자 권한이 아니면 예외 발생
+    /**
+     * 관리자 권한이 아니면 예외 발생
+     */
     public static void assertAdmin() {
         if (!isAdmin()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "관리자 권한이 필요합니다.");
         }
     }
 
-    // 매니저 권한이 아니면 예외 발생
+    /**
+     * 팀장 권한이 아니면 예외 발생
+     */
     public static void assertManager() {
         if (!isManager()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "매니저 권한이 필요합니다.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "팀장 권한이 필요합니다.");
         }
     }
 
-    // 일반 사용자 권한이 아니면 예외 발생
+    /**
+     * 일반 사용자 권한이 아니면 예외 발생
+     */
     public static void assertMember() {
         if (!isMember()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "일반 사용자 권한이 필요합니다.");

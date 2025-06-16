@@ -32,6 +32,7 @@
         <result property="departmentName" column="department_name"/>
     </resultMap>
     <resultMap id="EmployeeDetailResultMap" type="com.clover.salad.employee.query.dto.EmployeeDetailDTO">
+        <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="level" column="level"/>
         <result property="phone" column="phone"/>
@@ -39,6 +40,7 @@
         <result property="code" column="code"/>
         <result property="hireDate" column="hire_date"/>
         <result property="workPlace" column="work_place"/>
+        <result property="departmentId" column="department_id"/>
         <result property="departmentName" column="departmentName"/>
         <result property="profilePath" column="profilePath"/>
     </resultMap>
@@ -48,13 +50,15 @@
             parameterType="com.clover.salad.employee.query.dto.EmployeeSearchRequestDTO"
             resultType="com.clover.salad.employee.query.dto.EmployeeSearchResponseDTO">
         SELECT
-               e.code
+               e.id
+             , e.code
              , e.name
              , e.phone
              , e.email
              , e.level
              , DATE_FORMAT(e.hire_date, '%Y-%m-%d') AS hireDate
              , e.work_place
+             , e.department_id AS departmentId
              , d.name AS departmentName
           FROM employee e
           JOIN department d ON e.department_id = d.id
@@ -89,7 +93,8 @@
          ORDER BY e.hire_date DESC
     </select>
     <select id="selectIdByCodeAndEmail" resultType="int">
-        SELECT id
+        SELECT
+               id
           FROM employee
          WHERE code = #{code}
            AND email = #{email}
@@ -139,17 +144,17 @@
     <!--  사원의 경우 나의 팀장 찾기 위한 로직  -->
     <select id="findDepartmentIdByEmployeeId" parameterType="int" resultType="int">
         SELECT department_id
-        FROM employee
-        WHERE id = #{employeeId}
-          AND is_deleted = false
+          FROM employee
+         WHERE id = #{employeeId}
+           AND is_deleted = false
     </select>
     <select id="findManagerIdByDeptId" parameterType="int" resultType="int">
         SELECT id
-        FROM employee
-        WHERE department_id = #{deptId}
-          AND level = '팀장'
-          AND is_deleted = false
-        LIMIT 1
+          FROM employee
+         WHERE department_id = #{deptId}
+           AND level = '팀장'
+           AND is_deleted = false
+         LIMIT 1
     </select>
     <select id="findEmployeeById" parameterType="int" resultMap="SearchEmployeeResultMap">
         SELECT
@@ -198,13 +203,15 @@
             parameterType="int"
             resultMap="EmployeeDetailResultMap">
         SELECT
-               e.name
+               e.id
+             , e.name
              , e.level
              , e.phone
              , e.email
              , e.code
              , e.hire_date
              , e.work_place
+             , e.department_id
              , d.name AS departmentName
              , f.path AS profilePath
           FROM employee e

@@ -32,11 +32,14 @@ public class CustomerQueryController {
 
     /** 설명. 특정 사원(employeeId에 해당하는)이 담당하는 고객 목록(다중 건) 조회 */
     @GetMapping("/employee/{employeeId}")
-    public ResponseEntity<List<CustomerQueryDTO>> getCustomersByEmployeeId(
-            @PathVariable int employeeId) {
-        List<CustomerQueryDTO> customers =
-                customerQueryService.findCustomersByEmployeeId(employeeId);
-        return ResponseEntity.ok(customers);
+    public ResponseEntity<?> getCustomersByEmployeeId(@PathVariable int employeeId) {
+        try {
+            List<CustomerQueryDTO> customers =
+                    customerQueryService.findCustomersByEmployeeId(employeeId);
+            return ResponseEntity.ok(customers);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
     }
 
     /** 설명. 특정 사원(employeeId에 해당하는)이 담당하는 고객(customerId) 단일 건 조회 */

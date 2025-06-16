@@ -28,6 +28,11 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
     @Override
     public List<CustomerQueryDTO> findCustomersByEmployeeId(int employeeId) {
         List<Integer> customerIds = contractService.getCustomerIdsByEmployee(employeeId);
+
+        if (customerIds == null) {
+            throw new IllegalArgumentException("사원 ID에 해당하는 고객이 없습니다.");
+        }
+
         return customerMapper.findCustomersByIds(customerIds);
     }
 

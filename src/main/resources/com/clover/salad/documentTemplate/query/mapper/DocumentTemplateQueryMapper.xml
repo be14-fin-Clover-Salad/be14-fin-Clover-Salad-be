@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.clover.salad.documentTemplate.query.mapper.DocumentTemplateQueryMapper">
+
+    <resultMap id="DocumentTemplateMap" type="com.clover.salad.documentTemplate.command.application.dto.DocumentTemplateDTO">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="uploadFilePath" column="upload_file_path"/>
+        <result property="version" column="version"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="DocumentTemplateMap">
+        SELECT dt.id,
+               dt.name,
+               dt.description,
+               dt.version,
+               dt.created_at,
+               fu.path AS upload_file_path
+        FROM document_template dt
+                 JOIN file_upload fu ON dt.file_upload_id = fu.id
+        WHERE dt.is_deleted = FALSE
+        ORDER BY dt.created_at DESC
+    </select>
+
+    <select id="findById" parameterType="int" resultMap="DocumentTemplateMap">
+        SELECT dt.id,
+               dt.name,
+               dt.description,
+               dt.version,
+               dt.created_at,
+               fu.path AS upload_file_path
+        FROM document_template dt
+                 JOIN file_upload fu ON dt.file_upload_id = fu.id
+        WHERE dt.id = #{id}
+          AND dt.is_deleted = FALSE
+    </select>
+
+</mapper>

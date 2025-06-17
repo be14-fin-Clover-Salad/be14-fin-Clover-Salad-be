@@ -1,6 +1,8 @@
 package com.clover.salad.contract.document.entity;
 
 import com.clover.salad.common.file.entity.FileUploadEntity;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,6 +29,7 @@ public class DocumentTemplate {
 
 	private LocalDateTime createdAt;
 
+	@JsonProperty("isDeleted")
 	private boolean isDeleted;
 
 	@OneToOne(fetch = FetchType.LAZY)

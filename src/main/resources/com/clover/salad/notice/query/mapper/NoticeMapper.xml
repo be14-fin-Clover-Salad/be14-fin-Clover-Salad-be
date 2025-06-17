@@ -40,6 +40,7 @@
                n.id AS id,
                n.title,
                n.created_at,
+               n.is_deleted AS is_deleted,
                n.employee_id AS writerId,
                e.name AS writerName,
                e.level AS writerLevel,

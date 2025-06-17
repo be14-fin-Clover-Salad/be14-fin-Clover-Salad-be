@@ -23,7 +23,7 @@ public class DocumentTemplate {
 
 	private String name;
 
-	private String version;
+	private String version = "v1.0";
 
 	private String description;
 

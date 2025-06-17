@@ -34,7 +34,7 @@ public class DocumentTemplateCommandServiceImpl implements DocumentTemplateComma
 		DocumentTemplate entity = DocumentTemplate.builder()
 			.name(dto.getName())
 			.description(dto.getDescription())
-			.version("1")
+			.version("v1.0")
 			.createdAt(LocalDateTime.now())
 			.isDeleted(false)
 			.fileUpload(uploaded)
@@ -61,15 +61,18 @@ public class DocumentTemplateCommandServiceImpl implements DocumentTemplateComma
 		DocumentTemplate template = documentTemplateCommandRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 템플릿입니다."));
 
+		String currentVersion = template.getVersion();
+		String nextVersion = incrementVersion(currentVersion);
+		template.setVersion(nextVersion);
+
 		if (dto.getName() != null) {
 			template.setName(dto.getName());
 		}
-		if (dto.getVersion() != null) {
-			template.setVersion(dto.getVersion());
-		}
+
 		if (dto.getDescription() != null) {
 			template.setDescription(dto.getDescription());
 		}
+
 		if (dto.getFile() != null && !dto.getFile().isEmpty()) {
 			FileUploadEntity newFile = fileStorageService.store(dto.getFile(), "계약서");
 			template.setFileUpload(newFile);
@@ -77,5 +80,17 @@ public class DocumentTemplateCommandServiceImpl implements DocumentTemplateComma
 
 		template.setCreatedAt(LocalDateTime.now());
 	}
+
+	private String incrementVersion(String version) {
+		try {
+			if (version == null || !version.startsWith("v1.")) return "v1.1";
+			String num = version.substring(3); // "v1.2" → "2"
+			int next = Integer.parseInt(num) + 1;
+			return "v1." + next;
+		} catch (Exception e) {
+			return "v1.1";
+		}
+	}
+
 
 }

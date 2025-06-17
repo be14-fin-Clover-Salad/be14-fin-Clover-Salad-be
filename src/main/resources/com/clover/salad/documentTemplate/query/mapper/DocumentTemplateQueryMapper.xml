@@ -1,11 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.clover.salad.documentTemplate.query.mapper.DocumentTemplateQueryMapper">
 
-    <resultMap id="DocumentTemplateMap" type="com.clover.salad.documentTemplate.command.application.dto.DocumentTemplateDTO">
+    <resultMap id="DocumentTemplateMap"
+               type="com.clover.salad.documentTemplate.command.application.dto.DocumentTemplateDTO">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="description" column="description"/>
@@ -14,30 +15,56 @@
         <result property="createdAt" column="created_at"/>
     </resultMap>
 
+    <select id="findByCondition" parameterType="com.clover.salad.documentTemplate.query.dto.DocumentTemplateSearchDTO"
+            resultMap="DocumentTemplateMap">
+        SELECT dt.id,
+        dt.name,
+        dt.description,
+        dt.version,
+        dt.created_at,
+        fu.path AS upload_file_path
+        FROM document_template dt
+        JOIN file_upload fu ON dt.file_upload_id = fu.id
+        WHERE dt.is_deleted = FALSE
+        <if test="name != null and name != ''">
+            AND dt.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="version != null and version != ''">
+            AND dt.version LIKE CONCAT('%', #{version}, '%')
+        </if>
+        <if test="createdAtStart != null and createdAtStart != ''">
+            AND dt.created_at &gt;= #{createdAtStart}
+        </if>
+        <if test="createdAtEnd != null and createdAtEnd != ''">
+            AND dt.created_at &lt;= #{createdAtEnd}
+        </if>
+        ORDER BY dt.created_at DESC
+    </select>
+
     <select id="findAll" resultMap="DocumentTemplateMap">
         SELECT dt.id,
-               dt.name,
-               dt.description,
-               dt.version,
-               dt.created_at,
-               fu.path AS upload_file_path
+        dt.name,
+        dt.description,
+        dt.version,
+        dt.created_at,
+        fu.path AS upload_file_path
         FROM document_template dt
-                 JOIN file_upload fu ON dt.file_upload_id = fu.id
+        JOIN file_upload fu ON dt.file_upload_id = fu.id
         WHERE dt.is_deleted = FALSE
         ORDER BY dt.created_at DESC
     </select>
 
     <select id="findById" parameterType="int" resultMap="DocumentTemplateMap">
         SELECT dt.id,
-               dt.name,
-               dt.description,
-               dt.version,
-               dt.created_at,
-               fu.path AS upload_file_path
+        dt.name,
+        dt.description,
+        dt.version,
+        dt.created_at,
+        fu.path AS upload_file_path
         FROM document_template dt
-                 JOIN file_upload fu ON dt.file_upload_id = fu.id
+        JOIN file_upload fu ON dt.file_upload_id = fu.id
         WHERE dt.id = #{id}
-          AND dt.is_deleted = FALSE
+        AND dt.is_deleted = FALSE
     </select>
 
 </mapper>

@@ -71,6 +71,10 @@ public class QnaCommandServiceImpl implements QnaCommandService {
 			}
 		}
 
+		if(qna.isDeleted()){
+			throw new IllegalStateException("이미 삭제된 문의입니다.");
+		}
+
 		qna.setDeleted(true);
 
 		qnaRepository.save(qna);

@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/api/product")
 @Slf4j
 @RequiredArgsConstructor
 public class ProductQueryController {

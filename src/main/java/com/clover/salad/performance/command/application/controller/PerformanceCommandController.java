@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/performance")
+@RequestMapping("/api/performance")
 @Slf4j
 @RequiredArgsConstructor
 public class PerformanceCommandController {

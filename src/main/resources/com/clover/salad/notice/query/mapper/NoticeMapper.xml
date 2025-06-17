@@ -19,6 +19,7 @@
     <resultMap id="CheckInfoResultMap" type="com.clover.salad.notice.query.dto.CheckInfoDTO">
         <result property="employeeId" column="employee_id"/>
         <result property="employeeName" column="employeeName"/>
+        <result property="employeeLevel" column="employeeLevel"/>
         <result property="isChecked" column="is_checked"/>
     </resultMap>
 
@@ -70,6 +71,7 @@
         SELECT
                en.employee_id,
                e.name AS employeeName,
+               e.level AS employeeLevel,
                en.is_checked
           FROM employee_notice en
           JOIN employee e ON en.employee_id = e.id

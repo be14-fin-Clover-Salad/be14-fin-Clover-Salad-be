@@ -135,6 +135,10 @@ public class NoticeCommandServiceImpl implements NoticeCommandService {
 			throw new SecurityException("작성자 또는 관리자만 삭제할 수 있습니다.");
 		}
 
+		if(notice.isDeleted()){
+			throw new IllegalStateException("이미 삭제된 공지입니다.");
+		}
+
 		notice.setDeleted(true);
 
 		noticeRepository.save(notice);

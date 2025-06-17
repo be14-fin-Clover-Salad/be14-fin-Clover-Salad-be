@@ -14,5 +14,6 @@ public class EmployeeSearchResponseDTO {
 	private String level;
 	private String hireDate;
 	private String workPlace;
+	private int departmentId;
 	private String departmentName;
 }

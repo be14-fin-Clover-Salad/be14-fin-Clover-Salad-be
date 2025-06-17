@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.clover.salad.common.exception.CustomersException;
 import com.clover.salad.common.util.AuthUtil;
-import static com.clover.salad.common.util.AuthUtil.assertAdmin;
 import com.clover.salad.contract.query.service.ContractService;
 import com.clover.salad.customer.query.dto.CustomerQueryDTO;
 import com.clover.salad.customer.query.mapper.CustomerMapper;
@@ -26,13 +25,13 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
 
     @Override
     public List<CustomerQueryDTO> findAll() {
-        assertAdmin();
+        AuthUtil.assertAdmin();
         return customerMapper.findAll();
     }
 
     @Override
     public CustomerQueryDTO findCustomerById(int customerId) {
-        assertAdmin();
+        AuthUtil.assertAdmin();
         return customerMapper.findCustomerById(customerId);
     }
 

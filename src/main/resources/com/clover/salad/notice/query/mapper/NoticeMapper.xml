@@ -36,7 +36,7 @@
     </resultMap>
 
     <select id="findNoticeList" resultMap="NoticeResultMap">
-        SELECT
+        SELECT DISTINCT
                n.id AS id,
                n.title,
                n.created_at,

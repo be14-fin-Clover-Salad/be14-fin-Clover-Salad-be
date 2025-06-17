@@ -10,6 +10,7 @@ import lombok.Setter;
 public class CheckInfoDTO {
 	private int employeeId;
 	private String employeeName;
+	private String employeeLevel;
 	@JsonProperty("isChecked")
 	private boolean isChecked;
 }

@@ -2,7 +2,7 @@ package com.clover.salad.contract.command.service.parser;
 
 import com.clover.salad.contract.command.dto.*;
 import com.clover.salad.contract.document.entity.DocumentOrigin;
-import com.clover.salad.contract.common.CustomerType;
+import com.clover.salad.customer.command.domain.aggregate.vo.CustomerType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,8 @@ public class DefaultTemplateParser implements PdfContractParsingStrategy {
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	@Override
-	public ContractUploadRequestDTO parseAll(String fullText, String unused1, String unused2, DocumentOrigin origin) {
+	public ContractUploadRequestDTO parseAll(String fullText, String unused1, String unused2,
+			DocumentOrigin origin) {
 		CustomerDTO customer = parseCustomer(fullText);
 		ContractDTO contract = parseContract(fullText);
 		List<ProductDTO> products = parseProducts(fullText);
@@ -28,12 +29,8 @@ public class DefaultTemplateParser implements PdfContractParsingStrategy {
 		log.info("[파싱된 계약 정보] {}", contract);
 		products.forEach(p -> log.info("[파싱된 상품 정보] {}", p));
 
-		return ContractUploadRequestDTO.builder()
-			.customer(customer)
-			.contract(contract)
-			.products(products)
-			.documentOrigin(origin)
-			.build();
+		return ContractUploadRequestDTO.builder().customer(customer).contract(contract)
+				.products(products).documentOrigin(origin).build();
 	}
 
 	/*
@@ -46,20 +43,15 @@ public class DefaultTemplateParser implements PdfContractParsingStrategy {
 		String phone = extract(text, "연락처\\s*([\\d\\-]+)").replaceAll("-", "");
 		String email = extract(text, "이메일\\s*([\\w@.]+)");
 
-		return CustomerDTO.builder()
-			.name(name)
-			.birthdate(birthdate)
-			.address(address)
-			.phone(phone)
-			.email(email)
-			.customerType(CustomerType.고객)
-			.build();
+		return CustomerDTO.builder().name(name).birthdate(birthdate).address(address).phone(phone)
+				.email(email).customerType(CustomerType.고객).build();
 	}
 
 	private ContractDTO parseContract(String text) {
 		String start = "", end = "";
 		try {
-			Pattern datePattern = Pattern.compile("계약 시작일\\s*(\\d{4}-\\d{2}-\\d{2})\\s*계약 종료일\\s*(\\d{4}-\\d{2}-\\d{2})");
+			Pattern datePattern = Pattern.compile(
+					"계약 시작일\\s*(\\d{4}-\\d{2}-\\d{2})\\s*계약 종료일\\s*(\\d{4}-\\d{2}-\\d{2})");
 			Matcher dateMatcher = datePattern.matcher(text);
 			if (dateMatcher.find()) {
 				start = dateMatcher.group(1);
@@ -79,36 +71,22 @@ public class DefaultTemplateParser implements PdfContractParsingStrategy {
 		String day = extract(text, "매월 납일일자\\s*(\\d{1,2})");
 
 		try {
-			return ContractDTO.builder()
-				.startDate(LocalDate.parse(start, DATE_FORMAT))
-				.endDate(LocalDate.parse(end, DATE_FORMAT))
-				.amount(Integer.parseInt(amount))
-				.bankName(bank)
-				.bankAccount(acc)
-				.depositOwner(owner)
-				.relationship(rel)
-				.paymentEmail(email)
-				.paymentDay(Integer.parseInt(day))
-				.build();
+			return ContractDTO.builder().startDate(LocalDate.parse(start, DATE_FORMAT))
+					.endDate(LocalDate.parse(end, DATE_FORMAT)).amount(Integer.parseInt(amount))
+					.bankName(bank).bankAccount(acc).depositOwner(owner).relationship(rel)
+					.paymentEmail(email).paymentDay(Integer.parseInt(day)).build();
 		} catch (Exception e) {
 			log.warn("날짜 또는 숫자 파싱 실패: {}", e.getMessage());
-			return ContractDTO.builder()
-				.startDate(null)
-				.endDate(null)
-				.amount(0)
-				.bankName(bank)
-				.bankAccount(acc)
-				.depositOwner(owner)
-				.relationship(rel)
-				.paymentEmail(email)
-				.paymentDay(0)
-				.build();
+			return ContractDTO.builder().startDate(null).endDate(null).amount(0).bankName(bank)
+					.bankAccount(acc).depositOwner(owner).relationship(rel).paymentEmail(email)
+					.paymentDay(0).build();
 		}
 	}
 
 	private List<ProductDTO> parseProducts(String text) {
 		List<ProductDTO> list = new ArrayList<>();
-		Pattern pattern = Pattern.compile("(\\S+)\\s+(\\d+)\\s+(SN\\d{8})\\s+(\\S+)\\s+(\\d+)\\s*원/월");
+		Pattern pattern =
+				Pattern.compile("(\\S+)\\s+(\\d+)\\s+(SN\\d{8})\\s+(\\S+)\\s+(\\d+)\\s*원/월");
 		Matcher matcher = pattern.matcher(text);
 
 		while (matcher.find()) {
@@ -117,12 +95,8 @@ public class DefaultTemplateParser implements PdfContractParsingStrategy {
 			String modelName = matcher.group(3);
 			String manufacturer = matcher.group(4);
 
-			list.add(ProductDTO.builder()
-				.productName(productName)
-				.quantity(quantity)
-				.modelName(modelName)
-				.manufacturer(manufacturer)
-				.build());
+			list.add(ProductDTO.builder().productName(productName).quantity(quantity)
+					.modelName(modelName).manufacturer(manufacturer).build());
 		}
 
 		if (list.isEmpty()) {

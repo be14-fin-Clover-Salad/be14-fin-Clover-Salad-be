@@ -10,9 +10,15 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
-        if (email == null || email.isBlank()) {
-            return false;
+        if (email == null) {
+            return true; // PATCH 시 null 허용
         }
-        return email.matches(EMAIL_REGEX);
+
+        String trimmed = email.trim();
+        if (trimmed.isEmpty()) {
+            return false; // 공백만 입력된 경우 → 실패
+        }
+
+        return trimmed.matches(EMAIL_REGEX);
     }
 }

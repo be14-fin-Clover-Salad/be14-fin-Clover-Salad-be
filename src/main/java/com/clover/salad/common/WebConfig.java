@@ -2,7 +2,10 @@ package com.clover.salad.common;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.clover.salad.common.logging.ClientLogInterceptor;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -15,6 +18,12 @@ public class WebConfig implements WebMvcConfigurer {
 			.allowedHeaders("*")
 			.exposedHeaders("Authorization")
 			.allowCredentials(true);
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(new ClientLogInterceptor())
+			.addPathPatterns("/**");
 	}
 }
 

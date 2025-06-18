@@ -45,14 +45,14 @@ public class WebSecurity {
 
 		http.authorizeHttpRequests(authz ->
 				authz
-					// 개발용 일시적 허용
-					.requestMatchers("/**").permitAll()
+					// .requestMatchers("/**").permitAll()					// 개발용 일시적 허용
 					.requestMatchers("/auth/login").permitAll()
 					.requestMatchers("/employee").permitAll()
 					.requestMatchers("/employee/**").permitAll()
 					.requestMatchers("/notification/subscribe").permitAll()
 					.requestMatchers("/dashboard/sales").permitAll()
-					.anyRequest().authenticated()
+					.anyRequest().permitAll()
+					// .anyRequest().authenticated()
 			)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

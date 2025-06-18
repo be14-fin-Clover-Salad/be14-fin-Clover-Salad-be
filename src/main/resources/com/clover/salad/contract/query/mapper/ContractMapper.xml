@@ -57,30 +57,28 @@
         </collection>
     </resultMap>
 
-
     <select id="selectContractInfo" parameterType="int" resultMap="ContractResultMap">
-        SELECT
-            c.id,
-            c.code,
-            c.created_at,
-            c.start_date,
-            c.end_date,
-            c.status,
-            c.amount,
-            c.bank_name,
-            c.bank_account,
-            c.payment_day,
-            c.deposit_owner,
-            c.relationship,
-            c.payment_email,
-            c.is_deleted,
-            c.etc,
+        SELECT c.id,
+               c.code,
+               c.created_at,
+               c.start_date,
+               c.end_date,
+               c.status,
+               c.amount,
+               c.bank_name,
+               c.bank_account,
+               c.payment_day,
+               c.deposit_owner,
+               c.relationship,
+               c.payment_email,
+               c.is_deleted,
+               c.etc,
 
-            e.name AS employee_name,
-            cu.id AS customer_id,
-            cu.name AS customer_name,
+               e.name                              AS employee_name,
+               cu.id                               AS customer_id,
+               cu.name                             AS customer_name,
 
-            GROUP_CONCAT(p.name SEPARATOR ', ') AS product_names
+               GROUP_CONCAT(p.name SEPARATOR ', ') AS product_names
 
         FROM contract c
                  JOIN employee e ON c.employee_id = e.id
@@ -89,7 +87,7 @@
                  LEFT JOIN product p ON cp.product_id = p.id
 
         WHERE c.employee_id = #{employeeId}
-        AND NOT c.is_deleted
+          AND NOT c.is_deleted
         GROUP BY c.id
     </select>
 
@@ -191,30 +189,28 @@
     </select>
 
 
-
     <select id="selectDetailContractInfo" parameterType="int" resultMap="ContractWithProductsMap">
-        SELECT
-            c.id,
-            f.rename_file,
-            c.code,
-            c.amount,
+        SELECT c.id,
+               f.rename_file,
+               c.code,
+               c.amount,
 
-            cu.name AS customer_name,
-            cu.address AS customer_address,
-            cu.phone AS customer_phone,
+               cu.name    AS customer_name,
+               cu.address AS customer_address,
+               cu.phone   AS customer_phone,
 
-            e.name AS employee_name,
+               e.name     AS employee_name,
 
-            a.title AS aprv_title,
-            a.content AS aprv_content,
-            a.state AS aprv_state,
-            a.req_id,
-            a.aprv_id,
+               a.title    AS aprv_title,
+               a.content  AS aprv_content,
+               a.state    AS aprv_state,
+               a.req_id,
+               a.aprv_id,
 
-            p.name AS product_name,
-            p.serial_number,
-            cp.quantity,
-            p.rental_cost
+               p.name     AS product_name,
+               p.serial_number,
+               cp.quantity,
+               p.rental_cost
 
         FROM contract c
                  JOIN customer cu ON c.customer_id = cu.id

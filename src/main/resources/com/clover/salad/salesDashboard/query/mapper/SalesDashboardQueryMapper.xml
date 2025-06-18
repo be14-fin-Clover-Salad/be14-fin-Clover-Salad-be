@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clover.salad.salesDashboard.query.mapper.SalesDashboardQueryMapper">
+
+    <!-- 전체 매출 -->
+    <select id="selectTotalSalesByDateRange" parameterType="map" resultType="int">
+        SELECT
+               COALESCE(SUM(amount), 0)
+          FROM sales
+         WHERE is_deleted = FALSE
+           AND sales_date BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <!-- 월별 추이 -->
+    <resultMap id="SalesMonthlyTrendResultMap"
+               type="com.clover.salad.salesDashboard.query.dto.SalesMonthlyTrendResponseDTO">
+        <result property="year" column="year"/>
+        <result property="month" column="month"/>
+        <result property="totalAmount" column="totalAmount"/>
+    </resultMap>
+    <select id="selectMonthlySalesByYear" parameterType="int" resultMap="SalesMonthlyTrendResultMap">
+        SELECT
+               YEAR(sales_date) AS year
+             , MONTH(sales_date) AS month
+             , COALESCE(SUM(amount), 0) AS totalAmount
+          FROM sales
+         WHERE is_deleted = FALSE
+           AND YEAR(sales_date) = #{year}
+         GROUP BY YEAR(sales_date), MONTH(sales_date)
+         ORDER BY MONTH(sales_date)
+    </select>
+
+    <!-- 분기별 추이 -->
+    <resultMap id="SalesQuarterlyTrendResultMap"
+               type="com.clover.salad.salesDashboard.query.dto.SalesQuarterlyTrendResponseDTO">
+        <result property="year" column="year" />
+        <result property="quarter" column="quarter" />
+        <result property="totalAmount" column="totalAmount" />
+    </resultMap>
+    <select id="selectQuarterlySalesByYear" parameterType="int" resultMap="SalesQuarterlyTrendResultMap">
+        SELECT
+               YEAR(sales_date) AS year
+             , QUARTER(sales_date) AS quarter
+             , COALESCE(SUM(amount), 0) AS totalAmount
+          FROM sales
+         WHERE is_deleted = FALSE
+           AND YEAR(sales_date) = #{year}
+         GROUP BY YEAR(sales_date), QUARTER(sales_date)
+         ORDER BY QUARTER(sales_date)
+    </select>
+
+    <!-- 연도별 추이 -->
+    <resultMap id="SalesYearlyTrendResultMap"
+               type="com.clover.salad.salesDashboard.query.dto.SalesYearlyTrendResponseDTO">
+        <result property="year" column="year"/>
+        <result property="totalAmount" column="totalAmount"/>
+    </resultMap>
+    <select id="selectYearlySalesRange" parameterType="map" resultMap="SalesYearlyTrendResultMap">
+        SELECT
+               YEAR(sales_date) AS year
+             , COALESCE(SUM(amount), 0) AS totalAmount
+          FROM sales
+         WHERE is_deleted = FALSE
+           AND YEAR(sales_date) BETWEEN #{startYear} AND #{endYear}
+         GROUP BY YEAR(sales_date)
+         ORDER BY YEAR(sales_date)
+    </select>
+
+    <!-- 팀별 비율 공통 -->
+    <resultMap id="SalesTeamRatioRawResultMap"
+               type="com.clover.salad.salesDashboard.query.dto.SalesTeamRatioRawDTO">
+        <result property="teamName" column="teamName"/>
+        <result property="teamAmount" column="teamAmount"/>
+    </resultMap>
+    <select id="selectTeamSalesInPeriod" parameterType="map" resultMap="SalesTeamRatioRawResultMap">
+        SELECT
+               department AS teamName
+             , COALESCE(SUM(amount), 0) AS teamAmount
+          FROM sales
+         WHERE is_deleted = FALSE
+           AND sales_date BETWEEN #{startDate} AND #{endDate}
+         GROUP BY department
+    </select>
+    <select id="selectTeamSalesInMonth" parameterType="map" resultMap="SalesTeamRatioRawResultMap">
+        SELECT
+               department AS teamName
+             , COALESCE(SUM(amount), 0) AS teamAmount
+          FROM sales
+         WHERE is_deleted = FALSE
+           AND YEAR(sales_date) = #{year}
+           AND MONTH(sales_date) = #{month}
+         GROUP BY department
+    </select>
+
+    <!-- 팀별 총매출 월/분기/연도/범위 -->
+    <resultMap id="TeamMonthlySalesResultMap"
+               type="com.clover.salad.salesDashboard.query.dto.SalesTeamAmountResponseDTO">
+        <result property="teamName" column="teamName"/>
+        <result property="teamAmount" column="teamAmount"/>
+    </resultMap>
+    <select id="selectTeamSalesAmountByMonth" parameterType="map" resultMap="TeamMonthlySalesResultMap">
+        SELECT
+               department AS teamName
+             , COALESCE(SUM(amount), 0) AS teamAmount
+          FROM sales
+         WHERE is_deleted = FALSE
+           AND YEAR(sales_date) = #{year}
+           AND MONTH(sales_date) = #{month}
+         GROUP BY department
+    </select>
+
+    <resultMap id="TeamQuarterlySalesResultMap"
+               type="com.clover.salad.salesDashboard.query.dto.SalesTeamAmountResponseDTO">
+        <result property="teamName" column="teamName"/>
+        <result property="teamAmount" column="teamAmount"/>
+    </resultMap>
+    <select id="selectTeamSalesAmountByQuarter" parameterType="map" resultMap="TeamQuarterlySalesResultMap">
+        SELECT
+               department AS teamName
+             , COALESCE(SUM(amount), 0) AS teamAmount
+          FROM sales
+         WHERE is_deleted = FALSE
+           AND sales_date BETWEEN #{startDate} AND #{endDate}
+         GROUP BY department
+    </select>
+
+    <resultMap id="TeamYearlySalesResultMap"
+               type="com.clover.salad.salesDashboard.query.dto.SalesTeamAmountResponseDTO">
+        <result property="teamName" column="teamName"/>
+        <result property="teamAmount" column="teamAmount"/>
+    </resultMap>
+    <select id="selectTeamSalesAmountByYear" parameterType="int" resultMap="TeamYearlySalesResultMap">
+        SELECT
+               department AS teamName
+             , COALESCE(SUM(amount), 0) AS teamAmount
+          FROM sales
+         WHERE is_deleted = FALSE
+           AND YEAR(sales_date) = #{year}
+         GROUP BY department
+    </select>
+
+    <resultMap id="TeamRangeSalesResultMap"
+               type="com.clover.salad.salesDashboard.query.dto.SalesTeamAmountResponseDTO">
+        <result property="teamName" column="teamName"/>
+        <result property="teamAmount" column="teamAmount"/>
+    </resultMap>
+    <select id="selectTeamSalesAmountInRange" parameterType="map" resultMap="TeamRangeSalesResultMap">
+        SELECT
+               department AS teamName
+             , COALESCE(SUM(amount), 0) AS teamAmount
+          FROM sales
+         WHERE is_deleted = FALSE
+           AND sales_date BETWEEN #{startDate} AND #{endDate}
+         GROUP BY department
+    </select>
+
+</mapper>

@@ -51,7 +51,8 @@ public class WebSecurity {
 					.requestMatchers("/employee").permitAll()
 					.requestMatchers("/employee/**").permitAll()
 					.requestMatchers("/notification/subscribe").permitAll()
-					.anyRequest().authenticated()
+					.anyRequest().permitAll()
+					// .anyRequest().authenticated()
 			)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

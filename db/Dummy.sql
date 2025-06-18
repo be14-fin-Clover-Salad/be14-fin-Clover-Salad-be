@@ -500,20 +500,20 @@ VALUES (1, 6, 81, 100, 4, 1100000, 4.5, 50, 202405, 1),
 #     ('APPROVAL', '[결재 요청] A-2506-0003 계약에 대한 승인을 요청받았습니다.', NOW(), 'http://www.naver.com', FALSE, FALSE, 5);
 
 UPDATE product
-SET name = '청소기',
+SET name = '제습기',
     company = '삼성',
     serial_number = 'SN20240001'
 WHERE id = 6;
 
 UPDATE product
-SET name = '정수기',
+SET name = '전자레인지',
     company = 'LG',
     serial_number = 'SN20240002'
 WHERE id = 1;
 
 UPDATE product
-SET name = '비데',
-    company = '쿠쿠',
+SET name = '공기 청정기',
+    company = '삼성',
     serial_number = 'SN20240003'
 WHERE id = 2;
 

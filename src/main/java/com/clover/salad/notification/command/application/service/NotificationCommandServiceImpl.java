@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.clover.salad.notification.command.application.dto.NotificationCreateDTO;
 import com.clover.salad.notification.command.domain.aggregate.entity.NotificationEntity;
 import com.clover.salad.notification.command.domain.repository.NotificationRepository;
+import com.clover.salad.notification.query.sse.SseEmitterManager;
 import com.clover.salad.security.SecurityUtil;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -19,15 +20,19 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class NotificationCommandServiceImpl implements NotificationCommandService {
 	private final NotificationRepository notificationRepository;
+	private final SseEmitterManager sseEmitterManager;
 
 	@Autowired
-	public NotificationCommandServiceImpl(NotificationRepository notificationRepository
+	public NotificationCommandServiceImpl(NotificationRepository notificationRepository,
+		SseEmitterManager sseEmitterManager
 	) {
 		this.notificationRepository = notificationRepository;
+		this.sseEmitterManager = sseEmitterManager;
 	}
 
 	@Override
 	public void createNotification(NotificationCreateDTO notificationCreateDTO) {
+		log.info("[알림 생성] 수신자 employeeId: {}", notificationCreateDTO.getEmployeeId());
 		NotificationEntity notificationEntity = NotificationEntity.builder()
 			.type(notificationCreateDTO.getType())
 			.content(notificationCreateDTO.getContent())
@@ -39,6 +44,10 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
 			.build();
 
 		notificationRepository.save(notificationEntity);
+
+		// SSE 전송
+		log.info("[알림 생성] DB 저장 완료. SSE 전송 시작...");
+		sseEmitterManager.send(notificationCreateDTO.getEmployeeId(), notificationCreateDTO);
 	}
 
 	@Override
@@ -50,7 +59,7 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
 			throw new AccessDeniedException("자신의 알림만 읽음 처리할 수 있습니다.");
 		}
 
-		notificationEntity.markAsRead(); // 변경 감지 발생
+		notificationEntity.markAsRead();
 
 		notificationRepository.save(notificationEntity);
 	}

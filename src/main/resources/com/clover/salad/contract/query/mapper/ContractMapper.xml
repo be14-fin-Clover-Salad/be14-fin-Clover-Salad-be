@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.clover.salad.contract.query.mapper.ContractMapper">
+
+    <resultMap id="ContractResultMap" type="com.clover.salad.contract.query.dto.ContractDTO">
+        <id property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="status" column="status"/>
+        <result property="amount" column="amount"/>
+        <result property="bankName" column="bank_name"/>
+        <result property="bankAccount" column="bank_account"/>
+        <result property="paymentDay" column="payment_day"/>
+        <result property="depositOwner" column="deposit_owner"/>
+        <result property="paymentEmail" column="payment_email"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="etc" column="etc"/>
+        <result property="employeeName" column="employee_name"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="customerName" column="customer_name"/>
+        <result property="productNames" column="product_names"/>
+    </resultMap>
+
+    <resultMap id="ContractWithProductsMap" type="com.clover.salad.contract.query.dto.ContractResponseDTO">
+
+        <result property="id" column="id"/>
+        <result property="renameFile" column="rename_file"/>
+        <result property="code" column="code"/>
+        <result property="amount" column="amount"/>
+
+
+        <result property="customerName" column="customer_name"/>
+        <result property="customerAddress" column="customer_address"/>
+        <result property="customerPhone" column="customer_phone"/>
+
+
+        <result property="employeeName" column="employee_name"/>
+
+
+        <result property="aprvTitle" column="aprv_title"/>
+        <result property="aprvContent" column="aprv_content"/>
+        <result property="aprvState" column="aprv_state"/>
+        <result property="reqId" column="req_id"/>
+        <result property="aprvId" column="aprv_id"/>
+
+
+        <collection property="productList" ofType="com.clover.salad.contract.query.dto.ProductDTO">
+            <result property="productName" column="product_name"/>
+            <result property="serialNumber" column="serial_number"/>
+            <result property="quantity" column="quantity"/>
+            <result property="rentalCost" column="rental_cost"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectContractInfo" parameterType="int" resultMap="ContractResultMap">
+        SELECT c.id,
+               c.code,
+               c.created_at,
+               c.start_date,
+               c.end_date,
+               c.status,
+               c.amount,
+               c.bank_name,
+               c.bank_account,
+               c.payment_day,
+               c.deposit_owner,
+               c.relationship,
+               c.payment_email,
+               c.is_deleted,
+               c.etc,
+
+               e.name                              AS employee_name,
+               cu.id                               AS customer_id,
+               cu.name                             AS customer_name,
+
+               GROUP_CONCAT(p.name SEPARATOR ', ') AS product_names
+
+        FROM contract c
+                 JOIN employee e ON c.employee_id = e.id
+                 JOIN customer cu ON c.customer_id = cu.id
+                 LEFT JOIN contract_product cp ON c.id = cp.contract_id
+                 LEFT JOIN product p ON cp.product_id = p.id
+
+        WHERE c.employee_id = #{employeeId}
+          AND NOT c.is_deleted
+        GROUP BY c.id
+    </select>
+
+
+    <select id="searchContracts"
+            resultMap="ContractResultMap"
+            parameterType="map">
+        SELECT
+        c.id,
+        c.code,
+        c.created_at,
+        c.start_date,
+        c.end_date,
+        c.status,
+        c.amount,
+        c.bank_name,
+        c.bank_account,
+        c.payment_day,
+        c.deposit_owner,
+        c.relationship,
+        c.payment_email,
+        c.is_deleted,
+        c.etc,
+        e.name AS employee_name,
+        cu.id AS customer_id,
+        cu.name AS customer_name,
+        GROUP_CONCAT(p.name SEPARATOR ', ') AS product_names
+        FROM contract c
+        JOIN employee e ON c.employee_id = e.id
+        JOIN customer cu ON c.customer_id = cu.id
+        LEFT JOIN contract_product cp ON c.id = cp.contract_id
+        LEFT JOIN product p ON cp.product_id = p.id
+        <where>
+            NOT c.is_deleted
+            AND c.employee_id = #{employeeId}
+
+            <if test="search.minAmount != null">
+                AND c.amount &gt;= #{search.minAmount}
+            </if>
+            <if test="search.maxAmount != null">
+                AND c.amount &lt;= #{search.maxAmount}
+            </if>
+
+            <if test="search.code != null and search.code != ''">
+                AND c.code LIKE CONCAT('%', #{search.code}, '%')
+            </if>
+            <if test="search.createdAtStart != null">
+                AND c.created_at &gt;= #{search.createdAtStart}
+            </if>
+            <if test="search.createdAtEnd != null">
+                AND c.created_at &lt;= #{search.createdAtEnd}
+            </if>
+            <if test="search.startDateStart != null">
+                AND c.start_date &gt;= #{search.startDateStart}
+            </if>
+            <if test="search.startDateEnd != null">
+                AND c.start_date &lt;= #{search.startDateEnd}
+            </if>
+            <if test="search.endDateStart != null">
+                AND c.end_date &gt;= #{search.endDateStart}
+            </if>
+            <if test="search.endDateEnd != null">
+                AND c.end_date &lt;= #{search.endDateEnd}
+            </if>
+            <if test="search.status != null and search.status != ''">
+                AND c.status = #{search.status}
+            </if>
+            <if test="search.bankName != null and search.bankName != ''">
+                AND c.bank_name LIKE CONCAT('%', #{search.bankName}, '%')
+            </if>
+            <if test="search.paymentDayStart != null">
+                AND c.payment_day &gt;= #{search.paymentDayStart}
+            </if>
+            <if test="search.paymentDayEnd != null">
+                AND c.payment_day &lt;= #{search.paymentDayEnd}
+            </if>
+            <if test="search.depositOwner != null and search.depositOwner != ''">
+                AND c.deposit_owner LIKE CONCAT('%', #{search.depositOwner}, '%')
+            </if>
+            <if test="search.relationship != null and search.relationship != ''">
+                AND c.relationship = #{search.relationship}
+            </if>
+            <if test="search.employeeName != null and search.employeeName != ''">
+                AND e.name LIKE CONCAT('%', #{search.employeeName}, '%')
+            </if>
+            <if test="search.customerName != null and search.customerName != ''">
+                AND cu.name LIKE CONCAT('%', #{search.customerName}, '%')
+            </if>
+            <if test="search.productName != null and search.productName != ''">
+                AND EXISTS (
+                SELECT 1 FROM contract_product cp2
+                JOIN product p2 ON cp2.product_id = p2.id
+                WHERE cp2.contract_id = c.id
+                AND p2.name LIKE CONCAT('%', #{search.productName}, '%')
+                )
+            </if>
+        </where>
+        GROUP BY c.id
+    </select>
+
+
+    <select id="selectDetailContractInfo" parameterType="int" resultMap="ContractWithProductsMap">
+        SELECT c.id,
+               f.rename_file,
+               c.code,
+               c.amount,
+
+               cu.name    AS customer_name,
+               cu.address AS customer_address,
+               cu.phone   AS customer_phone,
+
+               e.name     AS employee_name,
+
+               a.title    AS aprv_title,
+               a.content  AS aprv_content,
+               a.state    AS aprv_state,
+               a.req_id,
+               a.aprv_id,
+
+               p.name     AS product_name,
+               p.serial_number,
+               cp.quantity,
+               p.rental_cost
+
+        FROM contract c
+                 JOIN customer cu ON c.customer_id = cu.id
+                 JOIN employee e ON c.employee_id = e.id
+                 LEFT JOIN approval a ON a.contract_id = c.id
+                 LEFT JOIN contract_product cp ON cp.contract_id = c.id
+                 LEFT JOIN product p ON p.id = cp.product_id
+                 LEFT JOIN document_origin d ON c.document_origin_id = d.id
+                 LEFT JOIN file_upload f ON d.file_upload_id = f.id
+
+        WHERE c.id = #{contractId}
+    </select>
+
+    <select id="findCustomerIdsByEmployeeId" parameterType="int" resultType="int">
+        SELECT DISTINCT customer_id
+        FROM CONTRACT
+        WHERE employee_id = #{employeeId}
+          AND is_deleted = FALSE
+    </select>
+
+    <select id="existsById" parameterType="int" resultType="boolean">
+        SELECT COUNT(id)
+        FROM contract
+        WHERE id = #{id}
+    </select>
+
+</mapper>

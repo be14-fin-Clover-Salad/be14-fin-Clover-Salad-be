@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.clover.salad.customer.query.mapper.CustomerMapper">
+
+  <resultMap id="CustomerResultMap" type="com.clover.salad.customer.query.dto.CustomerQueryDTO">
+    <id property="id" column="id"/>
+    <result property="name" column="name"/>
+    <result property="birthdate" column="birthdate"/>
+    <result property="address" column="address"/>
+    <result property="phone" column="phone"/>
+    <result property="email" column="email"/>
+    <result property="registerAt" column="register_at"/>
+    <result property="isDeleted" column="is_deleted"/>
+    <result property="type" column="type"/>
+    <result property="etc" column="etc"/>
+  </resultMap>
+
+  <select id="findAll" resultMap="CustomerResultMap">
+        SELECT
+               c.id
+             , c.name
+             , c.birthdate
+             , c.address
+             , c.phone
+             , c.email
+             , c.register_at
+             , c.is_deleted
+             , c.type
+             , c.etc
+          FROM customer c
+  </select>
+
+  <select id="findCustomerById" resultMap="CustomerResultMap">
+        SELECT
+               c.id
+             , c.name
+             , c.birthdate
+             , c.address
+             , c.phone
+             , c.email
+             , c.register_at
+             , c.is_deleted
+             , c.type
+             , c.etc
+          FROM customer c
+         WHERE c.id = #{id}
+  </select>
+
+  <select id="findCustomersByIds" resultMap="CustomerResultMap">
+    SELECT
+           c.id
+         , c.name
+         , c.birthdate
+         , c.address
+         , c.phone
+         , c.email
+         , c.register_at
+         , c.is_deleted
+         , c.type
+         , c.etc
+      FROM customer c
+     WHERE c.id IN
+    <foreach item="id" collection="customerIds" open="(" separator="," close=")">
+         #{id}
+    </foreach>
+  </select>
+
+  <select id="findRegisteredCustomerId" resultType="int">
+        SELECT c.id
+          FROM customer c
+         WHERE c.name = #{customerName}
+           AND c.birthdate = #{customerBirthdate}
+           AND c.phone = #{customerPhone}
+           AND c.is_deleted = false
+  </select>
+
+</mapper>

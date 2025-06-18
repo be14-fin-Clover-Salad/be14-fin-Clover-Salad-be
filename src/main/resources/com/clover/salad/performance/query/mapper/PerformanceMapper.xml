@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clover.salad.performance.query.mapper.PerformanceMapper">
+
+    <!-- 설명. 개인 실적 ResultMap -->
+    <resultMap id="EmployeePerformanceResultMap" type="com.clover.salad.performance.command.application.dto.EmployeePerformanceDTO">
+        <id property="id" column="ID"/>
+        <result property="rentalProductCount" column="RENTAL_PRODUCT_COUNT"/>
+        <result property="rentalRetentionCount" column="RENTAL_RETENTION_COUNT"/>
+        <result property="totalRentalCount" column="TOTAL_RENTAL_COUNT"/>
+        <result property="newCustomerCount" column="NEW_CUSTOMER_COUNT"/>
+        <result property="totalRentalAmount" column="TOTAL_RENTAL_AMOUNT"/>
+        <result property="customerFeedbackScore" column="(EP.CUSTOMER_FEEDBACK_SCORE * 10)"/>
+        <result property="customerFeedbackCount" column="CUSTOMER_FEEDBACK_COUNT"/>
+        <result property="targetDate" column="TARGET_DATE"/>
+        <result property="employeeId" column="EMPLOYEE_ID"/>
+    </resultMap>
+
+    <!-- 설명. 팀 실적 ResultMap -->
+    <resultMap id="DepartmentPerformanceResultMap" type="com.clover.salad.performance.command.application.dto.DepartmentPerformanceDTO">
+        <id property="id" column="ID"/>
+        <result property="rentalProductCount" column="RENTAL_PRODUCT_COUNT"/>
+        <result property="rentalRetentionCount" column="RENTAL_RETENTION_COUNT"/>
+        <result property="totalRentalCount" column="TOTAL_RENTAL_COUNT"/>
+        <result property="newCustomerCount" column="NEW_CUSTOMER_COUNT"/>
+        <result property="totalRentalAmount" column="TOTAL_RENTAL_AMOUNT"/>
+        <result property="customerFeedbackScore" column="(DP.CUSTOMER_FEEDBACK_SCORE * 10)"/>
+        <result property="customerFeedbackCount" column="CUSTOMER_FEEDBACK_COUNT"/>
+        <result property="targetDate" column="TARGET_DATE"/>
+        <result property="departmentId" column="DEPARTMENT_ID"/>
+    </resultMap>
+
+    <!-- 설명. 월별 상품 실적 ResultMap -->
+    <resultMap id="ProductPerformanceResultMap" type="com.clover.salad.performance.command.application.dto.ProductPerformancePerMonthDTO">
+        <id property="id" column="PRODUCT_ID"/>
+        <result property="productCode" column="PRODUCT_CODE"/>
+        <result property="sales" column="SALES"/>
+    </resultMap>
+
+    <!-- 설명. 개인 실적 조회 -->
+    <select id="selectEmployeePerformanceByEmployeeId" resultMap="EmployeePerformanceResultMap" parameterType="map">
+        SELECT
+               EP.ID
+             , EP.RENTAL_PRODUCT_COUNT
+             , EP.RENTAL_RETENTION_COUNT
+             , EP.TOTAL_RENTAL_COUNT
+             , EP.NEW_CUSTOMER_COUNT
+             , EP.TOTAL_RENTAL_AMOUNT
+             , (EP.CUSTOMER_FEEDBACK_SCORE * 10)
+             , EP.CUSTOMER_FEEDBACK_COUNT
+             , EP.TARGET_DATE
+             , EP.EMPLOYEE_ID
+          FROM EMPLOYEE_PERFORMANCE EP
+         WHERE EP.EMPLOYEE_ID = #{employeeId}
+           AND EP.TARGET_DATE BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <!-- 설명. 팀 실적 조회 -->
+    <select id="selectDepartmentPerformanceByDepartmentName" resultMap="DepartmentPerformanceResultMap" parameterType="map">
+        SELECT
+               DP.ID
+             , DP.RENTAL_PRODUCT_COUNT
+             , DP.RENTAL_RETENTION_COUNT
+             , DP.TOTAL_RENTAL_COUNT
+             , DP.NEW_CUSTOMER_COUNT
+             , DP.TOTAL_RENTAL_AMOUNT
+             , (DP.CUSTOMER_FEEDBACK_SCORE * 10)
+             , DP.CUSTOMER_FEEDBACK_COUNT
+             , DP.TARGET_DATE
+             , DP.DEPARTMENT_ID
+          FROM DEPARTMENT_PERFORMANCE DP
+         WHERE DP.DEPARTMENT_ID = (SELECT D.ID
+                                     FROM DEPARTMENT D
+                                    WHERE D.NAME = #{deptName})
+           AND DP.TARGET_DATE BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <!-- 설명. 계약 시작 기간에 따른 상품 판매 수량 조회 -->
+    <select id="selectProductPerformanceByProductCode" resultMap="ProductPerformanceResultMap">
+        SELECT
+               CP.PRODUCT_ID AS PRODUCT_ID
+             , P.PRODUCT_CODE AS PRODUCT_CODE
+             , SUM(CP.QUANTITY) AS SALES
+          FROM CONTRACT_PRODUCT CP
+          JOIN PRODUCT P
+            ON CP.product_id = P.id
+          JOIN CONTRACT C
+            ON CP.contract_id = C.id
+         WHERE P.PRODUCT_CODE = #{productCode}
+           AND C.START_DATE BETWEEN #{startDate} AND #{endDate}
+         GROUP BY CP.PRODUCT_ID
+    </select>
+
+    <select id="selectEmployeePerformanceByTargetDateAndDepartmentId" resultMap="EmployeePerformanceResultMap" parameterType="map">
+        SELECT
+               EP.ID
+             , EP.RENTAL_PRODUCT_COUNT
+             , EP.RENTAL_RETENTION_COUNT
+             , EP.TOTAL_RENTAL_COUNT
+             , EP.NEW_CUSTOMER_COUNT
+             , EP.TOTAL_RENTAL_AMOUNT
+             , (EP.CUSTOMER_FEEDBACK_SCORE * 10)
+             , EP.CUSTOMER_FEEDBACK_COUNT
+             , EP.TARGET_DATE
+             , EP.EMPLOYEE_ID
+          FROM EMPLOYEE_PERFORMANCE EP
+         WHERE EP.EMPLOYEE_ID IN (SELECT E.ID
+                                    FROM EMPLOYEE E
+                                   WHERE E.DEPARTMENT_ID = #{deptId}
+                                     AND E.IS_ADMIN = FALSE)
+           AND EP.TARGET_DATE = #{targetDate}
+    </select>
+</mapper>

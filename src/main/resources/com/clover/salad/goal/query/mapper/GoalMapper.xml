@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clover.salad.goal.query.mapper.GoalMapper">
+
+    <!-- 설명. 실적 목표 ResultMap -->
+    <resultMap id="GoalResultMap" type="com.clover.salad.goal.command.application.dto.GoalDTO">
+        <id property="id" column="ID"/>
+        <result property="rentalProductCount" column="RENTAL_PRODUCT_COUNT"/>
+        <result property="rentalRetentionCount" column="RENTAL_RETENTION_COUNT"/>
+        <result property="totalRentalCount" column="TOTAL_RENTAL_COUNT"/>
+        <result property="newCustomerCount" column="NEW_CUSTOMER_COUNT"/>
+        <result property="totalRentalAmount" column="TOTAL_RENTAL_AMOUNT"/>
+        <result property="customerFeedbackScore" column="(EG.CUSTOMER_FEEDBACK_SCORE * 10)"/>
+        <result property="customerFeedbackCount" column="CUSTOMER_FEEDBACK_COUNT"/>
+        <result property="targetDate" column="TARGET_DATE"/>
+        <result property="employeeId" column="EMPLOYEE_ID"/>
+    </resultMap>
+
+    <!-- 설명. 팀 실적 목표 ResultMap -->
+    <resultMap id="TeamGoalResultMap" type="com.clover.salad.goal.command.application.dto.GoalDTO">
+        <id property="id" column="ID"/>
+        <result property="rentalProductCount" column="SUM(EG.RENTAL_PRODUCT_COUNT)"/>
+        <result property="rentalRetentionCount" column="SUM(EG.RENTAL_RETENTION_COUNT)"/>
+        <result property="totalRentalCount" column="SUM(EG.TOTAL_RENTAL_COUNT)"/>
+        <result property="newCustomerCount" column="SUM(EG.NEW_CUSTOMER_COUNT)"/>
+        <result property="totalRentalAmount" column="SUM(EG.TOTAL_RENTAL_AMOUNT)"/>
+        <result property="customerFeedbackScore" column="ROUND(AVG(EG.CUSTOMER_FEEDBACK_SCORE * 10))"/>
+        <result property="customerFeedbackCount" column="SUM(EG.CUSTOMER_FEEDBACK_COUNT)"/>
+        <result property="targetDate" column="TARGET_DATE"/>
+        <result property="employeeId" column="EMPLOYEE_ID"/>
+    </resultMap>
+
+    <!-- 설명. 기본 실적 목표 ResultMap -->
+    <resultMap id="DefaultGoalResultMap" type="com.clover.salad.goal.command.application.dto.DefaultGoalDTO">
+        <id property="id" column="ID"/>
+        <result property="level" column="LEVEL"/>
+        <result property="rentalProductCount" column="RENTAL_PRODUCT_COUNT"/>
+        <result property="rentalRetentionRate" column="RENTAL_RETENTION_RATE"/>
+        <result property="newCustomerCount" column="NEW_CUSTOMER_COUNT"/>
+        <result property="totalRentalAmount" column="TOTAL_RENTAL_AMOUNT"/>
+        <result property="customerFeedbackScore" column="(DG.CUSTOMER_FEEDBACK_SCORE * 10)"/>
+        <result property="targetYear" column="TARGET_YEAR"/>
+    </resultMap>
+
+    <!-- 설명. 설정 기간의 사원별 실적 목표 조회 -->
+    <select id="selectGoalByEmployeeId" resultMap="GoalResultMap"
+            parameterType="com.clover.salad.goal.command.application.dto.EmployeeSearchTermDTO">
+        SELECT
+               EG.ID
+             , EG.RENTAL_PRODUCT_COUNT
+             , EG.RENTAL_RETENTION_COUNT
+             , EG.TOTAL_RENTAL_COUNT
+             , EG.NEW_CUSTOMER_COUNT
+             , EG.TOTAL_RENTAL_AMOUNT
+             , (EG.CUSTOMER_FEEDBACK_SCORE * 10)
+             , EG.CUSTOMER_FEEDBACK_COUNT
+             , EG.TARGET_DATE
+             , EG.EMPLOYEE_ID
+          FROM EMPLOYEE_GOAL EG
+         WHERE EG.EMPLOYEE_ID IN (SELECT E.ID
+                                   FROM EMPLOYEE E
+                                  WHERE E.CODE LIKE CONCAT('%', #{employeeCode}, '%'))
+        <if test="startDate != null">
+           AND EG.TARGET_DATE >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            <![CDATA[AND EG.TARGET_DATE <= #{endDate}]]>
+        </if>
+        <if test="minRentalProductCount != null">
+            AND EG.RENTAL_PRODUCT_COUNT >= #{minRentalProductCount}
+        </if>
+        <if test="maxRentalProductCount != null">
+            <![CDATA[AND EG.RENTAL_PRODUCT_COUNT <= #{maxRentalProductCount}]]>
+        </if>
+        <if test="minRentalRetentionRate != null">
+            AND EG.RENTAL_RETENTION_COUNT * 100 / EG.TOTAL_RENTAL_COUNT >= #{minRentalRetentionRate}
+        </if>
+        <if test="maxRentalRetentionRate != null">
+            <![CDATA[AND EG.RENTAL_RETENTION_RATE * 100 / EG.TOTAL_RENTAL_COUNT <= #{maxRentalRetentionRate}]]>
+        </if>
+        <if test="minNewCustomerCount != null">
+            AND EG.NEW_CUSTOMER_COUNT >= #{minNewCustomerCount}
+        </if>
+        <if test="maxNewCustomerCount != null">
+            <![CDATA[AND EG.NEW_CUSTOMER_COUNT <= #{maxNewCustomerCount}]]>
+        </if>
+        <if test="minTotalRentalAmount != null">
+            AND EG.TOTAL_RENTAL_AMOUNT >= #{minTotalRentalAmount}
+        </if>
+        <if test="maxTotalRentalAmount != null">
+            <![CDATA[AND EG.TOTAL_RENTAL_AMOUNT <= #{maxTotalRentalAmount}]]>
+        </if>
+        <if test="minCustomerFeedbackScore != null">
+            AND EG.CUSTOMER_FEEDBACK_SCORE >= #{minCustomerFeedbackScore}
+        </if>
+        <if test="maxCustomerFeedbackScore != null">
+            <![CDATA[AND EG.CUSTOMER_FEEDBACK_SCORE <= #{maxCustomerFeedbackScore}]]>
+        </if>
+        ORDER BY EG.TARGET_DATE DESC
+    </select>
+
+    <!-- 설명. 설정 기간의 팀 단위 실적 목표 조회 -->
+    <select id="selectGoalByDepartmentId" resultMap="TeamGoalResultMap"
+            parameterType="com.clover.salad.goal.command.application.dto.DeptSearchTermDTO">
+        SELECT
+               SUM(EG.RENTAL_PRODUCT_COUNT)
+             , SUM(EG.RENTAL_RETENTION_COUNT)
+             , SUM(EG.TOTAL_RENTAL_COUNT)
+             , SUM(EG.NEW_CUSTOMER_COUNT)
+             , SUM(EG.TOTAL_RENTAL_AMOUNT)
+             , ROUND(AVG(EG.CUSTOMER_FEEDBACK_SCORE * 10))
+             , SUM(EG.CUSTOMER_FEEDBACK_COUNT)
+             , EG.TARGET_DATE
+          FROM EMPLOYEE_GOAL EG
+          JOIN EMPLOYEE E ON EG.EMPLOYEE_ID = E.ID
+         WHERE E.DEPARTMENT_ID = (SELECT D.ID
+                                    FROM DEPARTMENT D
+                                   WHERE D.NAME LIKE CONCAT('%', #{deptName}, '%'))
+        <if test="startDate != null">
+            AND EG.TARGET_DATE >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            <![CDATA[AND EG.TARGET_DATE <= #{endDate}]]>
+        </if>
+         GROUP BY EG.TARGET_DATE
+        <trim prefix="HAVING" prefixOverrides="AND">
+            <if test="minRentalProductCount != null">
+                AND SUM(EG.RENTAL_PRODUCT_COUNT) >= #{minRentalProductCount}
+            </if>
+            <if test="maxRentalProductCount != null">
+                <![CDATA[AND SUM(EG.RENTAL_PRODUCT_COUNT) <= #{maxRentalProductCount}]]>
+            </if>
+            <if test="minRentalRetentionRate != null">
+                AND ROUND(SUM(EG.RENTAL_RETENTION_COUNT) * 100 / SUM(EG.TOTAL_RENTAL_COUNT)) >= #{minRentalRetentionRate}
+            </if>
+            <if test="maxRentalRetentionRate != null">
+                <![CDATA[AND ROUND(SUM(EG.RENTAL_RETENTION_COUNT) * 100 / SUM(EG.TOTAL_RENTAL_COUNT)) <= #{maxRentalRetentionRate}]]>
+            </if>
+            <if test="minNewCustomerCount != null">
+                AND SUM(EG.NEW_CUSTOMER_COUNT) >= #{minNewCustomerCount}
+            </if>
+            <if test="maxNewCustomerCount != null">
+                <![CDATA[AND SUM(EG.NEW_CUSTOMER_COUNT) <= #{maxNewCustomerCount}]]>
+            </if>
+            <if test="minTotalRentalAmount != null">
+                AND SUM(EG.TOTAL_RENTAL_AMOUNT) >= #{minTotalRentalAmount}
+            </if>
+            <if test="maxTotalRentalAmount != null">
+                <![CDATA[AND SUM(EG.TOTAL_RENTAL_AMOUNT) <= #{maxTotalRentalAmount}]]>
+            </if>
+            <if test="minCustomerFeedbackScore != null">
+                AND ROUND(AVG(EG.CUSTOMER_FEEDBACK_SCORE), 1) >= #{minCustomerFeedbackScore}
+            </if>
+            <if test="maxCustomerFeedbackScore != null">
+                <![CDATA[AND ROUND(AVG(EG.CUSTOMER_FEEDBACK_SCORE), 1) <= #{maxCustomerFeedbackScore}]]>
+            </if>
+        </trim>
+         ORDER BY EG.TARGET_DATE DESC
+    </select>
+
+    <!-- 설명. 직급과 연도로 기본 목표 조회 -->
+    <select id="selectDefaultGoalByLevelAndTargetYear" resultMap="DefaultGoalResultMap" parameterType="map">
+        SELECT
+               DG.ID
+             , DG.LEVEL
+             , DG.RENTAL_PRODUCT_COUNT
+             , DG.RENTAL_RETENTION_RATE
+             , DG.NEW_CUSTOMER_COUNT
+             , DG.TOTAL_RENTAL_AMOUNT
+             , (DG.CUSTOMER_FEEDBACK_SCORE * 10)
+             , DG.TARGET_YEAR
+          FROM DEFAULT_GOAL DG
+         WHERE DG.LEVEL = #{employeeLevel}
+           AND DG.TARGET_YEAR = #{targetYear}
+    </select>
+
+    <!-- 설명. 현재 목표의 사원 id와 대상연도로 연 단위 목표 조회 -->
+    <select id="selectYearGoalByCurrentGoalTargetDate" resultMap="GoalResultMap" parameterType="map">
+        SELECT
+               EG.ID
+             , EG.RENTAL_PRODUCT_COUNT
+             , EG.RENTAL_RETENTION_COUNT
+             , EG.TOTAL_RENTAL_COUNT
+             , EG.NEW_CUSTOMER_COUNT
+             , EG.TOTAL_RENTAL_AMOUNT
+             , (EG.CUSTOMER_FEEDBACK_SCORE * 10)
+             , EG.CUSTOMER_FEEDBACK_COUNT
+             , EG.TARGET_DATE
+             , EG.EMPLOYEE_ID
+          FROM EMPLOYEE_GOAL EG
+         WHERE EG.EMPLOYEE_ID =  #{employeeId}
+           AND EG.TARGET_DATE LIKE CONCAT(#{targetYear}, '%')
+         ORDER BY TARGET_DATE
+    </select>
+</mapper>

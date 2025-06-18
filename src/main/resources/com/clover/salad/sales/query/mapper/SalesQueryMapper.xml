@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clover.salad.sales.query.mapper.SalesQueryMapper">
+    <resultMap id="SalesQueryResultMap" type="com.clover.salad.sales.query.dto.SalesQueryResponseDTO">
+        <id property="id" column="id" />
+        <result property="salesDate" column="sales_date" />
+        <result property="department" column="department" />
+        <result property="employeeName" column="employee_name" />
+        <result property="amount" column="amount" />
+        <result property="contractCode" column="contract_code" />
+    </resultMap>
+    <select id="selectSalesByCondition"
+            parameterType="com.clover.salad.sales.query.dto.SalesQueryRequestDTO"
+            resultMap="SalesQueryResultMap">
+        SELECT
+               s.id
+             , s.sales_date
+             , s.department
+             , s.amount
+             , s.employee_name
+             , c.code AS contract_code
+          FROM sales s
+          JOIN contract c ON s.contract_id = c.id
+         WHERE s.is_deleted = false
+
+        <if test="startDate != null and startDate != ''">
+            AND s.sales_date &gt;= #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            AND s.sales_date &lt;= #{endDate}
+        </if>
+
+        <if test="minAmount != null">
+            AND s.amount &gt;= #{minAmount}
+        </if>
+        <if test="maxAmount != null">
+            AND s.amount &lt;= #{maxAmount}
+        </if>
+
+        <if test="department != null and department != ''">
+            AND s.department LIKE CONCAT('%', #{department}, '%')
+        </if>
+        <if test="employeeName != null and employeeName != ''">
+            AND s.employee_name LIKE CONCAT('%', #{employeeName}, '%')
+        </if>
+        <if test="contractCode != null and contractCode != ''">
+            AND c.code LIKE CONCAT('%', #{contractCode}, '%')
+        </if>
+         ORDER BY s.sales_date DESC
+    </select>
+</mapper>

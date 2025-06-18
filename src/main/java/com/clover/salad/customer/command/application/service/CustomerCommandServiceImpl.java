@@ -1,9 +1,13 @@
 package com.clover.salad.customer.command.application.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.clover.salad.common.exception.CustomersException;
+import com.clover.salad.common.util.AuthUtil;
+import com.clover.salad.contract.query.service.ContractService;
 import com.clover.salad.customer.command.application.dto.CustomerCreateRequest;
 import com.clover.salad.customer.command.application.dto.CustomerUpdateRequest;
 import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
@@ -20,6 +24,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 
 	private final CustomerRepository customerRepository;
 	private final CustomerQueryService customerQueryService;
+	private final ContractService contractService;
 
 	@Override
 	@Transactional
@@ -49,11 +54,23 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 	@Override
 	@Transactional
 	public void updateCustomer(int customerId, CustomerUpdateRequest request) {
+		// 1. 로그인 사용자 정보 (TokenPrincipal 기반으로 수정)
+		int loginEmployeeId = AuthUtil.getEmployeeId();
+
+		// 2. 권한 검증: 계약 정보 기반 고객 수정 가능 여부 확인
+		List<Integer> accessibleCustomerIds =
+				contractService.getCustomerIdsByEmployee(loginEmployeeId);
+		if (!accessibleCustomerIds.contains(customerId)) {
+			throw new CustomersException.CustomerAccessDeniedException("해당 고객에 대한 수정 권한이 없습니다.");
+		}
+
+		// 3. 고객 조회 및 업데이트
 		Customer customer = customerRepository.findById(customerId).orElseThrow(
 				() -> new CustomersException.CustomerNotFoundException("고객이 존재하지 않습니다."));
 
 		Customer updated = request.toEntity();
 		customer.update(updated);
+
 		log.info("[고객 수정] ID: {}, 이름: {}", customerId, customer.getName());
 	}
 

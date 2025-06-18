@@ -55,10 +55,6 @@
                 <when test="level == '관리자'">
                     AND 1=1
                 </when>
-                <when test="level == '팀장'">
-                    AND n.is_deleted = false
-                    AND e.department_id = #{departmentId}
-                </when>
                 <otherwise>
                     AND n.is_deleted = false
                     AND en.employee_id = #{employeeId}

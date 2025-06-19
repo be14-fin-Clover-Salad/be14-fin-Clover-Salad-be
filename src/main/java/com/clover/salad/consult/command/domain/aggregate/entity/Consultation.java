@@ -1,5 +1,6 @@
 package com.clover.salad.consult.command.domain.aggregate.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -37,7 +38,7 @@ public class Consultation {
     private String etc;
 
     @Column(name = "feedback_score", precision = 2, scale = 1)
-    private Double feedbackScore;
+    private BigDecimal feedbackScore;
 
     @Column(name = "employee_id", nullable = false)
     private Integer employeeId;

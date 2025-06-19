@@ -120,9 +120,4 @@ public class GlobalExceptionHandler {
 				.body(Map.of("status", 400, "error", "입력 오류", "message", "잘못된 요청 형식입니다."));
 	}
 
-	// 기타 예상치 못한 런타임 예외
-	@ExceptionHandler(RuntimeException.class)
-	public ResponseEntity<String> handleRuntime(RuntimeException e) {
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-	}
 }

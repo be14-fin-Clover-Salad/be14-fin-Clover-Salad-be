@@ -30,6 +30,12 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 	@Override
 	@Transactional
 	public void registerCustomer(CustomerCreateRequest request) {
+		// 사전 유효성 체크
+		if (!isRegisterableCustomer(request.getName(), request.getPhone(),
+				request.getBirthdate())) {
+			throw new CustomersException.InvalidCustomerDataException(
+					"이름 또는 연락처 중 하나는 반드시 입력되어야 하며, 생년월일만으로는 고객 등록이 불가능합니다.");
+		}
 
 		boolean hasContract = contractExists(request);
 		boolean hasConsult = consultExists(request);
@@ -59,6 +65,18 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 			existingCustomer.update(updated);
 			log.info("[기존 고객 업데이트] ID: {}, 이름: {}", existingCustomerId, existingCustomer.getName());
 		}
+	}
+
+	/** 고객 등록 가능 여부 판단: 이름 또는 연락처가 있어야 함. 생년월일만 있는 경우 등록 불가 */
+	private boolean isRegisterableCustomer(String name, String phone, String birthdate) {
+		boolean hasName = name != null && !name.isBlank();
+		boolean hasPhone = phone != null && !phone.isBlank();
+		boolean hasBirthdate = birthdate != null && !birthdate.isBlank();
+
+		boolean hasIdentifier = hasName || hasPhone;
+		boolean birthOnly = hasBirthdate && !hasIdentifier;
+
+		return hasIdentifier && !birthOnly;
 	}
 
 	@Override

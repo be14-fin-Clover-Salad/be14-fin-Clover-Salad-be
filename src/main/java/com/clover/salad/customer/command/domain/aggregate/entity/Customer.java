@@ -52,6 +52,7 @@ public class Customer {
 	@Column(length = 255)
 	private String address;
 
+	@JsonProperty("registerAt")
 	@Column(name = "register_at", nullable = false)
 	private LocalDate registerAt;
 
@@ -78,9 +79,6 @@ public class Customer {
 	public void update(Customer updated) {
 		if (this.phone == null && updated.phone == null) {
 			throw new InvalidCustomerDataException("연락처는 필수입니다.");
-		}
-		if (this.email == null && updated.email == null) {
-			throw new InvalidCustomerDataException("이메일은 필수입니다.");
 		}
 
 		this.name = updated.name != null ? updated.name : this.name;

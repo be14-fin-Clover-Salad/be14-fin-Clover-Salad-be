@@ -1,6 +1,6 @@
 package com.clover.salad.consult.command.application.dto;
 
-import com.clover.salad.common.validation.ValidBirthdate;
+import com.clover.salad.common.validator.ValidBirthdate;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

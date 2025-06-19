@@ -1,6 +1,6 @@
 package com.clover.salad.customer.command.application.dto;
 
-import com.clover.salad.common.validation.ValidEmail;
+import com.clover.salad.common.validator.ValidEmail;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum CustomerType {
+
 	CUSTOMER("고객"), PROSPECT("리드");
 
 	private final String label;

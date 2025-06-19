@@ -3,6 +3,7 @@ package com.clover.salad.customer.query.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.clover.salad.common.exception.CustomersException;
 import com.clover.salad.common.util.AuthUtil;
@@ -24,18 +25,21 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
     private final ContractService contractService;
 
     @Override
+    @Transactional(readOnly = true)
     public List<CustomerQueryDTO> findAll() {
         AuthUtil.assertAdmin();
         return customerMapper.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CustomerQueryDTO findCustomerById(int customerId) {
         AuthUtil.assertAdmin();
         return customerMapper.findCustomerById(customerId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CustomerQueryDTO> findCustomersByEmployeeId(int employeeId) {
         String token = AuthUtil.resolveToken();
         int loginEmployeeId = jwtUtil.getEmployeeId(token);
@@ -54,25 +58,22 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CustomerQueryDTO findCustomerByEmployeeAndCustomerId(int customerId, int employeeId) {
         String token = AuthUtil.resolveToken();
         int loginEmployeeId = jwtUtil.getEmployeeId(token);
 
-        // 고객 존재 여부 확인
         CustomerQueryDTO customer = customerMapper.findCustomerById(customerId);
         if (customer == null) {
             throw new CustomersException.CustomerNotFoundException("해당 고객을 조회할 수 없습니다.");
         }
 
-        // 로그인한 사원 본인만 접근 가능 (ROLE_MEMBER인 경우)
         if (AuthUtil.isMember() && loginEmployeeId != employeeId) {
             throw new CustomersException.CustomerAccessDeniedException("해당 고객은 요청한 사원의 담당이 아닙니다.");
         }
 
-        // 고객이 해당 사원의 고객인지 확인
         List<Integer> customerIds = contractService.getCustomerIdsByEmployee(employeeId);
         if (customerIds == null || !customerIds.contains(customerId)) {
-            log.warn("사원 ID {}는 고객 ID {}에 대한 접근 권한이 없습니다.", employeeId, customerId);
             throw new CustomersException.CustomerAccessDeniedException("해당 고객은 요청한 사원의 담당이 아닙니다.");
         }
 
@@ -80,11 +81,22 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Integer findRegisteredCustomerId(String customerName, String customerBirthdate,
             String customerPhone) {
-        Integer customerId = customerMapper.findRegisteredCustomerId(customerName,
-                customerBirthdate, customerPhone);
-        log.debug("조회된 고객 ID: {}", customerId);
-        return customerId;
+        return customerMapper.findRegisteredCustomerId(customerName, customerBirthdate,
+                customerPhone);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsContractByCustomer(String name, String birthdate, String phone) {
+        return customerMapper.existsContractByCustomer(name, birthdate, phone);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsConsultByCustomer(String name, String birthdate, String phone) {
+        return customerMapper.existsConsultByCustomer(name, birthdate, phone);
     }
 }

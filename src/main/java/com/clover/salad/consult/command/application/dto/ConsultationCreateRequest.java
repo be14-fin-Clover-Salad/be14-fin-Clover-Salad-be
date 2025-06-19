@@ -17,7 +17,15 @@ public class ConsultationCreateRequest {
     @ValidPhone
     private String customerPhone;
 
-    @NotBlank
+    @NotBlank(message = "상담 내용은 필수입니다.")
     private String content;
+
     private String etc;
+
+    /** 필수 고객 식별 정보가 존재하는지 확인 */
+    public boolean hasAnyCustomerIdentifier() {
+        return (customerName != null && !customerName.isBlank())
+                || (customerPhone != null && !customerPhone.isBlank())
+                || (customerBirthdate != null && !customerBirthdate.isBlank());
+    }
 }

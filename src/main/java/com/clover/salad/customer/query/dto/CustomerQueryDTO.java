@@ -2,9 +2,13 @@ package com.clover.salad.customer.query.dto;
 
 import java.time.LocalDate;
 
+import com.clover.salad.contract.common.CustomerType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -33,7 +37,9 @@ public class CustomerQueryDTO {
     @JsonProperty("isDeleted")
     private boolean isDeleted;
 
-    private String type;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CustomerType type;
 
     private String etc;
 }

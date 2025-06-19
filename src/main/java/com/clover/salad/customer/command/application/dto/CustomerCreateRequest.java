@@ -4,36 +4,27 @@ import com.clover.salad.common.validator.ValidBirthdate;
 import com.clover.salad.common.validator.ValidEmail;
 import com.clover.salad.common.validator.ValidPhone;
 import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-@Valid
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Builder
+@ToString
 public class CustomerCreateRequest {
 
-    @NotBlank(message = "이름은 필수입니다.")
     private String name;
 
     @ValidBirthdate
     private String birthdate;
 
-    @ValidPhone(message = "유효하지 않은 연락처 형식입니다.")
+    @ValidPhone
     private String phone;
 
     private String address;
 
-    @ValidEmail(message = "유효하지 않은 이메일 형식입니다.")
+    @ValidEmail
     private String email;
 
     private String etc;
@@ -43,8 +34,8 @@ public class CustomerCreateRequest {
                 .email(this.email).address(this.address).etc(this.etc).build();
     }
 
-    public CustomerUpdateRequest toUpdateRequest() {
-        return CustomerUpdateRequest.builder().address(this.address).email(this.email).etc(this.etc)
-                .build();
+    public boolean hasAnyCustomerIdentifier() {
+        return (name != null && !name.isBlank()) || (phone != null && !phone.isBlank())
+                || (birthdate != null && !birthdate.isBlank());
     }
 }

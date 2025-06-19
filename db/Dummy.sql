@@ -85,8 +85,8 @@ VALUES ('profile1.png', 'uuid1.png', '/uploads/', '2025-05-28 02:13:22', '프로
 
 -- EMPLOYEE
 -- 관리자 더미
-INSERT INTO employee (id, code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
-(-1, 'ADMIN', '$2a$10$eu/cmPGCdI.cJKQHSi12..fq50TgXsJ3UjKg/nB4SC6rvAyK0woWW', '관리자', '01000000000', 'admin@saladerp.com', '관리자', '1000-01-01', NULL, TRUE, FALSE, '관리자', 1, 1);
+INSERT INTO employee (code, password, name, phone, email, level, hire_date, resign_date, is_admin, is_deleted, work_place, department_id, profile) VALUES
+('ADMIN', '$2a$10$eu/cmPGCdI.cJKQHSi12..fq50TgXsJ3UjKg/nB4SC6rvAyK0woWW', '관리자', '01000000000', 'admin@saladerp.com', '관리자', '1000-01-01', NULL, TRUE, FALSE, '관리자', 1, 1);
 
 -- 사원, 팀장 더미
 -- 영업 1팀

@@ -19,6 +19,9 @@ public interface EmployeeMapper {
 	// 사원 검색
 	List<EmployeeSearchResponseDTO> searchEmployees(EmployeeSearchRequestDTO requestDTO);
 
+	// 모든 관리자 검색
+	List<Integer> findAdminIds();
+
 	// 비밀번호 재설정 로직 중
 	Integer selectIdByCodeAndEmail(@Param("code") String code, @Param("email") String email);
 

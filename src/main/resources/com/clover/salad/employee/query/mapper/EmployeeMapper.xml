@@ -222,4 +222,13 @@
          WHERE e.id = #{id}
            AND e.is_deleted = FALSE
     </select>
+
+    <!--  관리자 전체 검색  -->
+    <select id="findAdminIds" resultType="int">
+        SELECT
+               id
+          FROM employee
+         WHERE is_deleted = FALSE
+           AND is_admin = TRUE
+    </select>
 </mapper>

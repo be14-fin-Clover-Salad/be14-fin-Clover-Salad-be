@@ -12,9 +12,9 @@ import lombok.ToString;
 @Setter
 @ToString
 public class EmployeeSearchTermDTO {
-	private String employeeCode;
-	private Integer startDate;
-	private Integer endDate;
+	private Integer employeeCode;
+	private String startDate;
+	private String endDate;
 	private Integer minRentalProductCount;
 	private Integer maxRentalProductCount;
 	private Integer minRentalRetentionRate;

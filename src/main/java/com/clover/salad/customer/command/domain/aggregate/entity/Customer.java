@@ -93,16 +93,14 @@ public class Customer {
 	}
 
 	/** 정책에 따라 수정 허용된 필드만 업데이트 */
-	public void updateFromRequest(CustomerCreateRequest request) {
+	public void updateFromRequest(CustomerCreateRequest request, CustomerType resolvedType) {
 		if (request.getAddress() != null) {
 			this.address = request.getAddress();
 		}
 		if (request.getEmail() != null) {
 			this.email = request.getEmail();
 		}
-		if (request.getType() != null) {
-			this.type = CustomerType.from(request.getType());
-		}
+		this.type = resolvedType; // 외부 로직에서 결정된 타입을 무조건 설정
 		if (request.getEtc() != null) {
 			this.etc = request.getEtc();
 		}

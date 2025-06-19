@@ -4,10 +4,8 @@ import com.clover.salad.common.validator.ValidBirthdate;
 import com.clover.salad.common.validator.ValidEmail;
 import com.clover.salad.common.validator.ValidPhone;
 import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
-import com.clover.salad.customer.command.domain.aggregate.vo.CustomerType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,28 +26,23 @@ public class CustomerCreateRequest {
     @ValidBirthdate
     private String birthdate;
 
-    @ValidPhone
+    @ValidPhone(message = "유효하지 않은 연락처 형식입니다.")
     private String phone;
 
     private String address;
 
-    @ValidEmail
+    @ValidEmail(message = "유효하지 않은 이메일 형식입니다.")
     private String email;
-
-    @NotBlank(message = "고객 유형은 필수입니다.")
-    @Pattern(regexp = "^(리드|고객)$", message = "고객 유형은 '리드' 또는 '고객'이어야 합니다.")
-    private String type;
 
     private String etc;
 
     public Customer toEntity() {
         return Customer.builder().name(this.name).birthdate(this.birthdate).phone(this.phone)
-                .email(this.email).address(this.address).type(CustomerType.from(this.type))
-                .etc(this.etc).build();
+                .email(this.email).address(this.address).etc(this.etc).build();
     }
 
     public CustomerUpdateRequest toUpdateRequest() {
-        return CustomerUpdateRequest.builder().address(this.address).email(this.email)
-                .type(CustomerType.from(this.type)).etc(this.etc).build();
+        return CustomerUpdateRequest.builder().address(this.address).email(this.email).etc(this.etc)
+                .build();
     }
 }

@@ -11,6 +11,7 @@ import com.clover.salad.contract.query.service.ContractService;
 import com.clover.salad.customer.command.application.dto.CustomerCreateRequest;
 import com.clover.salad.customer.command.application.dto.CustomerUpdateRequest;
 import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
+import com.clover.salad.customer.command.domain.aggregate.vo.CustomerType;
 import com.clover.salad.customer.command.domain.repository.CustomerRepository;
 import com.clover.salad.customer.query.service.CustomerQueryService;
 
@@ -34,7 +35,10 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 
 		if (existingCustomerId == null) {
 			// 2. 신규 등록
-			Customer newCustomer = request.toEntity(); // @PrePersist로 registerAt 설정됨
+			Customer newCustomer = request.toEntity();
+			CustomerType type = determineCustomerType(request.getName(), request.getBirthdate(),
+					request.getPhone());
+			newCustomer.setType(type);
 			customerRepository.save(newCustomer);
 			log.info("[신규 고객 등록] 이름: {}, 등록 완료", request.getName());
 
@@ -44,8 +48,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 					() -> new CustomersException.CustomerNotFoundException("기존 고객을 찾을 수 없습니다."));
 
 			CustomerUpdateRequest updateRequest = request.toUpdateRequest(); // 일부 필드만 포함됨
-			Customer updated = updateRequest.toEntity(); // 병합용 Entity 생성
-
+			Customer updated = updateRequest.toEntity(existingCustomer.getType()); // 기존 타입 유지
 			existingCustomer.update(updated); // null 값 무시하고 병합
 			log.info("[기존 고객 업데이트] ID: {}, 이름: {}", existingCustomerId, existingCustomer.getName());
 		}
@@ -54,7 +57,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 	@Override
 	@Transactional
 	public void updateCustomer(int customerId, CustomerUpdateRequest request) {
-		// 1. 로그인 사용자 정보 (TokenPrincipal 기반으로 수정)
+		// 1. 로그인 사용자 정보 (TokenPrincipal 기반)
 		int loginEmployeeId = AuthUtil.getEmployeeId();
 
 		// 2. 권한 검증: 계약 정보 기반 고객 수정 가능 여부 확인
@@ -68,7 +71,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 		Customer customer = customerRepository.findById(customerId).orElseThrow(
 				() -> new CustomersException.CustomerNotFoundException("고객이 존재하지 않습니다."));
 
-		Customer updated = request.toEntity();
+		Customer updated = request.toEntity(customer.getType()); // 기존 타입 유지
 		customer.update(updated);
 
 		log.info("[고객 수정] ID: {}, 이름: {}", customerId, customer.getName());
@@ -79,5 +82,17 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 	public Integer findDuplicateCustomerId(CustomerCreateRequest request) {
 		return customerQueryService.findRegisteredCustomerId(request.getName(),
 				request.getBirthdate(), request.getPhone());
+	}
+
+	/** 고객 유형 자동 판별 (계약 or 상담 존재 여부 기준) */
+	private CustomerType determineCustomerType(String name, String birthdate, String phone) {
+		// boolean hasContract = contractService.existsByCustomer(name, birthdate, phone);
+		// boolean hasConsult = consultQueryService.existsByCustomer(name, birthdate, phone);
+
+		// if (hasContract) return CustomerType.CUSTOMER;
+		// if (hasConsult) return CustomerType.PROSPECT;
+
+		throw new CustomersException.InvalidCustomerDataException(
+				"계약 또는 상담 이력이 없는 고객은 등록할 수 없습니다.");
 	}
 }

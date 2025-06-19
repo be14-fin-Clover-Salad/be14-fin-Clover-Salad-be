@@ -1,5 +1,6 @@
 package com.clover.salad.customer.command.application.dto;
 
+import com.clover.salad.common.validator.ValidBirthdate;
 import com.clover.salad.common.validator.ValidEmail;
 import com.clover.salad.common.validator.ValidPhone;
 import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
@@ -20,6 +21,7 @@ public class CustomerUpdateRequest {
 
     private String name;
 
+    @ValidBirthdate(message = "유효하지 않은 날짜 형식입니다.")
     private String birthdate;
 
     @ValidPhone(message = "유효하지 않은 연락처 형식입니다.")
@@ -30,13 +32,11 @@ public class CustomerUpdateRequest {
     @ValidEmail(message = "유효하지 않은 이메일 형식입니다.")
     private String email;
 
-    private CustomerType type;
-
     private String etc;
 
     /** 부분 수정용 엔티티 변환 */
-    public Customer toEntity() {
+    public Customer toEntity(CustomerType resolvedType) {
         return Customer.builder().name(name).birthdate(birthdate).phone(phone).address(address)
-                .email(email).type(type).etc(etc).build();
+                .email(email).type(resolvedType).etc(etc).build();
     }
 }

@@ -3,7 +3,6 @@ package com.clover.salad.common.file.service;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.clover.salad.common.file.entity.FileUploadEntity;
+import com.clover.salad.common.file.enums.FileUploadType;
 import com.clover.salad.common.file.repository.FileUploadRepository;
 
 @Service
@@ -38,8 +38,7 @@ public class LocalFileStorageService implements FileStorageService {
 			.originFile(file.getOriginalFilename())
 			.renameFile(rename)
 			.path(uploadDir)
-			.createdAt(LocalDateTime.now())
-			.type(type)
+			.type(FileUploadType.valueOf(type))
 			.build();
 
 		return fileUploadRepository.save(upload);

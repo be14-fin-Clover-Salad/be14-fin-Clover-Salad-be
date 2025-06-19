@@ -1,6 +1,7 @@
 package com.clover.salad.contract.document.service;
 
 import com.clover.salad.common.file.entity.FileUploadEntity;
+import com.clover.salad.common.file.enums.FileUploadType;
 import com.clover.salad.common.file.repository.FileUploadRepository;
 import com.clover.salad.contract.document.entity.DocumentOrigin;
 import com.clover.salad.contract.document.entity.DocumentTemplate;
@@ -55,8 +56,7 @@ public class DocumentOriginService {
 			.originFile(originalFilename)
 			.renameFile(storedFileName)
 			.path(savedFile.getAbsolutePath())
-			.createdAt(LocalDateTime.now())
-			.type("계약서")
+			.type(FileUploadType.valueOf("CONTRACT"))
 			.build());
 
 		// 5. 기본 템플릿 조회

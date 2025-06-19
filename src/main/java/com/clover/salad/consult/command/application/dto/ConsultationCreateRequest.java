@@ -2,7 +2,7 @@ package com.clover.salad.consult.command.application.dto;
 
 import com.clover.salad.common.validator.ValidBirthdate;
 import com.clover.salad.common.validator.ValidPhone;
-
+import com.clover.salad.customer.command.application.dto.CustomerCreateRequest;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
@@ -22,10 +22,12 @@ public class ConsultationCreateRequest {
 
     private String etc;
 
-    /** 필수 고객 식별 정보가 존재하는지 확인 */
-    public boolean hasAnyCustomerIdentifier() {
-        return (customerName != null && !customerName.isBlank())
-                || (customerPhone != null && !customerPhone.isBlank())
-                || (customerBirthdate != null && !customerBirthdate.isBlank());
+    public CustomerCreateRequest toSanitizedCustomerCreateRequest() {
+        String sanitizedPhone =
+                this.customerPhone != null ? this.customerPhone.replaceAll("-", "") : null;
+
+        return CustomerCreateRequest.builder().name(this.customerName)
+                .birthdate(this.customerBirthdate).phone(sanitizedPhone).etc(this.etc).build();
     }
+
 }

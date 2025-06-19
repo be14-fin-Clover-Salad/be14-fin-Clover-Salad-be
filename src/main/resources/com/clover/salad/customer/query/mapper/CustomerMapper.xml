@@ -78,26 +78,28 @@
 
   <!-- 계약 존재 여부 조회 -->
   <select id="existsContractByCustomer" resultType="boolean">
-    SELECT EXISTS (
-        SELECT 1
-          FROM contract
-         WHERE name = #{name}
-           AND birthdate = #{birthdate}
-           AND phone = #{phone}
-           AND is_deleted = false
-    )
+  SELECT EXISTS (
+    SELECT 1
+      FROM contract c
+      JOIN customer cu ON c.customer_id = cu.id
+     WHERE cu.name = #{name}
+       AND cu.birthdate = #{birthdate}
+       AND cu.phone = #{phone}
+       AND cu.is_deleted = false
+  )
   </select>
 
   <!-- 상담 존재 여부 조회 -->
   <select id="existsConsultByCustomer" resultType="boolean">
-    SELECT EXISTS (
-        SELECT 1
-          FROM consultation
-         WHERE name = #{name}
-           AND birthdate = #{birthdate}
-           AND phone = #{phone}
-           AND is_deleted = false
-    )
+  SELECT EXISTS (
+    SELECT 1
+      FROM consultation cs
+      JOIN customer cu ON cs.customer_id = cu.id
+     WHERE cu.name = #{name}
+       AND cu.birthdate = #{birthdate}
+       AND cu.phone = #{phone}
+       AND cu.is_deleted = false
+  )
   </select>
 
 </mapper>

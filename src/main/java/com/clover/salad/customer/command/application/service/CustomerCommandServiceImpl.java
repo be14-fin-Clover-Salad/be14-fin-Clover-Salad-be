@@ -30,6 +30,12 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 	@Override
 	@Transactional
 	public void registerCustomer(CustomerCreateRequest request) {
+		registerCustomer(request, false);
+	}
+
+	@Override
+	@Transactional
+	public Integer registerCustomer(CustomerCreateRequest request, boolean bypassValidation) {
 		if (!isRegisterableCustomer(request.getName(), request.getPhone(),
 				request.getBirthdate())) {
 			throw new CustomersException.InvalidCustomerDataException(
@@ -42,17 +48,18 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 			boolean hasContract = contractExists(request);
 			boolean hasConsult = consultExists(request);
 
-			if (!hasContract && !hasConsult) {
+			if (!bypassValidation && !hasContract && !hasConsult) {
 				throw new CustomersException.InvalidCustomerDataException(
 						"계약 또는 상담 정보 없이 고객 등록은 불가능합니다.");
 			}
 
 			Customer newCustomer = request.toEntity();
-			CustomerType type = determineCustomerType(hasContract, hasConsult);
+			CustomerType type = determineCustomerType(hasContract, hasConsult, bypassValidation);
 			newCustomer.setType(type);
-			customerRepository.save(newCustomer);
+			Customer saved = customerRepository.saveAndFlush(newCustomer);
 
 			log.info("[신규 고객 등록] 이름: {}, 등록 완료", request.getName());
+			return saved.getId(); // 등록된 고객 ID 직접 반환
 		} else {
 			Customer existingCustomer = customerRepository.findById(existingCustomerId).orElseThrow(
 					() -> new CustomersException.CustomerNotFoundException("기존 고객을 찾을 수 없습니다."));
@@ -61,6 +68,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 			existingCustomer.updateFromRequest(request, currentType);
 
 			log.info("[기존 고객 업데이트] ID: {}, 이름: {}", existingCustomerId, existingCustomer.getName());
+			return existingCustomerId; // 기존 고객 ID 반환
 		}
 	}
 
@@ -68,10 +76,8 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 		boolean hasName = name != null && !name.isBlank();
 		boolean hasPhone = phone != null && !phone.isBlank();
 		boolean hasBirthdate = birthdate != null && !birthdate.isBlank();
-
 		boolean hasIdentifier = hasName || hasPhone;
 		boolean birthOnly = hasBirthdate && !hasIdentifier;
-
 		return hasIdentifier && !birthOnly;
 	}
 
@@ -89,7 +95,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 		Customer customer = customerRepository.findById(customerId).orElseThrow(
 				() -> new CustomersException.CustomerNotFoundException("고객이 존재하지 않습니다."));
 
-		Customer updated = request.toEntity(customer.getType()); // 기존 타입 유지
+		Customer updated = request.toEntity(customer.getType());
 		customer.update(updated);
 
 		log.info("[고객 수정] ID: {}, 이름: {}", customerId, customer.getName());
@@ -97,14 +103,20 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 
 	@Transactional(readOnly = true)
 	public Integer findDuplicateCustomerId(CustomerCreateRequest request) {
+		String normalizedPhone =
+				request.getPhone() != null ? request.getPhone().replaceAll("-", "") : null;
+
 		return customerQueryService.findRegisteredCustomerId(request.getName(),
-				request.getBirthdate(), request.getPhone());
+				request.getBirthdate(), normalizedPhone);
 	}
 
-	private CustomerType determineCustomerType(boolean hasContract, boolean hasConsult) {
+	private CustomerType determineCustomerType(boolean hasContract, boolean hasConsult,
+			boolean bypassValidation) {
 		if (hasContract)
 			return CustomerType.CUSTOMER;
 		if (hasConsult)
+			return CustomerType.PROSPECT;
+		if (bypassValidation)
 			return CustomerType.PROSPECT;
 		throw new CustomersException.InvalidCustomerDataException(
 				"계약 또는 상담 이력이 없는 고객은 등록할 수 없습니다.");
@@ -112,11 +124,13 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 
 	private boolean contractExists(CustomerCreateRequest request) {
 		return customerQueryService.existsContractByCustomer(request.getName(),
-				request.getBirthdate(), request.getPhone());
+				request.getBirthdate(),
+				request.getPhone() != null ? request.getPhone().replaceAll("-", "") : null);
 	}
 
 	private boolean consultExists(CustomerCreateRequest request) {
 		return customerQueryService.existsConsultByCustomer(request.getName(),
-				request.getBirthdate(), request.getPhone());
+				request.getBirthdate(),
+				request.getPhone() != null ? request.getPhone().replaceAll("-", "") : null);
 	}
 }

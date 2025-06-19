@@ -6,6 +6,8 @@ import com.clover.salad.customer.command.application.dto.CustomerUpdateRequest;
 public interface CustomerCommandService {
 	void registerCustomer(CustomerCreateRequest request);
 
+	Integer registerCustomer(CustomerCreateRequest request, boolean bypassValidation);
+
 	void updateCustomer(int customerId, CustomerUpdateRequest request);
 
 	// void deleteCustomer(int id);

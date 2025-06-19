@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.clover.salad.goal.command.application.dto.DefaultGoalDTO;
 import com.clover.salad.goal.command.application.dto.EmployeeSearchTermDTO;
 import com.clover.salad.goal.command.application.dto.GoalDTO;
 import com.clover.salad.goal.command.application.dto.DeptSearchTermDTO;
@@ -49,5 +50,14 @@ public class GoalQueryController {
 	) {
 		int employeeId = SecurityUtil.getEmployeeId();
 		return ResponseEntity.ok(goalQueryService.searchYearGoalByCurrentGoal(employeeId, targetYear));
+	}
+	
+	/* 설명. 기본 실적 목표 조회 */
+	@GetMapping("/default/{targetYear}/{level}")
+	public ResponseEntity<DefaultGoalDTO> searchDefaultGoal(
+		@PathVariable int targetYear,
+		@PathVariable String level
+	) {
+		return ResponseEntity.ok(goalQueryService.searchDefaultGoalByLevelAndTargetYear(level, targetYear));
 	}
 }

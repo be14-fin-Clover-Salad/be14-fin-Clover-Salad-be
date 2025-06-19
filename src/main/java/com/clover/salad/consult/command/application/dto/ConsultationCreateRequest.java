@@ -1,6 +1,7 @@
 package com.clover.salad.consult.command.application.dto;
 
 import com.clover.salad.common.validator.ValidBirthdate;
+import com.clover.salad.common.validator.ValidPhone;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -13,6 +14,7 @@ public class ConsultationCreateRequest {
     @ValidBirthdate
     private String customerBirthdate;
 
+    @ValidPhone
     private String customerPhone;
 
     @NotBlank

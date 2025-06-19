@@ -30,44 +30,40 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 	@Override
 	@Transactional
 	public void registerCustomer(CustomerCreateRequest request) {
-		// 사전 유효성 체크
 		if (!isRegisterableCustomer(request.getName(), request.getPhone(),
 				request.getBirthdate())) {
 			throw new CustomersException.InvalidCustomerDataException(
 					"이름 또는 연락처 중 하나는 반드시 입력되어야 하며, 생년월일만으로는 고객 등록이 불가능합니다.");
 		}
 
-		boolean hasContract = contractExists(request);
-		boolean hasConsult = consultExists(request);
-
-		if (!hasContract && !hasConsult) {
-			throw new CustomersException.InvalidCustomerDataException(
-					"계약 또는 상담 정보 없이 고객 등록은 불가능합니다.");
-		}
-
 		Integer existingCustomerId = findDuplicateCustomerId(request);
 
 		if (existingCustomerId == null) {
-			// 신규 고객 등록
+			boolean hasContract = contractExists(request);
+			boolean hasConsult = consultExists(request);
+
+			if (!hasContract && !hasConsult) {
+				throw new CustomersException.InvalidCustomerDataException(
+						"계약 또는 상담 정보 없이 고객 등록은 불가능합니다.");
+			}
+
 			Customer newCustomer = request.toEntity();
 			CustomerType type = determineCustomerType(hasContract, hasConsult);
 			newCustomer.setType(type);
 			customerRepository.save(newCustomer);
-			log.info("[신규 고객 등록] 이름: {}, 등록 완료", request.getName());
 
+			log.info("[신규 고객 등록] 이름: {}, 등록 완료", request.getName());
 		} else {
-			// 기존 고객 병합 처리
 			Customer existingCustomer = customerRepository.findById(existingCustomerId).orElseThrow(
 					() -> new CustomersException.CustomerNotFoundException("기존 고객을 찾을 수 없습니다."));
 
-			CustomerUpdateRequest updateRequest = request.toUpdateRequest();
-			Customer updated = updateRequest.toEntity(existingCustomer.getType()); // 기존 타입 유지
-			existingCustomer.update(updated);
+			CustomerType currentType = existingCustomer.getType();
+			existingCustomer.updateFromRequest(request, currentType);
+
 			log.info("[기존 고객 업데이트] ID: {}, 이름: {}", existingCustomerId, existingCustomer.getName());
 		}
 	}
 
-	/** 고객 등록 가능 여부 판단: 이름 또는 연락처가 있어야 함. 생년월일만 있는 경우 등록 불가 */
 	private boolean isRegisterableCustomer(String name, String phone, String birthdate) {
 		boolean hasName = name != null && !name.isBlank();
 		boolean hasPhone = phone != null && !phone.isBlank();
@@ -83,9 +79,9 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 	@Transactional
 	public void updateCustomer(int customerId, CustomerUpdateRequest request) {
 		int loginEmployeeId = AuthUtil.getEmployeeId();
-
 		List<Integer> accessibleCustomerIds =
 				contractService.getCustomerIdsByEmployee(loginEmployeeId);
+
 		if (!accessibleCustomerIds.contains(customerId)) {
 			throw new CustomersException.CustomerAccessDeniedException("해당 고객에 대한 수정 권한이 없습니다.");
 		}
@@ -93,7 +89,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 		Customer customer = customerRepository.findById(customerId).orElseThrow(
 				() -> new CustomersException.CustomerNotFoundException("고객이 존재하지 않습니다."));
 
-		Customer updated = request.toEntity(customer.getType());
+		Customer updated = request.toEntity(customer.getType()); // 기존 타입 유지
 		customer.update(updated);
 
 		log.info("[고객 수정] ID: {}, 이름: {}", customerId, customer.getName());
@@ -105,24 +101,20 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 				request.getBirthdate(), request.getPhone());
 	}
 
-	/** 고객 유형 자동 설정 로직 */
 	private CustomerType determineCustomerType(boolean hasContract, boolean hasConsult) {
 		if (hasContract)
 			return CustomerType.CUSTOMER;
 		if (hasConsult)
 			return CustomerType.PROSPECT;
-
 		throw new CustomersException.InvalidCustomerDataException(
 				"계약 또는 상담 이력이 없는 고객은 등록할 수 없습니다.");
 	}
 
-	/** 계약 존재 여부 확인 */
 	private boolean contractExists(CustomerCreateRequest request) {
 		return customerQueryService.existsContractByCustomer(request.getName(),
 				request.getBirthdate(), request.getPhone());
 	}
 
-	/** 상담 존재 여부 확인 */
 	private boolean consultExists(CustomerCreateRequest request) {
 		return customerQueryService.existsConsultByCustomer(request.getName(),
 				request.getBirthdate(), request.getPhone());

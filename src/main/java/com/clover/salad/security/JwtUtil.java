@@ -26,6 +26,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -138,5 +139,14 @@ public class JwtUtil {
 
 		TokenPrincipal principal = new TokenPrincipal(employeeId, code, authorities);
 		return new UsernamePasswordAuthenticationToken(principal, null, authorities);
+	}
+
+	// 헤더에서 토큰 파싱해주는 메서드
+	public String resolveToken(HttpServletRequest request) {
+		String bearerToken = request.getHeader("Authorization");
+		if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+			return bearerToken.substring(7);
+		}
+		return null;
 	}
 }

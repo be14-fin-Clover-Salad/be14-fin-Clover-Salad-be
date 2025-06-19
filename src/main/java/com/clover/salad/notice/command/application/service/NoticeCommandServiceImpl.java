@@ -18,6 +18,9 @@ import com.clover.salad.notice.command.domain.aggregate.entity.EmployeeNotice;
 import com.clover.salad.notice.command.domain.aggregate.entity.Notice;
 import com.clover.salad.notice.command.domain.repository.EmployeeNoticeRepository;
 import com.clover.salad.notice.command.domain.repository.NoticeRepository;
+import com.clover.salad.notification.command.application.dto.NotificationCreateDTO;
+import com.clover.salad.notification.command.application.service.NotificationCommandService;
+import com.clover.salad.notification.command.domain.aggregate.enums.NotificationType;
 
 @Service
 public class NoticeCommandServiceImpl implements NoticeCommandService {
@@ -25,13 +28,17 @@ public class NoticeCommandServiceImpl implements NoticeCommandService {
 	private final NoticeRepository noticeRepository;
 	private final EmployeeNoticeRepository employeeNoticeRepository;
 	private final EmployeeRepository employeeRepository;
+	private final NotificationCommandService notificationCommandService;
 
 	@Autowired
 	public NoticeCommandServiceImpl(NoticeRepository noticeRepository,
-		EmployeeNoticeRepository employeeNoticeRepository, EmployeeRepository employeeRepository) {
+		EmployeeNoticeRepository employeeNoticeRepository, EmployeeRepository employeeRepository,
+		NotificationCommandService notificationCommandService
+		) {
 		this.noticeRepository = noticeRepository;
 		this.employeeNoticeRepository = employeeNoticeRepository;
 		this.employeeRepository = employeeRepository;
+		this.notificationCommandService = notificationCommandService;
 	}
 
 	@Override
@@ -61,6 +68,17 @@ public class NoticeCommandServiceImpl implements NoticeCommandService {
 			}).toList();
 
 		employeeNoticeRepository.saveAll(employeeNotices);
+
+		// 알림 전송
+		for (Integer empId : targetIds) {
+			if (empId == writerId) continue;	// 작성자 자신 제외
+			notificationCommandService.createNotification(NotificationCreateDTO.builder()
+				.type(NotificationType.NOTICE)
+				.content("새로운 공지사항이 등록되었습니다.")
+				.url("/support/notice/" + notice.getId())
+				.employeeId(empId)
+				.build());
+		}
 	}
 
 	@Override

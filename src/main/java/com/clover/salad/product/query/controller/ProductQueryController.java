@@ -20,19 +20,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class ProductQueryController {
-	private final ProductQueryService productQSer;
+	private final ProductQueryService productQueryService;
 	
 	/* 설명. 상품 상세 조회 */
 	@GetMapping("/detail/{productId}")
 	public ResponseEntity<ProductDTO> searchProductById(@PathVariable("productId") int productId) {
-		return ResponseEntity.ok(productQSer.searchProductById(productId));
+		return ResponseEntity.ok(productQueryService.searchProductById(productId));
 	}
 	
 	/* 설명. 상품 목록 조회 */
 	@GetMapping("/list")
 	public ResponseEntity<List<ProductDTO>> searchProductList(SearchTermDTO searchTerm) {
 		log.info("Search term: {}", searchTerm);
-		List<ProductDTO> productList = productQSer.searchProductList(searchTerm);
+		List<ProductDTO> productList = productQueryService.searchProductList(searchTerm);
 		log.info("Search result: {}", productList);
 		return ResponseEntity.ok(productList);
 	}

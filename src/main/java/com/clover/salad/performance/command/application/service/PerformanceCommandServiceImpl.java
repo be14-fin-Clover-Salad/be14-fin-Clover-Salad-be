@@ -20,10 +20,8 @@ import com.clover.salad.contract.query.dto.ContractSearchDTO;
 import com.clover.salad.contract.query.service.ContractService;
 import com.clover.salad.customer.query.service.CustomerQueryService;
 import com.clover.salad.employee.command.domain.repository.DepartmentRepository;
-import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.EmployeeSearchRequestDTO;
 import com.clover.salad.employee.query.dto.EmployeeSearchResponseDTO;
-import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
 import com.clover.salad.performance.command.application.dto.DepartmentPerformanceDTO;
 import com.clover.salad.performance.command.application.dto.EmployeePerformanceDTO;
@@ -97,14 +95,12 @@ public class PerformanceCommandServiceImpl implements PerformanceCommandService 
 				rentalRetentionCount--;
 			}
 			/* newCustomerCount 신규 고객 수: 리스트로 만들고 id 개수를 세는 로직 */
-			// int currentCustomerId = contractDTO.getCustomerId();
-			// LocalDate currentCustomerRegisterDate = LocalDate.parse(
-			// 	customerQueryService.findCustomerById(currentCustomerId).getRegisterAt()
-			// );
-			// if (currentCustomerRegisterDate.isAfter(startDateStart)
-			//  || currentCustomerRegisterDate.isEqual(startDateStart)) {
-			// 	newCustomerIdSet.add(currentCustomerId);
-			// }
+			int currentCustomerId = contractDTO.getCustomerId();
+			LocalDate currentCustomerRegisterDate = customerQueryService.findCustomerById(currentCustomerId).getRegisterAt();
+			if (currentCustomerRegisterDate.isAfter(startDateStart)
+			 || currentCustomerRegisterDate.isEqual(startDateStart)) {
+				newCustomerIdSet.add(currentCustomerId);
+			}
 			/* totalRentalAmount 총 렌탈 금액 */
 			totalRentalAmount += contractDTO.getAmount();
 		}

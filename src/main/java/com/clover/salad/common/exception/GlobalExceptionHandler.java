@@ -1,9 +1,12 @@
 package com.clover.salad.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.extern.slf4j.Slf4j;
+
 import java.util.Map;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -17,7 +20,6 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
 
 	@ExceptionHandler(InvalidCurrentPasswordException.class)
 	public ResponseEntity<String> handleInvalidPassword(InvalidCurrentPasswordException e,

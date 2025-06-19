@@ -101,7 +101,7 @@ public class Customer {
 			this.email = request.getEmail();
 		}
 		if (request.getType() != null) {
-			this.type = request.getType();
+			this.type = CustomerType.from(request.getType());
 		}
 		if (request.getEtc() != null) {
 			this.etc = request.getEtc();

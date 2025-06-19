@@ -1,15 +1,17 @@
 package com.clover.salad.customer.command.application.dto;
 
-import com.clover.salad.common.validation.ValidEmail;
-import com.clover.salad.common.validation.ValidPhone;
+import com.clover.salad.common.validator.ValidEmail;
+import com.clover.salad.common.validator.ValidPhone;
 import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
 import com.clover.salad.customer.command.domain.aggregate.vo.CustomerType;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+@Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor

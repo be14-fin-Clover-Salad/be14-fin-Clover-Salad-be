@@ -1,7 +1,30 @@
 package com.clover.salad.contract.common;
 
-public enum ContractStatus {
-	결재전, 반려, 결재중, 계약만료, 중도해지, 계약무효;
+import lombok.Getter;
 
-	public static final ContractStatus DEFAULT = 결재전;
+@Getter
+public enum ContractStatus {
+	PENDING("결재전"),
+	REJECTED("반려"),
+	IN_PROGRESS("결재중"),
+	EXPIRED("계약만료"),
+	TERMINATED("중도해지"),
+	INVALID("계약무효");
+
+	private final String label;
+
+	ContractStatus(String label) {
+		this.label = label;
+	}
+
+	public static final ContractStatus DEFAULT = PENDING;
+
+	public static ContractStatus fromLabel(String label) {
+		for (ContractStatus status : values()) {
+			if (status.label.equals(label)) {
+				return status;
+			}
+		}
+		throw new IllegalArgumentException("Unknown label: " + label);
+	}
 }

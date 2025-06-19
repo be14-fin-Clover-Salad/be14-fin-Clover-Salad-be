@@ -1,6 +1,7 @@
 package com.clover.salad.customer.command.application.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -9,6 +10,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 public class CustomerUpdateRequest {
     private String name;
     private String birthdate;

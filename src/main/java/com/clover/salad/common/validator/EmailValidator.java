@@ -1,4 +1,4 @@
-package com.clover.salad.common.validation;
+package com.clover.salad.common.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

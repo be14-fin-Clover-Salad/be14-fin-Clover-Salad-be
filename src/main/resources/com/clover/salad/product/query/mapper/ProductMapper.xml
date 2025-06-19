@@ -17,6 +17,8 @@
         <result property="description" column="DESCRIPTION"/>
         <result property="isDeleted" column="IS_DELETED"/>
         <result property="fileUploadId" column="FILE_UPLOAD_ID"/>
+        <result property="fileName" column="FILE_NAME"/>
+        <result property="fileUrl" column="FILE_URL"/>
     </resultMap>
 
     <!-- 설명. 상품 상세정보 조회 -->
@@ -33,7 +35,11 @@
              , P.DESCRIPTION
              , P.IS_DELETED
              , P.FILE_UPLOAD_ID
+             , F.RENAME_FILE AS FILE_NAME
+             , F.PATH AS FILE_URL
           FROM PRODUCT P
+          JOIN FILE_UPLOAD F
+            ON P.FILE_UPLOAD_ID = F.ID
          WHERE P.ID = #{productId}
     </select>
 

@@ -26,4 +26,6 @@ public class ProductDTO {
 	@JsonProperty("isDeleted")
 	private boolean isDeleted;
 	private int fileUploadId;
+	private String fileName;
+	private String fileUrl;
 }

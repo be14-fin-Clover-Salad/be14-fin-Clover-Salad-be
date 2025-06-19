@@ -1,6 +1,8 @@
 package com.clover.salad.qna.command.application.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,11 @@ import com.clover.salad.common.exception.BadRequestException;
 import com.clover.salad.common.exception.NotFoundException;
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
+import com.clover.salad.employee.query.mapper.EmployeeMapper;
+import com.clover.salad.notification.command.application.dto.NotificationCreateDTO;
+import com.clover.salad.notification.command.application.service.NotificationCommandService;
+import com.clover.salad.notification.command.domain.aggregate.enums.NotificationType;
+import com.clover.salad.notification.command.domain.repository.NotificationRepository;
 import com.clover.salad.qna.command.application.dto.QnaAnswerRequest;
 import com.clover.salad.qna.command.application.dto.QnaCreateRequest;
 import com.clover.salad.qna.command.domain.aggregate.entity.Qna;
@@ -20,11 +27,19 @@ public class QnaCommandServiceImpl implements QnaCommandService {
 
 	private final QnaRepository qnaRepository;
 	private final EmployeeRepository employeeRepository;
+	private final EmployeeMapper employeeMapper;
+	private final NotificationCommandService notificationCommandService;
 
 	@Autowired
-	public QnaCommandServiceImpl(QnaRepository qnaRepository, EmployeeRepository employeeRepository) {
+	public QnaCommandServiceImpl(QnaRepository qnaRepository,
+		EmployeeRepository employeeRepository,
+		EmployeeMapper employeeMapper,
+		NotificationCommandService notificationCommandService
+	) {
 		this.qnaRepository = qnaRepository;
 		this.employeeRepository = employeeRepository;
+		this.employeeMapper = employeeMapper;
+		this.notificationCommandService = notificationCommandService;
 	}
 
 	@Override
@@ -49,6 +64,18 @@ public class QnaCommandServiceImpl implements QnaCommandService {
 		qna.setCreatedAt(LocalDateTime.now());
 		qna.setEmployeeId(writerId);
 		qnaRepository.save(qna);
+
+		// 알림 생성
+		List<Integer> adminIds = employeeMapper.findAdminIds();
+
+		for (Integer adminId : adminIds) {
+			notificationCommandService.createNotification(NotificationCreateDTO.builder()
+				.type(NotificationType.QNA)
+				.content("새로운 문의사항이 등록되었습니다.")
+				.url("/support/qna/" + qna.getId())
+				.employeeId(adminId)
+				.build());
+		}
 	}
 
 	@Override
@@ -107,6 +134,14 @@ public class QnaCommandServiceImpl implements QnaCommandService {
 		qna.setAnswerStatus("완료");
 
 		qnaRepository.save(qna);
+
+		// 알림 생성
+		notificationCommandService.createNotification(NotificationCreateDTO.builder()
+			.type(NotificationType.QNA)
+			.content("문의하신 내용에 답변이 등록되었습니다.")
+			.url("/support/qna/" + qna.getId())
+			.employeeId(qna.getEmployeeId())
+			.build());
 	}
 
 	@Override

@@ -47,7 +47,7 @@ CREATE TABLE FILE_UPLOAD
     rename_file VARCHAR(512) NOT NULL,
     path        VARCHAR(512) NOT NULL,
     created_at  DATETIME     NOT NULL,
-    type        VARCHAR(3)   NOT NULL,
+    type        VARCHAR(20)   NOT NULL,
     CONSTRAINT PK_FILE_UPLOAD PRIMARY KEY (id)
 );
 

@@ -77,16 +77,23 @@ public class Customer {
 
 	/** 변경된 값이 있을 경우만 업데이트 */
 	public void update(Customer updated) {
+		if (this.name == null && updated.name == null) {
+			throw new InvalidCustomerDataException("이름은 필수입니다.");
+		}
 		if (this.phone == null && updated.phone == null) {
 			throw new InvalidCustomerDataException("연락처는 필수입니다.");
 		}
 
 		this.name = updated.name != null ? updated.name : this.name;
 		this.birthdate = updated.birthdate != null ? updated.birthdate : this.birthdate;
-		this.phone = updated.phone != null ? updated.phone : this.phone;
+		this.phone = updated.phone != null ? sanitizePhone(updated.phone) : this.phone;
 		this.address = updated.address != null ? updated.address : this.address;
 		this.email = updated.email != null ? updated.email : this.email;
-		this.type = updated.type != null ? updated.type : this.type;
+
+		if (updated.type != null && !updated.type.equals(this.type)) {
+			this.type = updated.type;
+		}
+
 		this.etc = updated.etc != null ? updated.etc : this.etc;
 	}
 
@@ -102,5 +109,9 @@ public class Customer {
 		if (request.getEtc() != null) {
 			this.etc = request.getEtc();
 		}
+	}
+
+	private String sanitizePhone(String phone) {
+		return phone != null ? phone.replaceAll("-", "") : null;
 	}
 }

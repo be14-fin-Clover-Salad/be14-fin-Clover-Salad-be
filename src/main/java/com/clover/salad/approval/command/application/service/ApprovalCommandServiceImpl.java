@@ -10,7 +10,6 @@ import com.clover.salad.approval.query.mapper.ApprovalMapper;
 import com.clover.salad.contract.command.entity.ContractEntity;
 import com.clover.salad.contract.command.repository.ContractRepository;
 import com.clover.salad.contract.common.ContractStatus;
-import com.clover.salad.contract.query.mapper.ContractMapper;
 import com.clover.salad.employee.query.mapper.EmployeeMapper;
 import com.clover.salad.notification.command.application.dto.NotificationCreateDTO;
 import com.clover.salad.notification.command.application.service.NotificationCommandService;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -36,7 +34,6 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 	private final EmployeeMapper employeeMapper;
 	private final ApprovalMapper approvalMapper;
 	private final NotificationCommandService notificationCommandService;
-	private final ContractMapper contractMapper;
 	private final ContractRepository contractRepository;
 
 	@Autowired
@@ -44,14 +41,12 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 		EmployeeMapper employeeMapper,
 		ApprovalMapper approvalMapper,
 		NotificationCommandService notificationCommandService,
-		ContractMapper contractMapper,
 		ContractRepository contractRepository
 	) {
 		this.approvalRepository = approvalRepository;
 		this.employeeMapper = employeeMapper;
 		this.approvalMapper = approvalMapper;
 		this.notificationCommandService = notificationCommandService;
-		this.contractMapper = contractMapper;
 		this.contractRepository = contractRepository;
 	}
 
@@ -134,20 +129,20 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 	/* 설명. 결재 코드 작성 */
 	private String generateCode() {
 		LocalDate now = LocalDate.now();
-		String yearMonth = String.format("%02d%02d", now.getYear() % 100, now.getMonthValue()); // 2501
+		String yearMonth = String.format("%02d%02d", now.getYear() % 100, now.getMonthValue());
 		String prefix = "A-" + yearMonth; // A-2501
 
 		for (int attempt = 0; attempt < 5; attempt++) {
-			String lastCode = approvalMapper.findLastCodeByPrefix(prefix); // e.g., A-2501-0003
+			String lastCode = approvalMapper.findLastCodeByPrefix(prefix);
 
 			int nextSeq = 1;
 
-			if (lastCode != null && lastCode.length() == 11) { // "A-2501-0003" = 11글자
-				String lastSeqStr = lastCode.substring(8); // "0003"
+			if (lastCode != null && lastCode.length() == 11) {
+				String lastSeqStr = lastCode.substring(8);
 				nextSeq = Integer.parseInt(lastSeqStr) + 1;
 			}
 
-			String newCode = String.format("%s-%04d", prefix, nextSeq); // "A-2501-0004"
+			String newCode = String.format("%s-%04d", prefix, nextSeq);
 
 			if (approvalMapper.countByCode(newCode) == 0) {
 				return newCode;

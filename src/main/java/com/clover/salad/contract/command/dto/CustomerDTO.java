@@ -3,7 +3,7 @@ package com.clover.salad.contract.command.dto;
 import java.time.LocalDate;
 
 import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
-import com.clover.salad.contract.common.CustomerType;
+import com.clover.salad.customer.command.domain.aggregate.vo.CustomerType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,16 +27,8 @@ public class CustomerDTO {
 	private CustomerType customerType;
 
 	public Customer toEntityWithDefaults() {
-		return Customer.builder()
-			.name(name)
-			.birthdate(birthdate)
-			.phone(phone)
-			.address(address)
-			.email(email)
-			.type(customerType.name())
-			.registerAt(LocalDate.now())
-			.isDeleted(false)
-			.etc(null)
-			.build();
+		return Customer.builder().name(name).birthdate(birthdate).phone(phone).address(address)
+				.email(email).type(customerType).registerAt(LocalDate.now()).isDeleted(false)
+				.etc(null).build();
 	}
 }

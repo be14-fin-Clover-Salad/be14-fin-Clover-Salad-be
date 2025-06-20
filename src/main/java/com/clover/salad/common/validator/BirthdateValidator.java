@@ -32,4 +32,3 @@ public class BirthdateValidator implements ConstraintValidator<ValidBirthdate, S
         }
     }
 }
-

@@ -7,6 +7,7 @@ public enum ContractStatus {
 	PENDING("결재전"),
 	REJECTED("반려"),
 	IN_PROGRESS("결재중"),
+	IN_CONTRACT("계약중"),
 	EXPIRED("계약만료"),
 	TERMINATED("중도해지"),
 	INVALID("계약무효");

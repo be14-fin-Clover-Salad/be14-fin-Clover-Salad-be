@@ -14,4 +14,6 @@ public interface EmployeeCommandService {
 	void changePassword(int id, RequestChangePasswordDTO dto);
 
 	void updateProfilePath(int id, String newPath);
+
+	void updateProfile(int employeeId, int fileId);
 }

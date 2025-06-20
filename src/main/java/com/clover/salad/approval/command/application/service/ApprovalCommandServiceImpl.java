@@ -7,7 +7,9 @@ import com.clover.salad.approval.command.domain.aggregate.enums.ApprovalState;
 import com.clover.salad.approval.command.domain.repository.ApprovalRepository;
 import com.clover.salad.approval.query.dto.ApprovalExistenceCheckDTO;
 import com.clover.salad.approval.query.mapper.ApprovalMapper;
-import com.clover.salad.contract.query.mapper.ContractMapper;
+import com.clover.salad.contract.command.entity.ContractEntity;
+import com.clover.salad.contract.command.repository.ContractRepository;
+import com.clover.salad.contract.common.ContractStatus;
 import com.clover.salad.employee.query.mapper.EmployeeMapper;
 import com.clover.salad.notification.command.application.dto.NotificationCreateDTO;
 import com.clover.salad.notification.command.application.service.NotificationCommandService;
@@ -23,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -33,30 +34,30 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 	private final EmployeeMapper employeeMapper;
 	private final ApprovalMapper approvalMapper;
 	private final NotificationCommandService notificationCommandService;
-	private final ContractMapper contractMapper;
+	private final ContractRepository contractRepository;
 
 	@Autowired
 	public ApprovalCommandServiceImpl(ApprovalRepository approvalRepository,
 		EmployeeMapper employeeMapper,
 		ApprovalMapper approvalMapper,
 		NotificationCommandService notificationCommandService,
-		ContractMapper contractMapper
+		ContractRepository contractRepository
 	) {
 		this.approvalRepository = approvalRepository;
 		this.employeeMapper = employeeMapper;
 		this.approvalMapper = approvalMapper;
 		this.notificationCommandService = notificationCommandService;
-		this.contractMapper = contractMapper;
+		this.contractRepository = contractRepository;
 	}
 
 	@Override
 	public int requestApproval(ApprovalRequestDTO dto) {
 		int requesterId = SecurityUtil.getEmployeeId();
 
-		boolean contractExists = contractMapper.existsById(dto.getContractId());
-		if (!contractExists) {
-			throw new IllegalArgumentException("계약이 존재하지 않습니다. 계약 ID: " + dto.getContractId());
-		}
+		ContractEntity contract = contractRepository.findById(dto.getContractId())
+			.orElseThrow(() -> new IllegalArgumentException("계약이 존재하지 않습니다. 계약 ID: " + dto.getContractId()));
+		contract.changeStatus(ContractStatus.IN_PROGRESS);
+		log.info("계약의 상태가 '결재중'으로 변경되었습니다.");
 
 		/* 설명. 팀장은 결재 요청 불가능 */
 		if (SecurityUtil.hasRole("ROLE_MANAGER")) {
@@ -128,20 +129,20 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 	/* 설명. 결재 코드 작성 */
 	private String generateCode() {
 		LocalDate now = LocalDate.now();
-		String yearMonth = String.format("%02d%02d", now.getYear() % 100, now.getMonthValue()); // 2501
+		String yearMonth = String.format("%02d%02d", now.getYear() % 100, now.getMonthValue());
 		String prefix = "A-" + yearMonth; // A-2501
 
 		for (int attempt = 0; attempt < 5; attempt++) {
-			String lastCode = approvalMapper.findLastCodeByPrefix(prefix); // e.g., A-2501-0003
+			String lastCode = approvalMapper.findLastCodeByPrefix(prefix);
 
 			int nextSeq = 1;
 
-			if (lastCode != null && lastCode.length() == 11) { // "A-2501-0003" = 11글자
-				String lastSeqStr = lastCode.substring(8); // "0003"
+			if (lastCode != null && lastCode.length() == 11) {
+				String lastSeqStr = lastCode.substring(8);
 				nextSeq = Integer.parseInt(lastSeqStr) + 1;
 			}
 
-			String newCode = String.format("%s-%04d", prefix, nextSeq); // "A-2501-0004"
+			String newCode = String.format("%s-%04d", prefix, nextSeq);
 
 			if (approvalMapper.countByCode(newCode) == 0) {
 				return newCode;
@@ -175,6 +176,11 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 		// 대소문자 예외처리 위해 equalsIgnoreCase 사용 후 decision 값이 approve면 승인
 		if ("APPROVE".equalsIgnoreCase(dto.getDecision())) {
 			approval.approve(dto.getComment(), LocalDateTime.now());
+
+			ContractEntity contract = contractRepository.findById(approval.getContractId())
+				.orElseThrow(() -> new EntityNotFoundException("계약을 찾을 수 없습니다."));
+			contract.changeStatus(ContractStatus.IN_CONTRACT);
+			log.info("계약의 상태가 '계약중'으로 변경되었습니다.");
 
 		// decision 값이 reject면 반려. 반려 사유 입력했는지 체크
 		} else if ("REJECT".equalsIgnoreCase(dto.getDecision())) {

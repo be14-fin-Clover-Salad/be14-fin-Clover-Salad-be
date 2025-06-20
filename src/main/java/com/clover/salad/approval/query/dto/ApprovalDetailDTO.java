@@ -18,7 +18,7 @@ public class ApprovalDetailDTO {
 	private String content;
 	private LocalDateTime reqDate;
 	private LocalDateTime aprvDate;
-	private String state; // Enum이 아닌 각 Enum의 한글 Label
+	private String state;
 	private String comment;
 	private String reqName;
 	private String aprvName;

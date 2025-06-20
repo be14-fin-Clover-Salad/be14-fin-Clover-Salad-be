@@ -66,13 +66,13 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService, UserDetai
 		return employeeMapper.searchEmployees(requestDTO);
 	}
 
-	@Override
-	public boolean checkIsAdminById(int id) {
-		EmployeeEntity employee = employeeRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException("해당 ID를 가진 사용자를 찾을 수 없습니다."));
-
-		return employee.isAdmin();
-	}
+	// @Override
+	// public boolean checkIsAdminById(int id) {
+	// 	EmployeeEntity employee = employeeRepository.findById(id)
+	// 		.orElseThrow(() -> new RuntimeException("해당 ID를 가진 사용자를 찾을 수 없습니다."));
+	//
+	// 	return employee.isAdmin();
+	// }
 
 	@Override
 	public String findCodeById(int id) {

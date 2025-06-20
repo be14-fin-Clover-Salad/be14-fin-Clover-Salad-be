@@ -39,7 +39,6 @@ public class ContractService {
 
 	@Transactional
 	public ContractEntity registerContract(ContractUploadRequestDTO dto) {
-
 		CustomerDTO customerDto = dto.getCustomer();
 		String name = customerDto.getName();
 		String birthdate = customerDto.getBirthdate();
@@ -61,7 +60,6 @@ public class ContractService {
 				.build();
 			customerCommandService.updateCustomer(customer.getId(), updateRequest);
 
-			// 업데이트 이후 최신값 다시 불러오기
 			customer = customerRepository.findById(customer.getId())
 				.orElseThrow(() -> new IllegalArgumentException("기존 고객 재조회 실패"));
 		} else {
@@ -75,8 +73,6 @@ public class ContractService {
 				.etc(null)
 				.build();
 			customerCommandService.registerCustomer(createRequest);
-
-			// 영속성 반영 및 재조회
 			customerRepository.flush();
 			customer = customerRepository
 				.findTopByNameAndBirthdateAndPhoneOrderByRegisterAtDesc(name, birthdate, phone)
@@ -84,23 +80,18 @@ public class ContractService {
 		}
 
 		String generatedCode = generateContractCode();
-
 		int employeeId = SecurityUtil.getEmployeeId();
 		EmployeeEntity employee = employeeRepository.findById(employeeId)
 			.orElseThrow(() -> new IllegalArgumentException("사원 정보 조회 실패"));
 
 		ContractEntity contract = dto.getContract().toEntityWithDefaults(
-			customer,
-			generatedCode,
-			dto.getDocumentOrigin(),
-			employee
+			customer, generatedCode, dto.getDocumentOrigin(), employee
 		);
 		ContractEntity savedContract = contractRepository.save(contract);
 
 		for (ProductDTO productDto : dto.getProducts()) {
 			Product product = productRepository.findByNameAndSerialNumber(
-				productDto.getProductName(),
-				productDto.getModelName()
+				productDto.getProductName(), productDto.getModelName()
 			).orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다: " + productDto.getProductName()));
 
 			ContractProductEntity contractProduct = ContractProductEntity.builder()
@@ -113,6 +104,28 @@ public class ContractService {
 		}
 
 		return savedContract;
+	}
+
+	@Transactional(readOnly = true)
+	public void validate(ContractUploadRequestDTO dto) {
+		CustomerDTO customerDto = dto.getCustomer();
+		String name = customerDto.getName();
+		String birthdate = customerDto.getBirthdate();
+		String phone = customerDto.getPhone();
+
+		boolean customerExists = customerRepository
+			.findTopByNameAndBirthdateAndPhoneOrderByRegisterAtDesc(name, birthdate, phone)
+			.isPresent();
+
+		if (!customerExists) {
+			log.info("[VALIDATION] 신규 고객 등록 예정: {}", name);
+		}
+
+		for (ProductDTO productDto : dto.getProducts()) {
+			productRepository.findByNameAndSerialNumber(
+				productDto.getProductName(), productDto.getModelName()
+			).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다: " + productDto.getProductName()));
+		}
 	}
 
 	private String generateContractCode() {

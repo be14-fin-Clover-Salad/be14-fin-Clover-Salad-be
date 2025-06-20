@@ -41,12 +41,15 @@ public class ContractUploadFacade {
 
 		DocumentOrigin documentOrigin = null;
 		try {
+			// 1. 먼저 파싱 및 유효성 검증
+			ContractUploadRequestDTO parsed = pdfContractParserService.parsePdf(tempFile);
+			contractService.validate(parsed);
+
+			// 2. 검증 통과한 경우만 S3 업로드 및 DB 저장
 			documentOrigin = documentOriginService.uploadAndSave(tempFile, originalFilename);
-			File savedFile = new File(documentOrigin.getFileUpload().getPath());
+			parsed.setDocumentOrigin(documentOrigin);
 
-			ContractUploadRequestDTO parsed = pdfContractParserService.parsePdf(savedFile, documentOrigin);
 			ContractEntity saved = contractService.registerContract(parsed);
-
 			return new ContractUploadResponseDTO(saved.getId(), "계약 등록 완료");
 		} catch (Exception e) {
 			log.error("[ERROR] 계약 업로드 중 예외 발생: {}", e.getMessage(), e);
@@ -75,9 +78,36 @@ public class ContractUploadFacade {
 		file.transferTo(tempFile);
 
 		DocumentOrigin documentOrigin = null;
-
 		try {
-			return processReupload(contractId, file, note, tempFile);
+			// 1. 기존 계약 무효 처리
+			ContractEntity existingContract = contractService.markContractDeleted(contractId);
+
+			// 2. 파싱 및 검증
+			ContractUploadRequestDTO parsed = pdfContractParserService.parsePdf(tempFile);
+			contractService.validate(parsed);
+
+			// 3. 검증 통과 시 업로드 및 저장
+			documentOrigin = documentOriginService.uploadAndSave(tempFile, file.getOriginalFilename());
+			parsed.setDocumentOrigin(documentOrigin);
+
+			ContractEntity newContract = contractService.registerContract(parsed);
+			if (newContract == null || newContract.getId() <= 0) {
+				throw new IllegalStateException("신규 계약 등록 실패: 유효한 계약 ID가 생성되지 않음");
+			}
+
+			ContractFileHistory history = ContractFileHistory.builder()
+				.contract(newContract)
+				.replacedContract(existingContract)
+				.version(contractService.getNextVersion(existingContract.getId()))
+				.originFile(file.getOriginalFilename())
+				.renamedFile(documentOrigin.getFileUpload().getRenameFile())
+				.uploaderId(SecurityUtil.getEmployeeId())
+				.note(note)
+				.uploadedAt(LocalDateTime.now())
+				.build();
+			contractService.saveContractHistory(history);
+
+			return new ContractUploadResponseDTO(newContract.getId(), "기존 계약 갱신 완료");
 		} catch (Exception e) {
 			log.error("[ERROR] 계약 재업로드 중 예외 발생: {}", e.getMessage(), e);
 			if (documentOrigin != null) {
@@ -93,48 +123,5 @@ public class ContractUploadFacade {
 			Files.deleteIfExists(tempPath);
 			log.info("[CLEANUP] 임시 파일 삭제 완료: {}", tempPath);
 		}
-	}
-
-	private ContractUploadResponseDTO processReupload(int contractId, MultipartFile file, String note, File tempFile) throws Exception {
-		log.info("== [1] 계약 ID: {} / 파일명: {} ==", contractId, file.getOriginalFilename());
-
-		ContractEntity existingContract = contractService.markContractDeleted(contractId);
-		log.info("== [2] 기존 계약 무효 처리 완료: id={}, status={}, deleted={}",
-			existingContract.getId(), existingContract.getStatus(), existingContract.isDeleted());
-
-		DocumentOrigin documentOrigin = documentOriginService.uploadAndSave(tempFile, file.getOriginalFilename());
-		File savedFile = new File(documentOrigin.getFileUpload().getPath());
-
-		log.info("== [3] PDF 파싱 시작 ==");
-		ContractUploadRequestDTO parsed = pdfContractParserService.parsePdf(savedFile, documentOrigin);
-		log.info("== [3-1] 파싱 결과: 고객={}, 계약시작일={}, 상품개수={}",
-			parsed.getCustomer().getName(), parsed.getContract().getStartDate(), parsed.getProducts().size());
-
-		log.info("== [4] 신규 계약 등록 시작 ==");
-		ContractEntity newContract = contractService.registerContract(parsed);
-
-		if (newContract == null || newContract.getId() <= 0) {
-			throw new IllegalStateException("신규 계약 등록 실패: 유효한 계약 ID가 생성되지 않음");
-		}
-
-		log.info("== [4-1] 신규 계약 등록 완료: id={}", newContract.getId());
-
-		log.info("== [5] 히스토리 저장 시작 ==");
-		ContractFileHistory history = ContractFileHistory.builder()
-			.contract(newContract)
-			.replacedContract(existingContract)
-			.version(contractService.getNextVersion(existingContract.getId()))
-			.originFile(file.getOriginalFilename())
-			.renamedFile(documentOrigin.getFileUpload().getRenameFile())
-			.uploaderId(SecurityUtil.getEmployeeId())
-			.note(note)
-			.uploadedAt(LocalDateTime.now())
-			.build();
-
-
-		contractService.saveContractHistory(history);
-		log.info("== [5-1] 히스토리 저장 완료: version={}", history.getVersion());
-
-		return new ContractUploadResponseDTO(newContract.getId(), "기존 계약 갱신 완료");
 	}
 }

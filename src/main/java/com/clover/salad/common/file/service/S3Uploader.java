@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
@@ -37,4 +38,20 @@ public class S3Uploader {
 			throw new RuntimeException("파일 업로드 실패", e);
 		}
 	}
+
+	public void delete(String key) {
+		try {
+			DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+				.bucket(bucket)
+				.key(key)
+				.build();
+
+			s3Client.deleteObject(deleteObjectRequest);
+			log.info("S3 파일 삭제 완료: {}", key);
+		} catch (S3Exception e) {
+			log.error("S3 파일 삭제 실패: {}", e.getMessage(), e);
+			throw new RuntimeException("파일 삭제 실패", e);
+		}
+	}
+
 }

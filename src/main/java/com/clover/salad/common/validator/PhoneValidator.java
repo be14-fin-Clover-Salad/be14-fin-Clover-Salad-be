@@ -15,6 +15,9 @@ public class PhoneValidator implements ConstraintValidator<ValidPhone, String> {
         if (value == null) {
             return true;
         }
-        return PHONE_PATTERN.matcher(value).matches();
+
+        String sanitized = value.replaceAll("-", "");
+
+        return PHONE_PATTERN.matcher(sanitized).matches();
     }
 }

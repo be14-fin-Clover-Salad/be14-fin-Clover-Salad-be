@@ -72,16 +72,16 @@ INSERT INTO department (name, is_deleted, sup_dept_id) VALUES
 
 -- FILE_UPLOAD
 INSERT INTO FILE_UPLOAD (origin_file, rename_file, path, created_at, type)
-VALUES ('profile1.png', 'uuid1.png', '/uploads/', '2025-05-28 02:13:22', '프로필'),
-       ('contract1.png', 'uuid2.png', '/uploads/', '2025-05-28 02:13:22', '계약서'),
-       ('product1.png', 'uuid3.png', '/uploads/', '2025-05-28 02:13:22', '상품')
-     , ('profile2.png', 'uuid4.png', '/uploads/', '2025-05-29 23:34:38', '프로필')
-     , ('contract2.png', 'uuid5.png', '/uploads/', '2025-05-29 23:34:38', '계약서')
-     , ('product2.png', 'uuid6.png', '/uploads/', '2025-05-29 23:34:38', '상품')
-     , ('profile3.png', 'uuid7.png', '/uploads/', '2025-05-29 23:34:38', '프로필')
-     , ('contract3.png', 'uuid8.png', '/uploads/', '2025-05-29 23:34:38', '계약서')
-     , ('product3.png', 'uuid9.png', '/uploads/', '2025-05-29 23:34:38', '상품')
-     , ('profile4.png', 'uuid10.png', '/uploads/', '2025-05-29 23:34:38', '프로필');
+VALUES ('profile1.png', 'uuid1.png', '/uploads/', '2025-05-28 02:13:22', 'PROFILE'),
+       ('contract1.png', 'uuid2.png', '/uploads/', '2025-05-28 02:13:22', 'CONTRACT'),
+       ('product1.png', 'uuid3.png', '/uploads/', '2025-05-28 02:13:22', 'PRODUCT')
+     , ('profile2.png', 'uuid4.png', '/uploads/', '2025-05-29 23:34:38', 'PROFILE')
+     , ('contract2.png', 'uuid5.png', '/uploads/', '2025-05-29 23:34:38', 'CONTRACT')
+     , ('product2.png', 'uuid6.png', '/uploads/', '2025-05-29 23:34:38', 'PRODUCT')
+     , ('profile3.png', 'uuid7.png', '/uploads/', '2025-05-29 23:34:38', 'PROFILE')
+     , ('contract3.png', 'uuid8.png', '/uploads/', '2025-05-29 23:34:38', 'CONTRACT')
+     , ('product3.png', 'uuid9.png', '/uploads/', '2025-05-29 23:34:38', 'PRODUCT')
+     , ('profile4.png', 'uuid10.png', '/uploads/', '2025-05-29 23:34:38', 'PROFILE');
 
 -- EMPLOYEE
 -- 관리자 더미
@@ -593,3 +593,4 @@ SET name = '공기 청정기',
 WHERE id = 2;
 
 COMMIT;
+

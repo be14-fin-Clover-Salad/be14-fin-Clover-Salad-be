@@ -15,6 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class FileUploadResultDTO {
+	private Integer id;
 	private String originFile;
 	private String renamedFile;
 	private String url;

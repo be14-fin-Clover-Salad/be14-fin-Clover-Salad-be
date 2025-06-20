@@ -23,4 +23,10 @@ public interface CustomerMapper {
         Integer findRegisteredCustomerId(@Param("customerName") String customerName,
                         @Param("customerBirthdate") String customerBirthdate,
                         @Param("customerPhone") String customerPhone);
+
+        boolean existsContractByCustomer(@Param("name") String name,
+                        @Param("birthdate") String birthdate, @Param("phone") String phone);
+
+        boolean existsConsultByCustomer(@Param("name") String name,
+                        @Param("birthdate") String birthdate, @Param("phone") String phone);
 }

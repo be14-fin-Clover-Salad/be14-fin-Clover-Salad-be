@@ -415,3 +415,12 @@ CREATE TABLE CONTRACT_CHANGE_NOTICE
         FOREIGN KEY (contract_id)
             REFERENCES CONTRACT (id)
 );
+
+-- 프로필
+UPDATE file_upload SET type = 'PROFILE' WHERE type = '프로필';
+
+-- 계약서
+UPDATE file_upload SET type = 'CONTRACT' WHERE type = '계약서';
+
+-- 상품
+UPDATE file_upload SET type = 'PRODUCT' WHERE type = '상품';

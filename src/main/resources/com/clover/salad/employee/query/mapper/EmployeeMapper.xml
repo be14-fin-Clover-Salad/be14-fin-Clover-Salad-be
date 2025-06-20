@@ -231,4 +231,13 @@
          WHERE is_deleted = FALSE
            AND is_admin = TRUE
     </select>
+
+    <!--  프로필 업로드  -->
+    <update id="updateProfileById">
+        UPDATE
+               EMPLOYEE
+           SET profile = #{fileId}
+         WHERE id = #{employeeId}
+           AND is_deleted = false
+    </update>
 </mapper>

@@ -32,6 +32,7 @@ public class FileUploadController {
 		try {
 			var entity = fileUploadService.uploadAndSave(file, type);
 			var resultDTO = FileUploadResultDTO.builder()
+				.id(entity.getId())
 				.originFile(entity.getOriginFile())
 				.renamedFile(entity.getRenameFile())
 				.url(entity.getPath())

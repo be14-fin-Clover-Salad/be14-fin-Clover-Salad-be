@@ -23,6 +23,7 @@ import com.clover.salad.employee.command.application.dto.EmployeeUpdateDTO;
 import com.clover.salad.employee.command.application.dto.RequestChangePasswordDTO;
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
+import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.mapper.EmployeeMapper;
 
 import jakarta.mail.internet.MimeMessage;
@@ -163,5 +164,15 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 
 		file.setPath(newPath);
 		fileUploadRepository.save(file);
+	}
+
+	@Override
+	@Transactional
+	public void updateProfile(int employeeId, int fileId) {
+		EmployeeEntity employee = employeeRepository.findById(employeeId)
+			.orElseThrow(() -> new RuntimeException("해당 ID의 사원을 찾을 수 없습니다."));
+
+		employee.setProfile(fileId);
+		employeeRepository.save(employee);
 	}
 }

@@ -32,6 +32,8 @@ public class CustomerUpdateRequest {
     @ValidEmail(message = "유효하지 않은 이메일 형식입니다.")
     private String email;
 
+    private CustomerType type;
+
     private String etc;
 
     /** 부분 수정용 엔티티 변환 */

@@ -5,12 +5,12 @@ import java.time.LocalDate;
 import com.clover.salad.common.exception.CustomersException.InvalidCustomerDataException;
 import com.clover.salad.customer.command.application.dto.CustomerCreateRequest;
 import com.clover.salad.customer.command.domain.aggregate.vo.CustomerType;
+import com.clover.salad.customer.command.domain.aggregate.vo.CustomerTypeConverter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -60,8 +60,8 @@ public class Customer {
 	@Column(name = "is_deleted", nullable = false)
 	private boolean isDeleted;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false, length = 20)
+	@Convert(converter = CustomerTypeConverter.class)
+	@Column(name = "type", nullable = false, length = 20)
 	private CustomerType type;
 
 	@Column(length = 20)

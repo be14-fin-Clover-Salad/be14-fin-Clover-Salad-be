@@ -21,7 +21,7 @@ public enum CustomerType {
 	@JsonCreator
 	public static CustomerType from(String input) {
 		for (CustomerType type : values()) {
-			if (type.label.equals(input)) {
+			if (type.getLabel().equals(input)) {
 				return type;
 			}
 		}

@@ -61,4 +61,13 @@ public class Consultation {
         this.customerId = customerId;
         this.isDeleted = false;
     }
+
+    public void update(Consultation updated) {
+        if (updated.content != null && !updated.content.equals(this.content)) {
+            this.content = updated.content;
+        }
+        if (updated.etc != null && !updated.etc.equals(this.etc)) {
+            this.etc = updated.etc;
+        }
+    }
 }

@@ -15,4 +15,8 @@ public interface CustomerQueryService {
     CustomerQueryDTO findCustomerByEmployeeAndCustomerId(int customerId, int employeeId);
 
     Integer findRegisteredCustomerId(String name, String birthdate, String phone);
+
+    boolean existsContractByCustomer(String name, String birthdate, String phone);
+
+    boolean existsConsultByCustomer(String name, String birthdate, String phone);
 }

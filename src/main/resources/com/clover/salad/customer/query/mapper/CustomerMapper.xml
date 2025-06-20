@@ -68,12 +68,38 @@
   </select>
 
   <select id="findRegisteredCustomerId" resultType="int">
-        SELECT c.id
-          FROM customer c
-         WHERE c.name = #{customerName}
-           AND c.birthdate = #{customerBirthdate}
-           AND c.phone = #{customerPhone}
-           AND c.is_deleted = false
+    SELECT c.id
+      FROM customer c
+     WHERE c.name = #{customerName}
+       AND c.birthdate = #{customerBirthdate}
+       AND c.phone = #{customerPhone}
+       AND c.is_deleted = false
+  </select>
+
+  <!-- 계약 존재 여부 조회 -->
+  <select id="existsContractByCustomer" resultType="boolean">
+  SELECT EXISTS (
+    SELECT 1
+      FROM contract c
+      JOIN customer cu ON c.customer_id = cu.id
+     WHERE cu.name = #{name}
+       AND cu.birthdate = #{birthdate}
+       AND cu.phone = #{phone}
+       AND cu.is_deleted = false
+  )
+  </select>
+
+  <!-- 상담 존재 여부 조회 -->
+  <select id="existsConsultByCustomer" resultType="boolean">
+  SELECT EXISTS (
+    SELECT 1
+      FROM consultation cs
+      JOIN customer cu ON cs.customer_id = cu.id
+     WHERE cu.name = #{name}
+       AND cu.birthdate = #{birthdate}
+       AND cu.phone = #{phone}
+       AND cu.is_deleted = false
+  )
   </select>
 
 </mapper>

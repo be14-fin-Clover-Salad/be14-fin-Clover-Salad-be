@@ -2,6 +2,7 @@ package com.clover.salad.customer.query.dto;
 
 import java.time.LocalDate;
 
+import com.clover.salad.customer.command.domain.aggregate.vo.CustomerType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -33,7 +34,7 @@ public class CustomerQueryDTO {
     @JsonProperty("isDeleted")
     private boolean isDeleted;
 
-    private String type;
+    private CustomerType type;
 
     private String etc;
 }

@@ -142,8 +142,13 @@ hs_err_pid*
 replay_pid*
 
 # yml 파일 정보 관련 ignore 설정
-application.yml
-applicaiton.properties
+application*.yml
+application.properties
+!application.yml.template
+
+
+deploy/
+*.deploy.zip
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij
 

@@ -3,6 +3,7 @@ package com.clover.salad.common.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import com.clover.salad.common.validator.EmailValidator;
 
 public class EmailValidatorTest {
 

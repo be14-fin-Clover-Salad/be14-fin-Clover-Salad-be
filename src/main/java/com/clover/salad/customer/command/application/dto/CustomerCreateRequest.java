@@ -1,10 +1,11 @@
 package com.clover.salad.customer.command.application.dto;
 
-import com.clover.salad.common.validation.ValidEmail;
+import com.clover.salad.common.validator.ValidEmail;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 public class CustomerCreateRequest {
 
     @NotBlank(message = "이름은 필수입니다.")

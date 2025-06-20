@@ -66,4 +66,8 @@ public class ContractEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "employee_id", nullable = false)
 	private EmployeeEntity employee;
+
+	public void changeStatus(ContractStatus status) {
+		this.status = status;
+	}
 }

@@ -1,9 +1,11 @@
 package com.clover.salad.customer.command.application.dto;
 
+import com.clover.salad.common.validator.ValidBirthdate;
 import com.clover.salad.common.validator.ValidEmail;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import com.clover.salad.common.validator.ValidPhone;
+import com.clover.salad.consult.command.application.dto.ConsultationCreateRequest;
+import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
+import com.clover.salad.customer.command.domain.aggregate.vo.CustomerType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,14 +21,12 @@ import lombok.ToString;
 @Builder
 public class CustomerCreateRequest {
 
-    @NotBlank(message = "이름은 필수입니다.")
     private String name;
 
-    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "생년월일 형식은 yyyy-MM-dd여야 합니다.")
+    @ValidBirthdate
     private String birthdate;
 
-    @NotBlank(message = "휴대폰 번호는 필수입니다.")
-    @Pattern(regexp = "^010\\d{8}$", message = "휴대폰 번호는 010으로 시작하며 11자리여야 합니다.")
+    @ValidPhone
     private String phone;
 
     private String address;
@@ -34,9 +34,39 @@ public class CustomerCreateRequest {
     @ValidEmail
     private String email;
 
-    @NotBlank(message = "고객 유형은 필수입니다.")
-    @Pattern(regexp = "^(리드|고객)$", message = "고객 유형은 '리드' 또는 '고객'이어야 합니다.")
-    private String type;
+    private CustomerType type;
 
     private String etc;
+
+    /** 엔티티 변환 시 phone 정규화 포함 */
+    public Customer toEntity() {
+        String sanitizedPhone = this.phone != null ? this.phone.replaceAll("-", "") : null;
+
+        return Customer.builder().name(this.name).birthdate(this.birthdate).phone(sanitizedPhone)
+                .email(this.email).address(this.address).etc(this.etc).build();
+    }
+
+    /** 고객 식별 정보 존재 여부 확인 */
+    public boolean hasAnyCustomerIdentifier() {
+        return (name != null && !name.isBlank()) || (phone != null && !phone.isBlank())
+                || (birthdate != null && !birthdate.isBlank());
+    }
+
+    /** 상담 요청으로부터 Customer 등록용 DTO 생성 */
+    public static CustomerCreateRequest from(ConsultationCreateRequest request) {
+        return CustomerCreateRequest.builder().name(request.getCustomerName())
+                .birthdate(request.getCustomerBirthdate()).phone(request.getCustomerPhone())
+                .etc(request.getEtc()).build();
+    }
+
+    /** 연락처를 정규화한 DTO 반환 */
+    public static CustomerCreateRequest fromSanitized(ConsultationCreateRequest request) {
+        String normalizedPhone =
+                request.getCustomerPhone() != null ? request.getCustomerPhone().replaceAll("-", "")
+                        : null;
+
+        return CustomerCreateRequest.builder().name(request.getCustomerName())
+                .birthdate(request.getCustomerBirthdate()).phone(normalizedPhone).address(null)
+                .email(null).etc(request.getEtc()).build();
+    }
 }

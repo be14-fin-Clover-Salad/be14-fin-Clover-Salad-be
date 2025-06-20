@@ -56,4 +56,11 @@ public class EmployeeCommandController {
 		employeeCommandService.confirmResetPassword(dto.getToken(), dto.getNewPassword());
 		return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
 	}
+
+	@PatchMapping("/mypage/profile")
+	public ResponseEntity<String> updateProfile(@RequestBody UpdateProfileFileDTO updateProfileFileDTO) {
+		int employeeId = SecurityUtil.getEmployeeId();
+		employeeCommandService.updateProfile(employeeId, updateProfileFileDTO.getFileId());
+		return ResponseEntity.ok("프로필이 성공적으로 변경되었습니다.");
+	}
 }

@@ -43,13 +43,9 @@ public class ContractDTO {
 	public ContractEntity toEntityWithDefaults(
 		Customer customer,
 		String contractCode,
-		DocumentOrigin documentOrigin
+		DocumentOrigin documentOrigin,
+		EmployeeEntity employee // 사원 엔티티 주입받음
 	) {
-		// 임시 사원 ID 하드코딩
-		EmployeeEntity dummyEmployee = EmployeeEntity.builder()
-			.id(1) // 실제 DB에 존재하는 사원 ID
-			.build();
-
 		return ContractEntity.builder()
 			.code(contractCode)
 			.createdAt(LocalDateTime.now())
@@ -67,8 +63,9 @@ public class ContractDTO {
 			.etc(null)
 			.documentOrigin(documentOrigin)
 			.customer(customer)
-			.employee(dummyEmployee)
+			.employee(employee) // 로그인한 사원 주입
 			.build();
 	}
+
 
 }

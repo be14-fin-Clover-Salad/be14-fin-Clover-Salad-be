@@ -1,7 +1,6 @@
 package com.clover.salad.customer.command.domain.aggregate.vo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum CustomerType {
 
@@ -13,12 +12,11 @@ public enum CustomerType {
 		this.label = label;
 	}
 
-	@JsonValue
 	public String getLabel() {
 		return label;
 	}
 
-	@JsonCreator
+	@JsonCreator(mode = JsonCreator.Mode.DELEGATING)
 	public static CustomerType from(String input) {
 		for (CustomerType type : values()) {
 			if (type.getLabel().equals(input)) {

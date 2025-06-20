@@ -25,7 +25,7 @@ public class ApprovalCommandController {
 	@PostMapping("/request")
 	public ResponseEntity<String> requestApproval(@RequestBody ApprovalRequestDTO dto) {
 		int approvalId = approvalCommandService.requestApproval(dto);
-		String code = approvalCommandService.getApprovalCodeById(approvalId); // 이 메서드를 추가해야 함
+		String code = approvalCommandService.getApprovalCodeById(approvalId);
 		String message = "결재 요청이 정상적으로 처리되었습니다. 결재코드: " + code;
 		return ResponseEntity.ok(message);
 	}

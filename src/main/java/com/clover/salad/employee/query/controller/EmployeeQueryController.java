@@ -14,11 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.clover.salad.employee.query.dto.EmployeeDetailDTO;
 import com.clover.salad.employee.query.dto.EmployeeMypageQueryDTO;
-import com.clover.salad.employee.query.dto.EmployeeQueryDTO;
 import com.clover.salad.employee.query.dto.EmployeeSearchRequestDTO;
 import com.clover.salad.employee.query.dto.EmployeeSearchResponseDTO;
 import com.clover.salad.employee.query.dto.LoginHeaderInfoDTO;
-import com.clover.salad.employee.query.dto.SearchEmployeeDTO;
 import com.clover.salad.employee.query.service.EmployeeQueryService;
 import com.clover.salad.security.SecurityUtil;
 

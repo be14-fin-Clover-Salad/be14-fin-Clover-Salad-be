@@ -156,8 +156,7 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		EmployeeEntity employee = employeeRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("해당 ID의 사원을 찾을 수 없습니다."));
 
-		Integer profileId = employee.getProfile();
-		if (profileId == null) throw new RuntimeException("등록된 프로필이 없습니다.");
+		int profileId = employee.getProfile();
 
 		FileUploadEntity file = fileUploadRepository.findById(profileId)
 			.orElseThrow(() -> new RuntimeException("해당 프로필 파일을 찾을 수 없습니다."));
@@ -175,4 +174,5 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 		employee.setProfile(fileId);
 		employeeRepository.save(employee);
 	}
+
 }

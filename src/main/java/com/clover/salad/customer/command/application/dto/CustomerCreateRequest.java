@@ -5,14 +5,20 @@ import com.clover.salad.common.validator.ValidEmail;
 import com.clover.salad.common.validator.ValidPhone;
 import com.clover.salad.consult.command.application.dto.ConsultationCreateRequest;
 import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @ToString
+@Builder
 public class CustomerCreateRequest {
 
     private String name;

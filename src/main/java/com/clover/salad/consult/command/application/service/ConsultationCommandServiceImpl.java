@@ -80,6 +80,17 @@ public class ConsultationCommandServiceImpl implements ConsultationCommandServic
                 .type(request.getCustomerType()).etc(request.getCustomerEtc()).build());
     }
 
+    @Override
+    @Transactional
+    public void deleteConsultation(int consultId) {
+        // 1. 삭제되지 않은 상담 조회
+        Consultation consultation = consultationRepository.findByIdAndIsDeletedFalse(consultId)
+                .orElseThrow(() -> new IllegalArgumentException("삭제되었거나 존재하지 않는 상담입니다."));
+
+        // 2. 소프트 삭제 처리
+        consultation.setDeleted(true);
+    }
+
     private boolean isBlank(String value) {
         return value == null || value.isBlank();
     }

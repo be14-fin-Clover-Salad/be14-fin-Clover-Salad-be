@@ -7,4 +7,6 @@ public interface ConsultationCommandService {
     void createConsultation(ConsultationCreateRequest request);
 
     void updateConsultation(int consultId, ConsultationUpdateRequest request);
+
+    void deleteConsultation(int consultId);
 }

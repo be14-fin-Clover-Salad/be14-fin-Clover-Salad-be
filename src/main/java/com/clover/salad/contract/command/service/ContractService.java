@@ -1,21 +1,22 @@
 package com.clover.salad.contract.command.service;
 
-import java.io.File;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.clover.salad.contract.command.dto.*;
 import com.clover.salad.contract.command.entity.*;
 import com.clover.salad.contract.command.repository.*;
-import com.clover.salad.contract.command.service.parser.PdfContractParserService;
 import com.clover.salad.contract.common.ContractStatus;
-import com.clover.salad.contract.document.entity.DocumentOrigin;
-import com.clover.salad.contract.document.service.DocumentOriginService;
+import com.clover.salad.customer.command.application.dto.CustomerCreateRequest;
+import com.clover.salad.customer.command.application.dto.CustomerUpdateRequest;
+import com.clover.salad.customer.command.application.service.CustomerCommandService;
 import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
+import com.clover.salad.customer.command.domain.repository.CustomerRepository;
+import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
+import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 import com.clover.salad.product.command.domain.aggregate.entity.Product;
 import com.clover.salad.product.command.domain.repository.ProductRepository;
 import com.clover.salad.security.SecurityUtil;
@@ -29,31 +30,78 @@ import lombok.extern.slf4j.Slf4j;
 public class ContractService {
 
 	private final ContractRepository contractRepository;
-	private final ContractCustomerRepository contractCustomerRepository;
 	private final ProductRepository productRepository;
 	private final ContractProductRepository contractProductRepository;
 	private final ContractFileHistoryRepository contractFileHistoryRepository;
-	private final DocumentOriginService documentOriginService;
-	private final PdfContractParserService pdfContractParserService;
+	private final CustomerCommandService customerCommandService;
+	private final CustomerRepository customerRepository;
+	private final EmployeeRepository employeeRepository;
 
 	@Transactional
 	public ContractEntity registerContract(ContractUploadRequestDTO dto) {
-		Customer customer = contractCustomerRepository.save(dto.getCustomer().toEntityWithDefaults());
+
+		CustomerDTO customerDto = dto.getCustomer();
+		String name = customerDto.getName();
+		String birthdate = customerDto.getBirthdate();
+		String phone = customerDto.getPhone();
+
+		Customer customer = customerRepository
+			.findTopByNameAndBirthdateAndPhoneOrderByRegisterAtDesc(name, birthdate, phone)
+			.orElse(null);
+
+		if (customer != null) {
+			CustomerUpdateRequest updateRequest = CustomerUpdateRequest.builder()
+				.name(name)
+				.birthdate(birthdate)
+				.phone(phone)
+				.address(customerDto.getAddress())
+				.email(customerDto.getEmail())
+				.type(customerDto.getCustomerType().name())
+				.etc(null)
+				.build();
+			customerCommandService.updateCustomer(customer.getId(), updateRequest);
+
+			// 업데이트 이후 최신값 다시 불러오기
+			customer = customerRepository.findById(customer.getId())
+				.orElseThrow(() -> new IllegalArgumentException("기존 고객 재조회 실패"));
+		} else {
+			CustomerCreateRequest createRequest = CustomerCreateRequest.builder()
+				.name(name)
+				.birthdate(birthdate)
+				.phone(phone)
+				.address(customerDto.getAddress())
+				.email(customerDto.getEmail())
+				.type(customerDto.getCustomerType().name())
+				.etc(null)
+				.build();
+			customerCommandService.registerCustomer(createRequest);
+
+			// 영속성 반영 및 재조회
+			customerRepository.flush();
+			customer = customerRepository
+				.findTopByNameAndBirthdateAndPhoneOrderByRegisterAtDesc(name, birthdate, phone)
+				.orElseThrow(() -> new IllegalArgumentException("신규 고객 조회 실패"));
+		}
+
 		String generatedCode = generateContractCode();
+
+		int employeeId = SecurityUtil.getEmployeeId();
+		EmployeeEntity employee = employeeRepository.findById(employeeId)
+			.orElseThrow(() -> new IllegalArgumentException("사원 정보 조회 실패"));
 
 		ContractEntity contract = dto.getContract().toEntityWithDefaults(
 			customer,
 			generatedCode,
-			dto.getDocumentOrigin()
+			dto.getDocumentOrigin(),
+			employee
 		);
-
 		ContractEntity savedContract = contractRepository.save(contract);
 
 		for (ProductDTO productDto : dto.getProducts()) {
 			Product product = productRepository.findByNameAndSerialNumber(
 				productDto.getProductName(),
 				productDto.getModelName()
-			).orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+			).orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다: " + productDto.getProductName()));
 
 			ContractProductEntity contractProduct = ContractProductEntity.builder()
 				.contract(savedContract)
@@ -69,13 +117,11 @@ public class ContractService {
 
 	private String generateContractCode() {
 		String prefix = "C-";
-		java.time.LocalDate now = java.time.LocalDate.now();
-
+		LocalDate now = LocalDate.now();
 		String yy = String.format("%02d", now.getYear() % 100);
 		String mm = String.format("%02d", now.getMonthValue());
 		String datePart = yy + mm;
 		String seq = String.format("%04d", contractRepository.count() + 1);
-
 		return prefix + datePart + "-" + seq;
 	}
 
@@ -83,8 +129,7 @@ public class ContractService {
 	public ContractEntity markContractDeleted(int contractId) {
 		ContractEntity contract = contractRepository.findById(contractId)
 			.orElseThrow(() -> new IllegalArgumentException("기존 계약을 찾을 수 없습니다."));
-
-		contract.setStatus(ContractStatus.계약무효);
+		contract.setStatus(ContractStatus.INVALID);
 		contract.setDeleted(true);
 		return contract;
 	}
@@ -103,12 +148,10 @@ public class ContractService {
 
 	private int findRootContractId(int contractId) {
 		Optional<ContractFileHistory> historyOpt = contractFileHistoryRepository.findByContract_Id(contractId);
-
 		while (historyOpt.isPresent() && historyOpt.get().getReplacedContract() != null) {
 			contractId = historyOpt.get().getReplacedContract().getId();
 			historyOpt = contractFileHistoryRepository.findByContract_Id(contractId);
 		}
-
 		return contractId;
 	}
 

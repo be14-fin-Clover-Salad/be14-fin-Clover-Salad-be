@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.clover.salad.contract.common.ContractStatus;
+import com.clover.salad.contract.common.ContractStatusConverter;
 import com.clover.salad.contract.common.RelationshipType;
 import com.clover.salad.contract.document.entity.DocumentOrigin;
 import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
@@ -30,8 +31,8 @@ public class ContractEntity {
 	private LocalDate startDate;
 	private LocalDate endDate;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false, length = 20)
+	@Column(name = "status", nullable = false, length = 20)
+	@Convert(converter = ContractStatusConverter.class)
 	private ContractStatus status;
 
 	private int amount;

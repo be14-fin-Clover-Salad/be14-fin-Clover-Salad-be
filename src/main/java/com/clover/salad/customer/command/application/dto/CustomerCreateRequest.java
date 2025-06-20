@@ -7,12 +7,17 @@ import com.clover.salad.consult.command.application.dto.ConsultationCreateReques
 import com.clover.salad.customer.command.domain.aggregate.entity.Customer;
 import lombok.*;
 
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @ToString
+@Builder
 public class CustomerCreateRequest {
 
     private String name;

@@ -18,4 +18,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
             + "(:birthdate IS NULL OR c.birthdate = :birthdate)")
     Optional<Customer> findByNameAndPhoneAndBirthdateOptional(String name, String phone,
             String birthdate);
+
+    // 고성연 Transcational 안에서 도중 사용할 jpa 조회용
+    Optional<Customer> findTopByNameAndBirthdateAndPhoneOrderByRegisterAtDesc(
+        String name, String birthdate, String phone
+    );
+
 }

@@ -66,8 +66,8 @@
         <where>
             <if test="employeeCode != null">
                 AND EG.EMPLOYEE_ID IN (SELECT E.ID
-                FROM EMPLOYEE E
-                WHERE E.CODE LIKE CONCAT('%', #{employeeCode}, '%'))
+                                         FROM EMPLOYEE E
+                                        WHERE E.CODE LIKE CONCAT('%', #{employeeCode}, '%'))
             </if>
             <if test="startDate != ''">
                 AND EG.TARGET_DATE >= CAST(REPLACE(#{startDate}, '-', '') AS UNSIGNED)

@@ -27,35 +27,45 @@
     </resultMap>
 
     <resultMap id="ContractWithProductsMap" type="com.clover.salad.contract.query.dto.ContractResponseDTO">
-
-        <result property="id" column="id"/>
+        <id property="id" column="id"/>
         <result property="renameFile" column="rename_file"/>
         <result property="code" column="code"/>
         <result property="amount" column="amount"/>
-
-
         <result property="customerName" column="customer_name"/>
         <result property="customerAddress" column="customer_address"/>
         <result property="customerPhone" column="customer_phone"/>
-
-
         <result property="employeeName" column="employee_name"/>
+        <result property="fileUrl" column="file_url"/>
+        <result property="thumbnailUrl" column="thumbnail_url"/>
 
-
-        <result property="aprvTitle" column="aprv_title"/>
-        <result property="aprvContent" column="aprv_content"/>
-        <result property="aprvState" column="aprv_state"/>
-        <result property="reqId" column="req_id"/>
-        <result property="aprvId" column="aprv_id"/>
-
-
+        <!-- 상품 목록 -->
         <collection property="productList" ofType="com.clover.salad.contract.query.dto.ProductDTO">
             <result property="productName" column="product_name"/>
             <result property="serialNumber" column="serial_number"/>
             <result property="quantity" column="quantity"/>
             <result property="rentalCost" column="rental_cost"/>
         </collection>
+
+        <!-- 결재 내역 목록 -->
+        <collection property="approvalList" ofType="com.clover.salad.approval.query.dto.ApprovalDetailDTO">
+            <id property="id" column="approval_id"/>
+            <result property="code" column="approval_code"/>
+            <result property="title" column="approval_title"/>
+            <result property="content" column="approval_content"/>
+            <result property="reqDate" column="req_date"/>
+            <result property="aprvDate" column="aprv_date"/>
+            <result property="state" column="approval_state"/>
+            <result property="comment" column="approval_comment"/>
+            <result property="reqName" column="req_name"/>
+            <result property="aprvName" column="aprv_name"/>
+            <result property="contractCode" column="contract_code"/>
+            <result property="reqId" column="req_id"/>
+            <result property="aprvId" column="aprv_id"/>
+        </collection>
     </resultMap>
+
+
+
 
     <select id="selectContractInfo" parameterType="int" resultMap="ContractResultMap">
         SELECT c.id,
@@ -185,43 +195,57 @@
                 )
             </if>
         </where>
-        GROUP BY c.id
+        GROUP BY c.id DESC
     </select>
 
 
     <select id="selectDetailContractInfo" parameterType="int" resultMap="ContractWithProductsMap">
-        SELECT c.id,
-               f.rename_file,
-               c.code,
-               c.amount,
+        SELECT
+            c.id,
+            f.rename_file,
+            c.code,
+            c.amount,
+            cu.name AS customer_name,
+            cu.address AS customer_address,
+            cu.phone AS customer_phone,
+            e.name AS employee_name,
+            f.path AS file_url,
+            f.thumbnail_path AS thumbnail_url,
 
-               cu.name    AS customer_name,
-               cu.address AS customer_address,
-               cu.phone   AS customer_phone,
+            -- 상품(Products)
+            p.name AS product_name,
+            p.serial_number,
+            cp.quantity,
+            p.rental_cost,
 
-               e.name     AS employee_name,
-
-               a.title    AS aprv_title,
-               a.content  AS aprv_content,
-               a.state    AS aprv_state,
-               a.req_id,
-               a.aprv_id,
-
-               p.name     AS product_name,
-               p.serial_number,
-               cp.quantity,
-               p.rental_cost
+            -- 결재내역(Approvals)
+            a.id AS approval_id,
+            a.code AS approval_code,
+            a.title AS approval_title,
+            a.content AS approval_content,
+            a.req_date,
+            a.aprv_date,
+            a.state AS approval_state,
+            a.comment AS approval_comment,
+            req_emp.name AS req_name,
+            aprv_emp.name AS aprv_name,
+            a.contract_id AS contract_code,
+            a.req_id,
+            a.aprv_id
 
         FROM contract c
                  JOIN customer cu ON c.customer_id = cu.id
                  JOIN employee e ON c.employee_id = e.id
-                 LEFT JOIN approval a ON a.contract_id = c.id
-                 LEFT JOIN contract_product cp ON cp.contract_id = c.id
-                 LEFT JOIN product p ON p.id = cp.product_id
                  LEFT JOIN document_origin d ON c.document_origin_id = d.id
                  LEFT JOIN file_upload f ON d.file_upload_id = f.id
+                 LEFT JOIN contract_product cp ON cp.contract_id = c.id
+                 LEFT JOIN product p ON p.id = cp.product_id
+                 LEFT JOIN approval a ON a.contract_id = c.id
+                 LEFT JOIN employee req_emp ON a.req_id = req_emp.id
+                 LEFT JOIN employee aprv_emp ON a.aprv_id = aprv_emp.id
 
         WHERE c.id = #{contractId}
+
     </select>
 
     <select id="findCustomerIdsByEmployeeId" parameterType="int" resultType="int">

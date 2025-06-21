@@ -1,6 +1,6 @@
 ﻿-- saladdb 계정으로 실행!
-USE saladdb;
-
+# USE saladdb;
+#
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS APPROVAL;
@@ -46,6 +46,7 @@ CREATE TABLE FILE_UPLOAD
     origin_file VARCHAR(512) NOT NULL,
     rename_file VARCHAR(512) NOT NULL,
     path        VARCHAR(512) NOT NULL,
+    thumbnail_path VARCHAR(512) NULL,
     created_at  DATETIME     NOT NULL,
     type        VARCHAR(20)   NOT NULL,
     CONSTRAINT PK_FILE_UPLOAD PRIMARY KEY (id)

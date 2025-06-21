@@ -35,10 +35,6 @@ public class ContractDTO {
 	private String relationship;
 	private String paymentEmail;
 
-	// 임시 사원 ID 하드코딩
-	/*
-	 * 로그인한 사원 정보를 가지고 할 예정임
-	 * */
 
 	public ContractEntity toEntityWithDefaults(
 		Customer customer,

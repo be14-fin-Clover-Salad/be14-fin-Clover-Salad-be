@@ -32,6 +32,7 @@ public class FileUploadService {
 		String key = pathResolver.resolve(type, renamed);
 		String url = s3Uploader.upload(tempFile, key);
 
+
 		FileUploadEntity entity = FileUploadEntity.builder()
 			.originFile(origin)
 			.renameFile(renamed)
@@ -40,5 +41,25 @@ public class FileUploadService {
 			.build();
 
 		return fileUploadRepository.save(entity);
+	}
+
+	public FileUploadEntity uploadAndSave(File file, String originalFilename, FileUploadType type) {
+		String renamed = UUID.randomUUID() + "_" + originalFilename;
+		String key = pathResolver.resolve(type, renamed);
+		String url = s3Uploader.upload(file, key);
+
+		FileUploadEntity entity = FileUploadEntity.builder()
+			.originFile(originalFilename)
+			.renameFile(renamed)
+			.path(url)
+			.type(type)
+			.build();
+
+		return fileUploadRepository.save(entity);
+	}
+
+	public void deleteFromS3(String key) {
+		log.info("[FileUploadService] S3 파일 삭제 요청: {}", key);
+		s3Uploader.delete(key);
 	}
 }

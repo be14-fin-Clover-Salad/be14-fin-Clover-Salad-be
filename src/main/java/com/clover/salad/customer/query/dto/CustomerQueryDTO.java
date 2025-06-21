@@ -37,4 +37,20 @@ public class CustomerQueryDTO {
     private CustomerType type;
 
     private String etc;
+
+    public String getPhone() {
+        return formatPhone(this.phone);
+    }
+
+    private String formatPhone(String raw) {
+        if (raw == null)
+            return null;
+        String digits = raw.replaceAll("\\D", "");
+        if (digits.length() == 10) {
+            return digits.replaceFirst("(\\d{3})(\\d{3})(\\d{4})", "$1-$2-$3");
+        } else if (digits.length() == 11) {
+            return digits.replaceFirst("(\\d{3})(\\d{4})(\\d{4})", "$1-$2-$3");
+        }
+        return raw;
+    }
 }

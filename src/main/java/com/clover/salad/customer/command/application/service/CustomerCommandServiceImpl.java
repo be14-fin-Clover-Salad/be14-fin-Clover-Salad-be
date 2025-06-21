@@ -95,7 +95,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 		Customer customer = customerRepository.findById(customerId).orElseThrow(
 				() -> new CustomersException.CustomerNotFoundException("고객이 존재하지 않습니다."));
 
-		Customer updated = request.toEntity(customer.getType());
+		Customer updated = request.toEntity(request.getType());
 		customer.update(updated);
 
 		log.info("[고객 수정] ID: {}, 이름: {}", customerId, customer.getName());

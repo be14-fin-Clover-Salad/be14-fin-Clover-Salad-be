@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "consultation")
@@ -31,6 +32,7 @@ public class Consultation {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Setter
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
@@ -60,5 +62,14 @@ public class Consultation {
         this.employeeId = employeeId;
         this.customerId = customerId;
         this.isDeleted = false;
+    }
+
+    public void update(Consultation updated) {
+        if (updated.content != null && !updated.content.equals(this.content)) {
+            this.content = updated.content;
+        }
+        if (updated.etc != null && !updated.etc.equals(this.etc)) {
+            this.etc = updated.etc;
+        }
     }
 }

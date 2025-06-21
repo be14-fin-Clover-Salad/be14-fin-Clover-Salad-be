@@ -57,6 +57,7 @@ public class ApprovalCommandServiceImpl implements ApprovalCommandService {
 		ContractEntity contract = contractRepository.findById(dto.getContractId())
 			.orElseThrow(() -> new IllegalArgumentException("계약이 존재하지 않습니다. 계약 ID: " + dto.getContractId()));
 		contract.changeStatus(ContractStatus.IN_PROGRESS);
+		contractRepository.save(contract);
 		log.info("계약의 상태가 '결재중'으로 변경되었습니다.");
 
 		/* 설명. 팀장은 결재 요청 불가능 */

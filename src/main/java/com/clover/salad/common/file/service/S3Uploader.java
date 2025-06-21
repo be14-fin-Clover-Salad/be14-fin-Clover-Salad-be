@@ -31,10 +31,23 @@ public class S3Uploader {
 
 		try {
 			s3Client.putObject(putObjectRequest, RequestBody.fromFile(file));
-			return s3Client.utilities().getUrl(GetUrlRequest.builder().bucket(bucket).key(key).build()).toString();
+			String fullUrl = s3Client.utilities()
+				.getUrl(GetUrlRequest.builder().bucket(bucket).key(key).build())
+				.toExternalForm();
+
+			log.info("[S3Uploader] 업로드된 S3 URL = {}", fullUrl);
+			return fullUrl;
 		} catch (S3Exception e) {
 			log.error("S3 업로드 실패: {}", e.getMessage(), e);
 			throw new RuntimeException("파일 업로드 실패", e);
+		}
+	}
+
+	public void delete(String key) {
+		try {
+			s3Client.deleteObject(builder -> builder.bucket(bucket).key(key));
+		} catch (S3Exception e) {
+			log.warn("S3 삭제 실패: {}", e.getMessage(), e);
 		}
 	}
 }

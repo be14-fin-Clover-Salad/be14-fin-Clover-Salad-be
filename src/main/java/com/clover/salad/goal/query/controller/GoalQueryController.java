@@ -13,7 +13,6 @@ import com.clover.salad.goal.command.application.dto.EmployeeSearchTermDTO;
 import com.clover.salad.goal.command.application.dto.GoalDTO;
 import com.clover.salad.goal.command.application.dto.DeptSearchTermDTO;
 import com.clover.salad.goal.query.service.GoalQueryService;
-import com.clover.salad.security.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,12 +43,12 @@ public class GoalQueryController {
 	/* 설명. 실적 목표 수정 버튼 누를 시, 현재 선택된 목표의 연도를 가져와서, 그 해의 목표 조회
 	 *  지난 기간에 대한 제한은 프론트에서 구현
 	 * */
-	@GetMapping("/change/{targetYear}")
+	@GetMapping("/change/{employeeCode}/{targetYear}")
 	public ResponseEntity<List<GoalDTO>> searchYearGoalByCurrentGoal(
+		@PathVariable int employeeCode,
 		@PathVariable int targetYear
 	) {
-		int employeeId = SecurityUtil.getEmployeeId();
-		return ResponseEntity.ok(goalQueryService.searchYearGoalByCurrentGoal(employeeId, targetYear));
+		return ResponseEntity.ok(goalQueryService.searchYearGoalByCurrentGoal(employeeCode, targetYear));
 	}
 	
 	/* 설명. 기본 실적 목표 조회 */

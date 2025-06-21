@@ -6,9 +6,17 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.clover.salad.contract.command.dto.*;
-import com.clover.salad.contract.command.entity.*;
-import com.clover.salad.contract.command.repository.*;
+import com.clover.salad.contract.command.dto.ContractUploadRequestDTO;
+import com.clover.salad.contract.command.dto.ContractUpdateResponseDTO;
+import com.clover.salad.contract.command.dto.ContractDeleteResponseDTO;
+import com.clover.salad.contract.command.dto.CustomerDTO;
+import com.clover.salad.contract.command.dto.ProductDTO;
+import com.clover.salad.contract.command.entity.ContractEntity;
+import com.clover.salad.contract.command.entity.ContractFileHistory;
+import com.clover.salad.contract.command.entity.ContractProductEntity;
+import com.clover.salad.contract.command.repository.ContractRepository;
+import com.clover.salad.contract.command.repository.ContractProductRepository;
+import com.clover.salad.contract.command.repository.ContractFileHistoryRepository;
 import com.clover.salad.contract.common.ContractStatus;
 import com.clover.salad.customer.command.application.dto.CustomerCreateRequest;
 import com.clover.salad.customer.command.application.dto.CustomerUpdateRequest;
@@ -29,110 +37,102 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ContractService {
 
-	private final ContractRepository contractRepository;
-	private final ProductRepository productRepository;
-	private final ContractProductRepository contractProductRepository;
+	private final ContractRepository            contractRepository;
+	private final ProductRepository             productRepository;
+	private final ContractProductRepository     contractProductRepository;
 	private final ContractFileHistoryRepository contractFileHistoryRepository;
-	private final CustomerCommandService customerCommandService;
-	private final CustomerRepository customerRepository;
-	private final EmployeeRepository employeeRepository;
+	private final CustomerCommandService        customerCommandService;
+	private final CustomerRepository            customerRepository;
+	private final EmployeeRepository            employeeRepository;
 
 	@Transactional
 	public ContractEntity registerContract(ContractUploadRequestDTO dto) {
-		CustomerDTO customerDto = dto.getCustomer();
-		String name = customerDto.getName();
-		String birthdate = customerDto.getBirthdate();
-		String phone = customerDto.getPhone();
+		CustomerDTO c    = dto.getCustomer();
+		String     name  = c.getName();
+		String     birth = c.getBirthdate();
+		String     phone = c.getPhone();
 
+		// 1) 기존 고객 조회
 		Customer customer = customerRepository
-				.findTopByNameAndBirthdateAndPhoneOrderByRegisterAtDesc(name, birthdate, phone)
-				.orElse(null);
+			.findTopByNameAndBirthdateAndPhoneOrderByRegisterAtDesc(name, birth, phone)
+			.orElse(null);
 
+		// 2) 고객 업데이트 or 신규 등록
 		if (customer != null) {
-			CustomerUpdateRequest updateRequest =
-					CustomerUpdateRequest.builder().name(name).birthdate(birthdate).phone(phone)
-							.address(customerDto.getAddress()).email(customerDto.getEmail())
-							.type(customerDto.getCustomerType()).etc(null).build();
-			customerCommandService.updateCustomer(customer.getId(), updateRequest);
+			CustomerUpdateRequest upd = CustomerUpdateRequest.builder()
+				.name(name).birthdate(birth).phone(phone)
+				.address(c.getAddress()).email(c.getEmail())
+				.type(c.getCustomerType()).etc(null)
+				.build();
+			customerCommandService.updateCustomer(customer.getId(), upd, true);
 
-			customer = customerRepository.findById(customer.getId())
-					.orElseThrow(() -> new IllegalArgumentException("기존 고객 재조회 실패"));
 		} else {
-			CustomerCreateRequest createRequest =
-					CustomerCreateRequest.builder().name(name).birthdate(birthdate).phone(phone)
-							.address(customerDto.getAddress()).email(customerDto.getEmail())
-							.type(customerDto.getCustomerType()).etc(null).build();
-			customerCommandService.registerCustomer(createRequest);
-			customerRepository.flush();
-			customer = customerRepository
-					.findTopByNameAndBirthdateAndPhoneOrderByRegisterAtDesc(name, birthdate, phone)
-					.orElseThrow(() -> new IllegalArgumentException("신규 고객 조회 실패"));
+			// ▶ 신규 고객은 검증만 우회하여 등록
+			CustomerCreateRequest createReq = CustomerCreateRequest.builder()
+				.name(name).birthdate(birth).phone(phone)
+				.address(c.getAddress()).email(c.getEmail())
+				.type(c.getCustomerType()).etc(null)
+				.build();
+			customerCommandService.registerCustomer(createReq, true);
 		}
 
-		String generatedCode = generateContractCode();
-		int employeeId = SecurityUtil.getEmployeeId();
-		EmployeeEntity employee = employeeRepository.findById(employeeId)
-				.orElseThrow(() -> new IllegalArgumentException("사원 정보 조회 실패"));
+		// 3) 갱신 또는 신규 고객 재조회
+		customer = customerRepository
+			.findTopByNameAndBirthdateAndPhoneOrderByRegisterAtDesc(name, birth, phone)
+			.orElseThrow(() -> new IllegalStateException("고객 조회 실패"));
 
-		ContractEntity contract = dto.getContract().toEntityWithDefaults(
-				customer, generatedCode, dto.getDocumentOrigin(), employee
-		);
-		ContractEntity savedContract = contractRepository.save(contract);
+		// 4) 계약 코드 생성
+		String code = generateContractCode();
+		EmployeeEntity emp = employeeRepository.findById(SecurityUtil.getEmployeeId())
+			.orElseThrow(() -> new IllegalArgumentException("사원 조회 실패"));
 
-		for (ProductDTO productDto : dto.getProducts()) {
-			Product product = productRepository.findByNameAndSerialNumber(
-					productDto.getProductName(), productDto.getModelName()
-			).orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다: " + productDto.getProductName()));
+		// 5) 계약 저장
+		ContractEntity contract = dto.getContract()
+			.toEntityWithDefaults(customer, code, dto.getDocumentOrigin(), emp);
+		ContractEntity saved = contractRepository.save(contract);
 
-			ContractProductEntity contractProduct =
-					ContractProductEntity.builder().contract(savedContract).product(product)
-							.quantity(productDto.getQuantity()).build();
+		// 6) 상품 매핑
+		for (ProductDTO pd : dto.getProducts()) {
+			Product prod = productRepository.findByNameAndSerialNumber(
+				pd.getProductName(), pd.getModelName()
+			).orElseThrow(() -> new IllegalArgumentException("상품 없음: " + pd.getProductName()));
 
-			contractProductRepository.save(contractProduct);
+			ContractProductEntity cp = ContractProductEntity.builder()
+				.contract(saved)
+				.product(prod)
+				.quantity(pd.getQuantity())
+				.build();
+			contractProductRepository.save(cp);
 		}
 
-		return savedContract;
+		return saved;
 	}
 
 	@Transactional(readOnly = true)
 	public void validate(ContractUploadRequestDTO dto) {
-		CustomerDTO customerDto = dto.getCustomer();
-		String name = customerDto.getName();
-		String birthdate = customerDto.getBirthdate();
-		String phone = customerDto.getPhone();
-
-		boolean customerExists = customerRepository
-			.findTopByNameAndBirthdateAndPhoneOrderByRegisterAtDesc(name, birthdate, phone)
-			.isPresent();
-
-		if (!customerExists) {
-			log.info("[VALIDATION] 신규 고객 등록 예정: {}", name);
-		}
-
-		for (ProductDTO productDto : dto.getProducts()) {
+		// 상품 유효성만 검사
+		for (ProductDTO p : dto.getProducts()) {
 			productRepository.findByNameAndSerialNumber(
-					productDto.getProductName(), productDto.getModelName()
-			).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다: " + productDto.getProductName()));
+				p.getProductName(), p.getModelName()
+			).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다: " + p.getProductName()));
 		}
 	}
 
 	private String generateContractCode() {
-		String prefix = "C-";
 		LocalDate now = LocalDate.now();
-		String yy = String.format("%02d", now.getYear() % 100);
-		String mm = String.format("%02d", now.getMonthValue());
-		String datePart = yy + mm;
+		String yy  = String.format("%02d", now.getYear() % 100);
+		String mm  = String.format("%02d", now.getMonthValue());
 		String seq = String.format("%04d", contractRepository.count() + 1);
-		return prefix + datePart + "-" + seq;
+		return "C-" + yy + mm + "-" + seq;
 	}
 
 	@Transactional
 	public ContractEntity markContractDeleted(int contractId) {
-		ContractEntity contract = contractRepository.findById(contractId)
-				.orElseThrow(() -> new IllegalArgumentException("기존 계약을 찾을 수 없습니다."));
-		contract.setStatus(ContractStatus.INVALID);
-		contract.setDeleted(true);
-		return contract;
+		ContractEntity c = contractRepository.findById(contractId)
+			.orElseThrow(() -> new IllegalArgumentException("기존 계약을 찾을 수 없습니다."));
+		c.setStatus(ContractStatus.INVALID);
+		c.setDeleted(true);
+		return c;
 	}
 
 	@Transactional
@@ -142,33 +142,35 @@ public class ContractService {
 
 	public int getNextVersion(int replacedContractId) {
 		int rootId = findRootContractId(replacedContractId);
-		return contractFileHistoryRepository.findMaxVersionByReplacedContractId(rootId)
-				.map(v -> v + 1).orElse(1);
+		return contractFileHistoryRepository
+			.findMaxVersionByReplacedContractId(rootId)
+			.map(v -> v + 1)
+			.orElse(1);
 	}
 
 	private int findRootContractId(int contractId) {
-		Optional<ContractFileHistory> historyOpt =
-				contractFileHistoryRepository.findByContract_Id(contractId);
-		while (historyOpt.isPresent() && historyOpt.get().getReplacedContract() != null) {
-			contractId = historyOpt.get().getReplacedContract().getId();
-			historyOpt = contractFileHistoryRepository.findByContract_Id(contractId);
+		Optional<ContractFileHistory> h =
+			contractFileHistoryRepository.findByContract_Id(contractId);
+		while (h.isPresent() && h.get().getReplacedContract() != null) {
+			contractId = h.get().getReplacedContract().getId();
+			h = contractFileHistoryRepository.findByContract_Id(contractId);
 		}
 		return contractId;
 	}
 
 	@Transactional
 	public ContractUpdateResponseDTO updateEtcOnly(int contractId, String etc) {
-		ContractEntity contract = contractRepository.findById(contractId)
-				.orElseThrow(() -> new IllegalArgumentException("계약을 찾을 수 없습니다."));
-		contract.setEtc(etc);
-		return new ContractUpdateResponseDTO(contract.getId(), contract.getEtc());
+		ContractEntity c = contractRepository.findById(contractId)
+			.orElseThrow(() -> new IllegalArgumentException("계약을 찾을 수 없습니다."));
+		c.setEtc(etc);
+		return new ContractUpdateResponseDTO(c.getId(), c.getEtc());
 	}
 
 	@Transactional
 	public ContractDeleteResponseDTO deleteContract(int contractId) {
-		ContractEntity contract = contractRepository.findById(contractId)
-				.orElseThrow(() -> new IllegalArgumentException("계약을 찾을 수 없습니다."));
-		contract.setDeleted(true);
-		return new ContractDeleteResponseDTO(contract.getId(), contract.isDeleted());
+		ContractEntity c = contractRepository.findById(contractId)
+			.orElseThrow(() -> new IllegalArgumentException("계약을 찾을 수 없습니다."));
+		c.setDeleted(true);
+		return new ContractDeleteResponseDTO(c.getId(), c.isDeleted());
 	}
 }

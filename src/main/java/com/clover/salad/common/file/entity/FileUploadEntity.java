@@ -39,6 +39,9 @@ public class FileUploadEntity {
 	@Column(name = "path", nullable = false, length = 512)
 	private String path;
 
+	@Column(name = "thumbnail_path", length = 512)
+    private String thumbnailPath;
+
 	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt;
 

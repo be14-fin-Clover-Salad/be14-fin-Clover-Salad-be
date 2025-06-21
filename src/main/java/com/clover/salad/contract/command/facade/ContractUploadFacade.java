@@ -9,6 +9,9 @@ import com.clover.salad.contract.command.service.parser.PdfContractParserService
 import com.clover.salad.contract.document.entity.DocumentOrigin;
 import com.clover.salad.contract.document.service.DocumentOriginService;
 import com.clover.salad.contract.exception.ContractUploadFailedException;
+import com.clover.salad.common.file.entity.FileUploadEntity;
+import com.clover.salad.common.file.repository.FileUploadRepository;
+import com.clover.salad.common.file.service.PdfThumbnailService;
 import com.clover.salad.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +32,8 @@ public class ContractUploadFacade {
 	private final PdfContractParserService pdfContractParserService;
 	private final ContractService contractService;
 	private final DocumentOriginService documentOriginService;
+	private final PdfThumbnailService thumbnailService;
+	private final FileUploadRepository fileUploadRepository;
 
 	/**
 	 * 신규 계약 업로드
@@ -41,16 +46,28 @@ public class ContractUploadFacade {
 
 		DocumentOrigin documentOrigin = null;
 		try {
-			// 1. 먼저 파싱 및 유효성 검증
+			// 1. 파싱 및 유효성 검증
 			ContractUploadRequestDTO parsed = pdfContractParserService.parsePdf(tempFile);
 			contractService.validate(parsed);
 
-			// 2. 검증 통과한 경우만 S3 업로드 및 DB 저장
+			// 2. PDF S3 업로드 및 DocumentOrigin 저장
 			documentOrigin = documentOriginService.uploadAndSave(tempFile, originalFilename);
 			parsed.setDocumentOrigin(documentOrigin);
 
+			// 3. 썸네일 생성 및 S3 업로드
+			String pdfKey = documentOrigin.getFileUpload().getPath();
+			byte[] thumbBytes = thumbnailService.generateFirstPageThumbnail(pdfKey);
+			String thumbKey = thumbnailService.uploadThumbnailToS3(pdfKey, thumbBytes);
+
+			// 4. 썸네일 경로 DB 반영
+			FileUploadEntity pdfUpload = documentOrigin.getFileUpload();
+			pdfUpload.setThumbnailPath(thumbKey);
+			fileUploadRepository.save(pdfUpload);
+
+			// 5. 계약 등록
 			ContractEntity saved = contractService.registerContract(parsed);
 			return new ContractUploadResponseDTO(saved.getId(), "계약 등록 완료");
+
 		} catch (Exception e) {
 			log.error("[ERROR] 계약 업로드 중 예외 발생: {}", e.getMessage(), e);
 			if (documentOrigin != null) {
@@ -68,8 +85,8 @@ public class ContractUploadFacade {
 		}
 	}
 
-	/**
-	 * 기존 계약 PDF 재업로드 (버전 히스토리 포함)
+	/*
+	 * 기존 계약 PDF 재업로드
 	 */
 	@Transactional
 	public ContractUploadResponseDTO handleReplace(int contractId, MultipartFile file, String note) throws Exception {
@@ -86,15 +103,27 @@ public class ContractUploadFacade {
 			ContractUploadRequestDTO parsed = pdfContractParserService.parsePdf(tempFile);
 			contractService.validate(parsed);
 
-			// 3. 검증 통과 시 업로드 및 저장
+			// 3. PDF S3 업로드 및 DocumentOrigin 저장
 			documentOrigin = documentOriginService.uploadAndSave(tempFile, file.getOriginalFilename());
 			parsed.setDocumentOrigin(documentOrigin);
 
+			// 4. 썸네일 생성 및 S3 업로드
+			String pdfKey = documentOrigin.getFileUpload().getPath();
+			byte[] thumbBytes = thumbnailService.generateFirstPageThumbnail(pdfKey);
+			String thumbKey = thumbnailService.uploadThumbnailToS3(pdfKey, thumbBytes);
+
+			// 5. 썸네일 경로 DB 반영
+			FileUploadEntity pdfUpload = documentOrigin.getFileUpload();
+			pdfUpload.setThumbnailPath(thumbKey);
+			fileUploadRepository.save(pdfUpload);
+
+			// 6. 신규 계약 등록
 			ContractEntity newContract = contractService.registerContract(parsed);
 			if (newContract == null || newContract.getId() <= 0) {
 				throw new IllegalStateException("신규 계약 등록 실패: 유효한 계약 ID가 생성되지 않음");
 			}
 
+			// 7. 버전 히스토리 저장
 			ContractFileHistory history = ContractFileHistory.builder()
 				.contract(newContract)
 				.replacedContract(existingContract)
@@ -108,6 +137,7 @@ public class ContractUploadFacade {
 			contractService.saveContractHistory(history);
 
 			return new ContractUploadResponseDTO(newContract.getId(), "기존 계약 갱신 완료");
+
 		} catch (Exception e) {
 			log.error("[ERROR] 계약 재업로드 중 예외 발생: {}", e.getMessage(), e);
 			if (documentOrigin != null) {

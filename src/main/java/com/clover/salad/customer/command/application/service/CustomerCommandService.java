@@ -11,4 +11,6 @@ public interface CustomerCommandService {
 	void updateCustomer(int customerId, CustomerUpdateRequest request);
 
 	// void deleteCustomer(int id);
+
+	void updateCustomer(int customerId, CustomerUpdateRequest request, boolean bypassValidation);
 }

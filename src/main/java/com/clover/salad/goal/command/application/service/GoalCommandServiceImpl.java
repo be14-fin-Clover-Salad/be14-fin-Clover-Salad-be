@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.clover.salad.common.exception.InvalidSearchTermException;
+import com.clover.salad.common.exception.NotFoundException;
 import com.clover.salad.employee.command.domain.aggregate.entity.EmployeeEntity;
 import com.clover.salad.employee.command.domain.repository.EmployeeRepository;
 import com.clover.salad.goal.command.application.dto.DefaultGoalDTO;
@@ -61,7 +62,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 	public void deleteGoal(List<GoalDTO> goalList) {
 		for (GoalDTO goalDTO : goalList) {
 			Goal goal = goalRepository.findByEmployeeIdAndTargetDate(goalDTO.getEmployeeId(), goalDTO.getTargetDate());
-			goalRepository.delete(updateGoal(goal, goalDTO));
+			goalRepository.delete(goal);
 		}
 	}
 	
@@ -109,6 +110,7 @@ public class GoalCommandServiceImpl implements GoalCommandService {
 		log.info("Getting Default Goal");
 		DefaultGoalDTO defaultGoal = goalQueryService.searchDefaultGoalByLevelAndTargetYear(employeeLevel, yearlyGoal.getTargetDate());
 		log.info("Default Goal {}", defaultGoal);
+		if (defaultGoal == null) throw new NotFoundException("'" + yearlyGoal.getTargetDate() + "'년에 '"+ employeeLevel +"' 직급의 목표가 없습니다.");
 		
 		/* 설명. 회사의 연간 목표보다 설정한 목표가 높거나 같은지 체크 */
 		log.info("Checking Yearly Goal");

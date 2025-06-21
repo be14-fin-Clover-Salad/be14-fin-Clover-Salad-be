@@ -38,8 +38,8 @@ public class GoalCommandController {
 	}
 
 	/* 설명. 실적 목표 수정 */
-	@PutMapping("/change")
-	public ResponseEntity<String> changeGoal(
+	@PutMapping("/update")
+	public ResponseEntity<String> updateGoal(
 		@RequestBody List<GoalDTO> goalList
 	) {
 		int employeeId = SecurityUtil.getEmployeeId();

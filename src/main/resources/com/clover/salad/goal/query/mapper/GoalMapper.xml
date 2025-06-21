@@ -16,6 +16,7 @@
         <result property="customerFeedbackCount" column="CUSTOMER_FEEDBACK_COUNT"/>
         <result property="targetDate" column="TARGET_DATE"/>
         <result property="employeeId" column="EMPLOYEE_ID"/>
+        <result property="employeeCode" column="EMPLOYEE_CODE"/>
     </resultMap>
 
     <!-- 설명. 팀 실적 목표 ResultMap -->
@@ -30,6 +31,7 @@
         <result property="customerFeedbackCount" column="SUM(EG.CUSTOMER_FEEDBACK_COUNT)"/>
         <result property="targetDate" column="TARGET_DATE"/>
         <result property="employeeId" column="EMPLOYEE_ID"/>
+        <result property="employeeCode" column="EMPLOYEE_CODE"/>
     </resultMap>
 
     <!-- 설명. 기본 실적 목표 ResultMap -->
@@ -58,46 +60,52 @@
              , EG.CUSTOMER_FEEDBACK_COUNT
              , EG.TARGET_DATE
              , EG.EMPLOYEE_ID
+             , E.CODE AS EMPLOYEE_CODE
           FROM EMPLOYEE_GOAL EG
-         WHERE EG.EMPLOYEE_ID IN (SELECT E.ID
-                                   FROM EMPLOYEE E
-                                  WHERE E.CODE LIKE CONCAT('%', #{employeeCode}, '%'))
-        <if test="startDate != null">
-           AND EG.TARGET_DATE >= #{startDate}
-        </if>
-        <if test="endDate != null">
-            <![CDATA[AND EG.TARGET_DATE <= #{endDate}]]>
-        </if>
-        <if test="minRentalProductCount != null">
-            AND EG.RENTAL_PRODUCT_COUNT >= #{minRentalProductCount}
-        </if>
-        <if test="maxRentalProductCount != null">
-            <![CDATA[AND EG.RENTAL_PRODUCT_COUNT <= #{maxRentalProductCount}]]>
-        </if>
-        <if test="minRentalRetentionRate != null">
-            AND EG.RENTAL_RETENTION_COUNT * 100 / EG.TOTAL_RENTAL_COUNT >= #{minRentalRetentionRate}
-        </if>
-        <if test="maxRentalRetentionRate != null">
-            <![CDATA[AND EG.RENTAL_RETENTION_RATE * 100 / EG.TOTAL_RENTAL_COUNT <= #{maxRentalRetentionRate}]]>
-        </if>
-        <if test="minNewCustomerCount != null">
-            AND EG.NEW_CUSTOMER_COUNT >= #{minNewCustomerCount}
-        </if>
-        <if test="maxNewCustomerCount != null">
-            <![CDATA[AND EG.NEW_CUSTOMER_COUNT <= #{maxNewCustomerCount}]]>
-        </if>
-        <if test="minTotalRentalAmount != null">
-            AND EG.TOTAL_RENTAL_AMOUNT >= #{minTotalRentalAmount}
-        </if>
-        <if test="maxTotalRentalAmount != null">
-            <![CDATA[AND EG.TOTAL_RENTAL_AMOUNT <= #{maxTotalRentalAmount}]]>
-        </if>
-        <if test="minCustomerFeedbackScore != null">
-            AND EG.CUSTOMER_FEEDBACK_SCORE >= #{minCustomerFeedbackScore}
-        </if>
-        <if test="maxCustomerFeedbackScore != null">
-            <![CDATA[AND EG.CUSTOMER_FEEDBACK_SCORE <= #{maxCustomerFeedbackScore}]]>
-        </if>
+          JOIN EMPLOYEE E ON EG.EMPLOYEE_ID = E.ID
+        <where>
+            <if test="employeeCode != null">
+                AND EG.EMPLOYEE_ID IN (SELECT E.ID
+                                         FROM EMPLOYEE E
+                                        WHERE E.CODE LIKE CONCAT('%', #{employeeCode}, '%'))
+            </if>
+            <if test="startDate != ''">
+                AND EG.TARGET_DATE >= CAST(REPLACE(#{startDate}, '-', '') AS UNSIGNED)
+            </if>
+            <if test="endDate != ''">
+                <![CDATA[AND EG.TARGET_DATE <= CAST(REPLACE(#{endDate}, '-', '') AS UNSIGNED)]]>
+            </if>
+            <if test="minRentalProductCount != null">
+                AND EG.RENTAL_PRODUCT_COUNT >= #{minRentalProductCount}
+            </if>
+            <if test="maxRentalProductCount != null">
+                <![CDATA[AND EG.RENTAL_PRODUCT_COUNT <= #{maxRentalProductCount}]]>
+            </if>
+            <if test="minRentalRetentionRate != null">
+                AND EG.RENTAL_RETENTION_COUNT * 100 / EG.TOTAL_RENTAL_COUNT >= #{minRentalRetentionRate}
+            </if>
+            <if test="maxRentalRetentionRate != null">
+                <![CDATA[AND EG.RENTAL_RETENTION_RATE * 100 / EG.TOTAL_RENTAL_COUNT <= #{maxRentalRetentionRate}]]>
+            </if>
+            <if test="minNewCustomerCount != null">
+                AND EG.NEW_CUSTOMER_COUNT >= #{minNewCustomerCount}
+            </if>
+            <if test="maxNewCustomerCount != null">
+                <![CDATA[AND EG.NEW_CUSTOMER_COUNT <= #{maxNewCustomerCount}]]>
+            </if>
+            <if test="minTotalRentalAmount != null">
+                AND EG.TOTAL_RENTAL_AMOUNT >= #{minTotalRentalAmount}
+            </if>
+            <if test="maxTotalRentalAmount != null">
+                <![CDATA[AND EG.TOTAL_RENTAL_AMOUNT <= #{maxTotalRentalAmount}]]>
+            </if>
+            <if test="minCustomerFeedbackScore != null">
+                AND EG.CUSTOMER_FEEDBACK_SCORE >= #{minCustomerFeedbackScore}
+            </if>
+            <if test="maxCustomerFeedbackScore != null">
+                <![CDATA[AND EG.CUSTOMER_FEEDBACK_SCORE <= #{maxCustomerFeedbackScore}]]>
+            </if>
+        </where>
         ORDER BY EG.TARGET_DATE DESC
     </select>
 

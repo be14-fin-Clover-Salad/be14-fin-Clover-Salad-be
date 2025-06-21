@@ -14,5 +14,5 @@ public interface GoalQueryService {
 	
 	DefaultGoalDTO searchDefaultGoalByLevelAndTargetYear(String employeeLevel, int targetYear);
 	
-	List<GoalDTO> searchYearGoalByCurrentGoal(int employeeId, int targetYear);
+	List<GoalDTO> searchYearGoalByCurrentGoal(int employeeCode, int targetYear);
 }
